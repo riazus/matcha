@@ -1,0 +1,16 @@
+src/**/.vs
+src/**/.vscode
+src/**/*.*proj.user
+src/**/*.dbmdl
+src/**/*.jfm
+src/**/azds.yaml
+src/**/bin
+src/**/obj
+src/**/Tests
+src/**/*.Tests
+src/**/charts
+src/*/node_modules
+src/**/node_modules
+.gitignore
+.git
+*.md

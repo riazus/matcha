@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  # ------------------------------------------------------------
+  # MSSQL - Database
+  # ------------------------------------------------------------
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - TZ=Europe/Paris
+      - MSSQL_SA_PASSWORD=${MSSQL_PASSWORD}
+      - MSSQL_TCP_PORT=${MSSQL_PORT}
+    volumes:
+      - msdata:/var/lib/mssql/data
+    ports:
+      - ${MSSQL_PORT}:${MSSQL_PORT}
+    networks:
+      - matcha-networke
+    restart: always
+
+  # ------------------------------------------------------------
+  # ASP.NET 7.0 Core - Backend
+  # ------------------------------------------------------------
+  backend:
+    container_name: backend
+    build:
+      context: ./src/backend
+    hostname: backend
+    environment:
+      - TZ=Europe/Paris
+      - ConnectionStrings__DefaultConnection=Data Source=db;Initial Catalog=${DB_NAME};User ID=sa;Password=${MSSQL_PASSWORD};Encrypt=False
+      - AppSettings__Secret=${JWT_SECRET}
+      - AppSettings__SmtpUser=${SMTP_USER}
+      - AppSettings__SmtpPass=${SMTP_PASS}
+      - AppSettings__Secrets__GoogleClientId=${GOOGLE_CLIENT_ID}
+      - AppSettings__Secrets__GoogleClientSecret=${GOOGLE_CLIENT_SECRET}
+      - AppSettings__Secrets__GithubClientId=${GITHUB_CLIENT_ID}
+      - AppSettings__Secrets__GithubClientSecret=${GITHUB_CLIENT_SECRET}
+    depends_on:
+      - db
+    ports:
+      - ${BACKEND_PORT}:80
+    networks:
+      - matcha-network
+    restart: unless-stopped
+
+    # ------------------------------------------------------------
+    # React 18 - Frontend
+    # ------------------------------------------------------------
+    frontend:
+      container_name: frontend
+      build:
+        context: ./src/frontend
+        dockerfile: Dockerfile.prod
+      environment:
+        WDS_SOCKET_PORT: ${FRONTEND_PORT}
+        PORT: ${FRONTEND_PORT}
+        GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_OAUTH_REDIRECT: ${FRONTED_GOOGLE_OAUTH_REDIRECT}
+        GITHUB_OAUTH_CLIENT_ID: ${GITHUB_CLIENT_ID}
+        GITHUB_OAUTH_REDIRECT_URL: ${FRONTEND_GITHUB_OAUTH_REDIRECT_URL}
+      ports:
+        - ${FRONTEND_PORT}:${FRONTEND_PORT}
+      networks:
+        - matcha-network
+      restart: unless-stopped
+
+volumes:
+  msdata:
+
+networks:
+  matcha-network:
+    driver: bridge
