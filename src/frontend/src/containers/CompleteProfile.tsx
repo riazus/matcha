@@ -280,7 +280,7 @@ function CompleteProfile() {
         Upload Profile Picture
         <VisuallyHiddenInput
           type="file"
-          accept=".jpg, .png"
+          accept=".jpg, .png, .jpeg"
           onChange={handleProfilePictureUpload}
         />
       </Button>

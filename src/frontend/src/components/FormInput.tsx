@@ -1,25 +1,101 @@
 import {
+  Box,
   FormHelperText,
   Typography,
   FormControl,
-  Input as _Input,
+  Input,
   InputProps,
+  TextField,
+  InputAdornment,
+  InputLabel,
+  IconButton
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { FC } from "react";
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { FC, useState, MouseEvent } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-const Input = styled(_Input)`
-  background-color: white;
-  padding: 0.4rem 0.7rem;
-`;
-
 type IFormInputProps = {
+  field: any;
+  // field: ControllerRenderProps<FieldValues, string>;
   name: string;
   label: string;
 } & InputProps;
 
-const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
+const EmailField : FC<IFormInputProps> = ({name, label, ...otherProps}) => {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+      <TextField label={label} variant="standard" />
+    </Box>
+  )
+}
+
+const PasswordField : FC<IFormInputProps> = ({name, label, ...otherProps}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  return (
+    <div>
+      <InputLabel htmlFor="standard-adornment-password">{label}</InputLabel>
+      <Input
+        id="standard-adornment-password"
+        type={showPassword ? 'text' : 'password'}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={e => setShowPassword(!showPassword)}
+              onMouseDown={handleMouseDownPassword}
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        }
+        /> 
+      </div>
+  )
+}
+
+const InputField : FC<IFormInputProps> = ({name, label, ...otherProps}) => {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+      <AccountCircle sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+      <TextField label={label} variant="standard" />
+    </Box>
+  )
+}
+
+const DefaultField : FC<IFormInputProps> = ({field, name, label, ...otherProps}) => {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+
+  return (
+    <div>
+    <Typography
+    variant="body2"
+    sx={styles.text}
+    >
+    {label}
+    </Typography>
+    <Input
+      {...field}
+      fullWidth
+      disableUnderline
+      sx={styles.input}
+      error={!!errors[name]}
+      {...otherProps}
+    />
+    </div>
+  )
+}
+
+const FormInput: FC<IFormInputProps> = ({ name, label, type = "", ...otherProps }) => {
   const {
     control,
     formState: { errors },
@@ -32,21 +108,10 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
       name={name}
       render={({ field }) => (
         <FormControl fullWidth sx={{ mb: 2 }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#e5e7eb", mb: 1, fontWeight: 500 }}
-          >
-            {label}
-          </Typography>
-          <Input
-            {...field}
-            color="success"
-            fullWidth
-            disableUnderline
-            sx={{ borderRadius: "1rem" }}
-            error={!!errors[name]}
-            {...otherProps}
-          />
+          {type === "" ? <DefaultField field={field} name={name} label={label} /> : null}
+          {type === "input" ? <InputField name={name} label={label} /> : null}
+          {type === "email" ? <EmailField name={name} label={label}/> : null}
+          {type === "password" ? <PasswordField name={name} label={label}/> : null}
           <FormHelperText error={!!errors[name]}>
             {errors[name] ? (errors[name]?.message as unknown as string) : ""}
           </FormHelperText>
@@ -55,5 +120,23 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
     />
   );
 };
+
+const styles = {
+  text: {
+    color: "#7209b7",
+    mb: 1, 
+    fontWeight: 600,
+    fontFamily: "\"Inter\",sans-serif",
+  },
+  input: {
+    borderRadius: "1rem",
+    borderColor: "black",
+    borderWidth: "10px",
+    backgroundColor: "rgb(114, 9, 183, 0.2)",
+    width: "20rem",
+    margin: "0.1rem",
+    padding: "0.3rem 1rem",
+  }
+}
 
 export default FormInput;
