@@ -14,11 +14,10 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { FC, useState, MouseEvent } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { FieldValues, ControllerRenderProps, Controller, useFormContext } from "react-hook-form";
 
 type IFormInputProps = {
-  field: any;
-  // field: ControllerRenderProps<FieldValues, string>;
+  field: ControllerRenderProps<FieldValues, string>;
   name: string;
   label: string;
 } & InputProps;
@@ -109,9 +108,9 @@ const FormInput: FC<IFormInputProps> = ({ name, label, type = "", ...otherProps 
       render={({ field }) => (
         <FormControl fullWidth sx={{ mb: 2 }}>
           {type === "" ? <DefaultField field={field} name={name} label={label} /> : null}
-          {type === "input" ? <InputField name={name} label={label} /> : null}
-          {type === "email" ? <EmailField name={name} label={label}/> : null}
-          {type === "password" ? <PasswordField name={name} label={label}/> : null}
+          {type === "input" ? <InputField field={field} name={name} label={label} /> : null}
+          {type === "email" ? <EmailField field={field} name={name} label={label}/> : null}
+          {type === "password" ? <PasswordField field={field} name={name} label={label}/> : null}
           <FormHelperText error={!!errors[name]}>
             {errors[name] ? (errors[name]?.message as unknown as string) : ""}
           </FormHelperText>
