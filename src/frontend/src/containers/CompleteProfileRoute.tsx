@@ -1,10 +1,9 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { readUser } from "../app/services/localStorageService";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAppSelector } from "../app/hooks";
 
 function CompleteProfileRoute() {
-  const user = readUser();
+  const { user } = useAppSelector((root) => root.user);
 
-  // COMPLETE PROFILE ROUTE !!!
   if (user?.isProfileCompleted === false) {
     return <Navigate to={"/complete-profile"} />;
   } else {
