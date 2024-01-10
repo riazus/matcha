@@ -6,6 +6,7 @@ import {
   useGetNotificationsCountQuery,
   useLogoutMutation,
 } from "../app/api/api";
+import { setColors } from "../styles/colors";
 import { useEffect } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 
@@ -32,8 +33,8 @@ function Header() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#17553d" }}>
-      <Container>
+    <AppBar position="static" style={styles.appBar}>
+      <Container style={styles.container}>
         <Toolbar>
           <Typography
             variant="h5"
@@ -93,6 +94,16 @@ function Header() {
       </Container>
     </AppBar>
   );
+}
+
+const styles = {
+  appBar: {
+    backgroundColor: setColors("lightGray"),
+    maxWidth: "100%"
+  },
+  container: {
+
+  },
 }
 
 export default Header;

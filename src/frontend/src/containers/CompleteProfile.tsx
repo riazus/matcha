@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/system";
+import { Box, Container, padding } from "@mui/system";
 import { useAppSelector } from "../app/hooks";
 import {
   Typography,
@@ -8,6 +8,7 @@ import {
   TextareaAutosize,
   Input,
   Button,
+  Tooltip
 } from "@mui/material";
 import { SubmitHandler, useForm, FormProvider } from "react-hook-form";
 import { LoadingButton } from "../components/LoadingButtonForm";
@@ -25,6 +26,7 @@ import { toast } from "react-toastify";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useNavigate } from "react-router-dom";
+import { setColors } from "../styles/colors";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -120,6 +122,7 @@ function isUser18YearsOrOlder(birthdate: Date): boolean {
 //     "You must be legal age for using this app"
 //   ),
 // });
+
 
 export interface AddressData {
   latitude: number;
@@ -267,18 +270,12 @@ function CompleteProfile() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
+    <Container sx={styles.mainBox}>
       <Button
         component="label"
         variant="contained"
         startIcon={<CloudUploadIcon />}
+        sx={styles.profileImgButton}
       >
         Upload Profile Picture
         <VisuallyHiddenInput
@@ -308,15 +305,16 @@ function CompleteProfile() {
         </Box> */}
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Typography sx={{ mt: 5 }}>
+        <Typography style={styles.bithdayText} sx={{ mt: 5 }}>
           {birthday?.isValid() &&
             `You are: ${Math.abs(
               new Date(Date.now() - +birthday?.toDate()).getUTCFullYear() - 1970
             )} old`}
         </Typography>
         <DatePicker
+          label="Enter your birthday date here !"
           value={birthday}
-          onChange={(newDate) => setBirthday(newDate)}
+          onChange={(newDate) => {setBirthday(newDate)}}
         />
       </LocalizationProvider>
 
@@ -369,7 +367,7 @@ function CompleteProfile() {
 
       <TextareaAutosize
         minRows={3}
-        placeholder="Describe yourself"
+        placeholder="Please enter a nice bio"
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           setDescription(e.target.value)
         }
@@ -377,25 +375,53 @@ function CompleteProfile() {
 
       <Box sx={{ my: 5 }}>
         <Typography>Select your interests (up 5):</Typography>
-        <UnstyledSelectMultiple values={tagsData} setTags={setTags} />
+        <>
+          <UnstyledSelectMultiple values={tagsData} setTags={setTags} />
+        </>
       </Box>
 
       <Box sx={{ my: 5 }}>
         <Typography color={"white"}>
           Click to the map if you want make location
         </Typography>
-        <Box sx={{ height: "50vh", width: "75vh" }}>
-          <OpenStreetMap setAddressData={setAddressData} />
+        <Box sx={styles.localizationBox}>
+          <OpenStreetMap setAddressData={setAddressData}/>
         </Box>
       </Box>
 
       <Box sx={{ my: 5 }}>
-        <LoadingButton loading={isLoading} onClick={handleSubmitClick}>
-          Save provided information
-        </LoadingButton>
+          <LoadingButton loading={isLoading} onClick={handleSubmitClick}>
+            Saving
+          </LoadingButton>
       </Box>
-    </Box>
+    </Container>
   );
 }
+
+const styles = {
+  mainBox: {
+    display: "flex",
+    flexDirection: "column",
+    margin: "1%",
+  },
+  bithdayText: {
+    paddingBottom: "10px",
+    paddingTop: "10px",
+  },
+  profileImgButton: {
+    width: "50%",
+    height: "70%",
+    borderRadius: "10px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+
+  },
+  localizationBox: {
+    height: "25vh", 
+    width: "60vh",
+    borderRadius: "10px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+  }
+}
+
 
 export default CompleteProfile;
