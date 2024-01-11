@@ -253,3 +253,87 @@ INNER JOIN deleted d ON (d.FavoriteAccountId = mp.Profile1 AND d.LikedById = mp.
 
 END
 GO
+
+
+
+/* SETUP DUMMY ACCOUNTS */
+
+INSERT INTO [dbo].[Account]
+([Id],[Username],[Email],[FirstName],[LastName],[PasswordHash]
+,[VerificationToken],[Verified],[ResetToken],[ResetTokenExpires]
+,[PasswordReset],[Created],[Updated],[Provider],[IsProfileCompleted]
+,[RelativeProfilePictureUrl],[RelativeAdditionalPicturesUrlDB],[GenderDB]
+,[GenderPreferencesDB],[Birthday],[Description],[TagsDB],[Latitude]
+,[Longitude],[Postcode],[Country],[Town]) 
+VALUES
+(newid(), 'mbelucci', 'monica@mail.com', 
+'Monica', 'Belucci', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 1, 0, '12-16-1980', 'I like running and watch movies', '["movies", "running", "popcorn"]', 
+34.052235, -118.243683, 90001, 'USA', 'Los Angeles'),
+
+(newid(), 'rsmith', 'rsmith@mail.com', 
+'Roland', 'Smith', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 0, 1, '01-01-1988', 'I like running and spend time with my friends', '["movies", "friends", "running"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'kasmus', 'kasmus@mail.com', 
+'Kristina', 'Asmus', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 1, 0, '01-01-1990', 'I like running and spend time with my friends', '["movies", "friends", "running"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'lcarrol', 'lcarrol@mail.com', 
+'Lika', 'Carrol', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 1, 0, '01-01-1999', 'I like running and spend time with my friends', '["sport", "friends", "running"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'pfluery', 'pfluery@mail.com', 
+'Pierre', 'Fleury', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 0, 2, '01-01-1995', 'I like running and spend time with my friends', '["sport", "friends", "geek"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'ljouli', 'ljouli@mail.com', 
+'Loran', 'Jouli', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 2, 1, '01-01-2000', 'I like running and spend time with my friends', '["sport", "friends", "geek"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'ybaque', 'ybaque@mail.com', 
+'Yasmine', 'Baque', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 1, 1, '01-01-2002', 'I like running and spend time with my friends', '["food", "friends", "geek"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'ajolie', 'ajoli@mail.com', 
+'Angelina', 'Jolie', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 1, 0, '01-01-1988', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'tkami', 'tkami@mail.com', 
+'Tamara', 'Kami', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 2, 2, '01-01-2000', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris'),
+
+(newid(), 'cjambou', 'cjambou@mail.com', 
+'Clement', 'Jambou', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
+null, getdate(), null, null, null, getdate(), 
+null, null, 1, 'Images/dummy.jpg', 
+null, 0, 0, '01-01-1970', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
+48.856613, 2.352222, 90001, 'France', 'Paris')
+
+GO
