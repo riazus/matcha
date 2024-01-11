@@ -99,7 +99,8 @@ function Header() {
 const styles = {
   appBar: {
     backgroundColor: setColors("lightGray"),
-    maxWidth: "100%"
+    maxWidth: "100%",
+    height: "4rem",
   },
   container: {
 

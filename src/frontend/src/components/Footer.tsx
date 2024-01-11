@@ -14,7 +14,7 @@ const Footer = () => {
 const styles = {
   box: {
     backgroundColor: setColors("lightGray"), 
-    height: "4rem", 
+    height: "4rem",
     boxShadow: 15,
     display: "flex",
     justifyContent: "center",
