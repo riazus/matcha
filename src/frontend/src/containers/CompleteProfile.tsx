@@ -1,14 +1,22 @@
-import { Box, Container, padding } from "@mui/system";
+import { Box, Container, display, padding } from "@mui/system";
 import { useAppSelector } from "../app/hooks";
 import {
+  Grid,
   Typography,
   Checkbox,
   FormGroup,
   FormControlLabel,
   TextareaAutosize,
+  TextField,
   Input,
   Button,
-  Tooltip
+  Tooltip,
+  Radio,
+  RadioGroup,
+  FormLabel,
+  FormControl,
+  Modal,
+  Switch,
 } from "@mui/material";
 import { SubmitHandler, useForm, FormProvider } from "react-hook-form";
 import { LoadingButton } from "../components/LoadingButtonForm";
@@ -18,7 +26,7 @@ import { CompleteProfileBody } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, SetStateAction } from "react";
 import UnstyledSelectMultiple from "../components/SelectMultiply";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
@@ -50,53 +58,53 @@ const tagsData = [
   "meditation",
   "paresse",
   "fitness",
-  /* "aventure",
-  // "timide",
-  // "marketing",
-  // "fastfood",
-  // "intelligence",
-  // "humour",
-  // "cool",
-  // "highTech",
-  // "globetrotting",
-  // "histoire",
-  // "shopping",
-  // "nature",
-  // "sport",
-  // "football",
-  // "literature",
-  // "math",
-  // "action",
-  // "faitsDivers",
-  // "decouverte",
-  // "cinema",
-  // "musique",
-  // "actualite",
-  // "politique",
-  // "social",
-  // "etudes",
-  // "cuisine",
-  // "humanitaire",
-  // "animaux",
-  // "environnement",
-  // "jeuxVideo",
-  // "peinture",
-  // "dessin",
-  // "ecriture",
-  // "lecture",
-  // "photographie",
-  // "chasse",
-  // "randonnee",
-  // "marche",
-  // "plage",
-  // "detente",
-  // "automobile",
-  // "couture",
-  // "innovation",
-  // "terroir",
-  // "informatique",
-  // "marathon",
-   "blogging", */
+  "aventure",
+  "timide",
+  "marketing",
+  "fastfood",
+  "intelligence",
+  "humour",
+  "cool",
+  "highTech",
+  "globetrotting",
+  "histoire",
+  "shopping",
+  "nature",
+  "sport",
+  "football",
+  "literature",
+  "math",
+  "action",
+  "faitsDivers",
+  "decouverte",
+  "cinema",
+  "musique",
+  "actualite",
+  "politique",
+  "social",
+  "etudes",
+  "cuisine",
+  "humanitaire",
+  "animaux",
+  "environnement",
+  "jeuxVideo",
+  "peinture",
+  "dessin",
+  "ecriture",
+  "lecture",
+  "photographie",
+  "chasse",
+  "randonnee",
+  "marche",
+  "plage",
+  "detente",
+  "automobile",
+  "couture",
+  "innovation",
+  "terroir",
+  "informatique",
+  "marathon",
+  "blogging",
 ];
 
 function isUser18YearsOrOlder(birthdate: Date): boolean {
@@ -122,7 +130,6 @@ function isUser18YearsOrOlder(birthdate: Date): boolean {
 //     "You must be legal age for using this app"
 //   ),
 // });
-
 
 export interface AddressData {
   latitude: number;
@@ -164,7 +171,7 @@ function CompleteProfile() {
   const [state, setState] = useState({
     gender: {
       iAmMan: false,
-      iAmWomen: false,
+      iAmWoman: false,
       iSearchMan: false,
       iSearchWomen: false,
     },
@@ -185,12 +192,24 @@ function CompleteProfile() {
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [tags, setTags] = useState<string[] | null>();
   const [description, setDescription] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
   const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       ...state,
       gender: { ...state.gender, [event.target.name]: event.target.checked },
     });
+  };
+  
+  const handleTag = (tag: string) => {
+    if (tags?.find((x) => x === tag) !== undefined) {
+      const nTags = tags?.filter((oneTag) => oneTag !== tag);
+      setTags(nTags);
+    } else {
+      setTags((prevTags: string[] | null | undefined) =>
+        prevTags ? [...prevTags, tag] : [tag]
+      );
+    }
   };
 
   const handleProfilePictureUpload = (
@@ -228,7 +247,7 @@ function CompleteProfile() {
     } else if (!birthday) {
       toast.error("Birthday cannot be empty!");
       return;
-    } else if (!state.gender.iAmMan && !state.gender.iAmWomen) {
+    } else if (!state.gender.iAmMan && !state.gender.iAmWoman) {
       toast.error("Gender cannot be empty!");
       return;
     } else if (!tags || tags?.length < 1) {
@@ -280,7 +299,7 @@ function CompleteProfile() {
         Upload Profile Picture
         <VisuallyHiddenInput
           type="file"
-          accept=".jpg, .png, .jpeg"
+          accept=".jpg, .png"
           onChange={handleProfilePictureUpload}
         />
       </Button>
@@ -314,85 +333,128 @@ function CompleteProfile() {
         <DatePicker
           label="Enter your birthday date here !"
           value={birthday}
-          onChange={(newDate) => {setBirthday(newDate)}}
+          onChange={(newDate) => {
+            setBirthday(newDate);
+          }}
         />
       </LocalizationProvider>
 
       <FormGroup>
-        <Typography sx={{ mt: 5 }}>You are:</Typography>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={state.gender.iAmMan}
-              disabled={state.gender.iAmWomen}
-              onChange={handleChangeGender}
-              name="iAmMan"
-            />
-          }
-          label="I'm a man"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={state.gender.iAmWomen}
-              disabled={state.gender.iAmMan}
-              onChange={handleChangeGender}
-              name="iAmWomen"
-            />
-          }
-          label="I'm a women"
-        />
-        <Typography>You search:</Typography>
+        <FormLabel>Which gender are you ?</FormLabel>
+        <RadioGroup defaultValue="man">
+          <FormControlLabel
+            value="man"
+            control={<Radio name="iAmMan" onChange={handleChangeGender} />}
+            label="Man"
+          />
+          <FormControlLabel
+            value="woman"
+            control={<Radio name="iAmWoman" onChange={handleChangeGender} />}
+            label="Woman"
+          />
+          <FormControlLabel
+            value="nonBinary"
+            control={
+              <Radio name="iAmNonBinary" onChange={handleChangeGender} />
+            }
+            label="Non Binary"
+          />
+          <FormControlLabel
+            value="other"
+            control={<Radio name="other" onChange={handleChangeGender} />}
+            label="Not represented !"
+          />
+        </RadioGroup>
+        <FormLabel>I am searching for</FormLabel>
         <FormControlLabel
           control={
             <Checkbox
               checked={state.gender.iSearchMan}
-              onChange={handleChangeGender}
               name="iSearchMan"
+              onChange={handleChangeGender}
             />
           }
-          label="Man"
+          label="Men"
         />
         <FormControlLabel
           control={
             <Checkbox
               checked={state.gender.iSearchWomen}
-              onChange={handleChangeGender}
               name="iSearchWomen"
+              onChange={handleChangeGender}
             />
           }
           label="Women"
         />
       </FormGroup>
 
-      <TextareaAutosize
-        minRows={3}
-        placeholder="Please enter a nice bio"
+      <TextField
+        label="Please enter a bio"
+        multiline
+        rows={6}
+        variant="filled"
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           setDescription(e.target.value)
         }
       />
 
-      <Box sx={{ my: 5 }}>
+      {/* <Box sx={{ my: 5 }}>
         <Typography>Select your interests (up 5):</Typography>
         <>
           <UnstyledSelectMultiple values={tagsData} setTags={setTags} />
         </>
-      </Box>
+      </Box> */}
+
+      <Button onClick={() => setOpenModal(!openModal)}>
+        Choose your interrests !
+      </Button>
+      <Modal open={openModal} onClose={() => setOpenModal(!openModal)}>
+        <Box sx={styles.boxModal}>
+          {/* <FormControl>
+            <FormLabel component="legend">Assign responsibility</FormLabel>
+              <FormGroup sx={styles.interrestGroup}>
+                {tagsData.map(data => (
+                  <FormControlLabel
+                  key={data}
+                  control={
+                    <Switch checked={state.tags[data]} onChange={handleChangeInterrests} name={data} />
+                  }
+                  label={data}
+                />
+                ))}
+                </FormGroup>
+              </FormControl> */}
+          <Grid container spacing={1}>
+          {tagsData.map((tag) => (
+            <Grid item xs={3}>
+            <Button
+            key={tag}
+            onClick={() => handleTag(tag)}
+            color="secondary"
+            variant={tags && tags.includes(tag) === true ? 'contained' : 'outlined'}
+            >
+              {tag}
+            </Button>
+            </Grid>
+          ))}
+          </Grid>
+          <Button onClick={() => setOpenModal(!openModal)}>Finished !</Button>
+        </Box>
+      </Modal>
 
       <Box sx={{ my: 5 }}>
         <Typography color={"white"}>
           Click to the map if you want make location
         </Typography>
         <Box sx={styles.localizationBox}>
-          <OpenStreetMap setAddressData={setAddressData}/>
+          <OpenStreetMap setAddressData={setAddressData} />
         </Box>
       </Box>
 
       <Box sx={{ my: 5 }}>
-          <LoadingButton loading={isLoading} onClick={handleSubmitClick}>
-            Saving
-          </LoadingButton>
+        <LoadingButton loading={isLoading} onClick={handleSubmitClick}>
+          Saving
+        </LoadingButton>
       </Box>
     </Container>
   );
@@ -413,15 +475,30 @@ const styles = {
     height: "70%",
     borderRadius: "10px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-
   },
   localizationBox: {
-    height: "25vh", 
+    height: "25vh",
     width: "60vh",
     borderRadius: "10px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-  }
-}
-
+  },
+  boxModal: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "70vw",
+    bgcolor: "white",
+    boxShadow: 24,
+    p: 4,
+  },
+  interrestGroup: {
+    maxHeight: "50vh",
+    maxWidth: "60vw",
+    display: "flex",
+    flexDirection: "row",
+    overflowY: "auto",
+  },
+};
 
 export default CompleteProfile;
