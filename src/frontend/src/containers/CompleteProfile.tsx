@@ -1,7 +1,10 @@
-import { Box, Container, display, padding } from "@mui/system";
+import { Box, Container, display, minWidth, padding } from "@mui/system";
 import { useAppSelector } from "../app/hooks";
+import dayjs from 'dayjs';
 import {
+  Stack,
   Grid,
+  Popover,
   Typography,
   Checkbox,
   FormGroup,
@@ -200,7 +203,7 @@ function CompleteProfile() {
       gender: { ...state.gender, [event.target.name]: event.target.checked },
     });
   };
-  
+
   const handleTag = (tag: string) => {
     if (tags?.find((x) => x === tag) !== undefined) {
       const nTags = tags?.filter((oneTag) => oneTag !== tag);
@@ -294,7 +297,7 @@ function CompleteProfile() {
         component="label"
         variant="contained"
         startIcon={<CloudUploadIcon />}
-        sx={styles.profileImgButton}
+        sx={styles.uploadProfileButton}
       >
         Upload Profile Picture
         <VisuallyHiddenInput
@@ -324,19 +327,22 @@ function CompleteProfile() {
         </Box> */}
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          sx={styles.datePicker}
+          label="Enter your birthday date here !"
+          value={birthday}
+          onChange={(newDate) => {
+            setBirthday(newDate);
+          }}
+          maxDate={dayjs()}
+          defaultValue={dayjs('2000-01-01')}
+        />
         <Typography style={styles.bithdayText} sx={{ mt: 5 }}>
           {birthday?.isValid() &&
             `You are: ${Math.abs(
               new Date(Date.now() - +birthday?.toDate()).getUTCFullYear() - 1970
             )} old`}
         </Typography>
-        <DatePicker
-          label="Enter your birthday date here !"
-          value={birthday}
-          onChange={(newDate) => {
-            setBirthday(newDate);
-          }}
-        />
       </LocalizationProvider>
 
       <FormGroup>
@@ -398,52 +404,36 @@ function CompleteProfile() {
         }
       />
 
-      {/* <Box sx={{ my: 5 }}>
-        <Typography>Select your interests (up 5):</Typography>
-        <>
-          <UnstyledSelectMultiple values={tagsData} setTags={setTags} />
-        </>
-      </Box> */}
-
-      <Button onClick={() => setOpenModal(!openModal)}>
-        Choose your interrests !
+      <Button onClick={() => setOpenModal(!openModal)} sx={styles.openModalButton}>
+        Choose your interrests
       </Button>
-      <Modal open={openModal} onClose={() => setOpenModal(!openModal)}>
+      <Modal sx={styles.modal} open={openModal} onClose={() => setOpenModal(!openModal)}>
         <Box sx={styles.boxModal}>
-          {/* <FormControl>
-            <FormLabel component="legend">Assign responsibility</FormLabel>
-              <FormGroup sx={styles.interrestGroup}>
-                {tagsData.map(data => (
-                  <FormControlLabel
-                  key={data}
-                  control={
-                    <Switch checked={state.tags[data]} onChange={handleChangeInterrests} name={data} />
+          <Typography variant="h1" sx={styles.interrestsText}>Interrests :</Typography>
+          <Grid container spacing={2}>
+            {tagsData.map((tag) => (
+              <Grid item xs={10} sm={4}>
+                <Button
+                  key={tag}
+                  onClick={() => handleTag(tag)}
+                  color="secondary"
+                  variant={
+                    tags && tags.includes(tag) === true
+                      ? "contained"
+                      : "outlined"
                   }
-                  label={data}
-                />
-                ))}
-                </FormGroup>
-              </FormControl> */}
-          <Grid container spacing={1}>
-          {tagsData.map((tag) => (
-            <Grid item xs={3}>
-            <Button
-            key={tag}
-            onClick={() => handleTag(tag)}
-            color="secondary"
-            variant={tags && tags.includes(tag) === true ? 'contained' : 'outlined'}
-            >
-              {tag}
-            </Button>
-            </Grid>
-          ))}
-          </Grid>
-          <Button onClick={() => setOpenModal(!openModal)}>Finished !</Button>
+                >
+                  {tag}
+                </Button>
+              </Grid>
+            ))}
+        </Grid>
+          <Button onClick={() => setOpenModal(!openModal)} sx={styles.interrestsFinishedButton}>Finished</Button>
         </Box>
       </Modal>
 
       <Box sx={{ my: 5 }}>
-        <Typography color={"white"}>
+        <Typography color={"black"}>
           Click to the map if you want make location
         </Typography>
         <Box sx={styles.localizationBox}>
@@ -466,38 +456,67 @@ const styles = {
     flexDirection: "column",
     margin: "1%",
   },
-  bithdayText: {
-    paddingBottom: "10px",
-    paddingTop: "10px",
-  },
-  profileImgButton: {
+  uploadProfileButton: {
     width: "50%",
     height: "70%",
     borderRadius: "10px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    marginTop: "1%",
+    marginBottom: "3%",
+  },
+  datePicker: {
+    width: "40%",
+    minWidth: "230px",
+  },
+  bithdayText: {
+    paddingBottom: "10px",
+    paddingTop: "10px",
+    marginTop: "1%",
+    marginBottom: "1%",
   },
   localizationBox: {
     height: "25vh",
     width: "60vh",
     borderRadius: "10px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    '@media (max-width: 600px)': {
+      width: '90vw',
+    },
   },
+  openModalButton: {
+    marginTop: "1%",
+  },
+  modal: {},
   boxModal: {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70vw",
-    bgcolor: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "60%",
+    height: "70vh",
+    minWidth: "320px",
+    bgcolor: "rgb(255, 255, 255, 0.9)",
     boxShadow: 24,
     p: 4,
+    overflowY: "scroll",
+    borderRadius: "10px",
+    '@media (max-width: 600px)': {
+      width: '90vw',
+    },
+    '@media (min-width: 601px) and (max-width: 960px)': {
+      width: '80vw',
+    },
   },
-  interrestGroup: {
-    maxHeight: "50vh",
-    maxWidth: "60vw",
-    display: "flex",
-    flexDirection: "row",
-    overflowY: "auto",
+  interrestsText: {
+    fontSize: '3rem', 
+    fontWeight: 'bold',
+    marginBottom: "2%", 
+  },
+  interrestsFinishedButton: {
+    marginTop: "3%"
   },
 };
 
