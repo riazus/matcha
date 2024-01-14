@@ -1,6 +1,6 @@
 import { Box, Container, display, minWidth, padding } from "@mui/system";
 import { useAppSelector } from "../app/hooks";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import {
   Stack,
   Grid,
@@ -335,7 +335,7 @@ function CompleteProfile() {
             setBirthday(newDate);
           }}
           maxDate={dayjs()}
-          defaultValue={dayjs('2000-01-01')}
+          defaultValue={dayjs("2000-01-01")}
         />
         <Typography style={styles.bithdayText} sx={{ mt: 5 }}>
           {birthday?.isValid() &&
@@ -346,52 +346,64 @@ function CompleteProfile() {
       </LocalizationProvider>
 
       <FormGroup>
-        <FormLabel>Which gender are you ?</FormLabel>
-        <RadioGroup defaultValue="man">
-          <FormControlLabel
-            value="man"
-            control={<Radio name="iAmMan" onChange={handleChangeGender} />}
-            label="Man"
-          />
-          <FormControlLabel
-            value="woman"
-            control={<Radio name="iAmWoman" onChange={handleChangeGender} />}
-            label="Woman"
-          />
-          <FormControlLabel
-            value="nonBinary"
-            control={
-              <Radio name="iAmNonBinary" onChange={handleChangeGender} />
-            }
-            label="Non Binary"
-          />
-          <FormControlLabel
-            value="other"
-            control={<Radio name="other" onChange={handleChangeGender} />}
-            label="Not represented !"
-          />
-        </RadioGroup>
-        <FormLabel>I am searching for</FormLabel>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={state.gender.iSearchMan}
-              name="iSearchMan"
-              onChange={handleChangeGender}
+        <div style={styles.selection}>
+          <div style={styles.selectionContent}>
+            <FormLabel>Which gender are you ?</FormLabel>
+            <RadioGroup defaultValue="man">
+              <FormControlLabel
+                value="man"
+                control={<Radio name="iAmMan" onChange={handleChangeGender} />}
+                label="Man"
+              />
+              <FormControlLabel
+                value="woman"
+                control={
+                  <Radio name="iAmWoman" onChange={handleChangeGender} />
+                }
+                label="Woman"
+              />
+              <FormControlLabel
+                value="nonBinary"
+                control={
+                  <Radio name="iAmNonBinary" onChange={handleChangeGender} />
+                }
+                label="Non Binary"
+              />
+              <FormControlLabel
+                value="other"
+                control={<Radio name="other" onChange={handleChangeGender} />}
+                label="Not represented !"
+              />
+            </RadioGroup>
+          </div>
+        </div>
+        <div style={styles.selection}>
+          <div style={styles.selectionContent}>
+            <FormLabel>I am searching for :</FormLabel>
+            <div style={styles.tickbox}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.gender.iSearchMan}
+                  name="iSearchMan"
+                  onChange={handleChangeGender}
+                />
+              }
+              label="Men"
             />
-          }
-          label="Men"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={state.gender.iSearchWomen}
-              name="iSearchWomen"
-              onChange={handleChangeGender}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.gender.iSearchWomen}
+                  name="iSearchWomen"
+                  onChange={handleChangeGender}
+                />
+              }
+              label="Women"
             />
-          }
-          label="Women"
-        />
+            </div>
+          </div>
+        </div>
       </FormGroup>
 
       <TextField
@@ -404,39 +416,61 @@ function CompleteProfile() {
         }
       />
 
-      <Button onClick={() => setOpenModal(!openModal)} sx={styles.openModalButton}>
-        Choose your interrests
-      </Button>
-      <Modal sx={styles.modal} open={openModal} onClose={() => setOpenModal(!openModal)}>
-        <Box sx={styles.boxModal}>
-          <Typography variant="h1" sx={styles.interrestsText}>Interrests :</Typography>
-          <Grid container spacing={2}>
-            {tagsData.map((tag) => (
-              <Grid item xs={10} sm={4}>
-                <Button
-                  key={tag}
-                  onClick={() => handleTag(tag)}
-                  color="secondary"
-                  variant={
-                    tags && tags.includes(tag) === true
-                      ? "contained"
-                      : "outlined"
-                  }
-                >
-                  {tag}
-                </Button>
-              </Grid>
-            ))}
-        </Grid>
-          <Button onClick={() => setOpenModal(!openModal)} sx={styles.interrestsFinishedButton}>Finished</Button>
-        </Box>
-      </Modal>
+      <Box sx={styles.interrestsBox}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenModal(!openModal)}
+          sx={styles.openModalButton}
+        >
+          Add an interrest
+        </Button>
+        <div>
+          {tags!.map((tag) => (
+            <Button variant="outlined" sx={styles.interrestsButton}>{tag}</Button>
+          ))}
+        </div>
+        <Modal
+          sx={styles.modal}
+          open={openModal}
+          onClose={() => setOpenModal(!openModal)}
+        >
+          <Box sx={styles.boxModal}>
+            <Typography variant="h1" sx={styles.interrestsText}>
+              Interrests :
+            </Typography>
+            <Grid container spacing={2}>
+              {tagsData.map((tag) => (
+                <Grid item xs={10} sm={4}>
+                  <Button
+                    key={tag}
+                    onClick={() => handleTag(tag)}
+                    color="secondary"
+                    variant={
+                      tags && tags.includes(tag) === true
+                        ? "contained"
+                        : "outlined"
+                    }
+                  >
+                    {tag}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+            <Button
+              onClick={() => setOpenModal(!openModal)}
+              sx={styles.interrestsFinishedButton}
+            >
+              Finished
+            </Button>
+          </Box>
+        </Modal>
+      </Box>
 
-      <Box sx={{ my: 5 }}>
-        <Typography color={"black"}>
-          Click to the map if you want make location
+      <Box sx={styles.locationBox}>
+        <Typography color={"black"} sx={styles.locationText}>
+          Click on the map to select your location :
         </Typography>
-        <Box sx={styles.localizationBox}>
+        <Box sx={styles.location}>
           <OpenStreetMap setAddressData={setAddressData} />
         </Box>
       </Box>
@@ -474,17 +508,30 @@ const styles = {
     marginTop: "1%",
     marginBottom: "1%",
   },
-  localizationBox: {
+  locationText: {
+    fontWeight: "600",
+  },
+  locationBox: {
+    backgroundColor: "rgb(253, 255, 252)",
+    border: "1px solid #DEE2E6"
+  },
+  location: {
     height: "25vh",
     width: "60vh",
-    borderRadius: "10px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-    '@media (max-width: 600px)': {
-      width: '90vw',
+    "@media (max-width: 600px)": {
+      width: "90vw",
     },
   },
   openModalButton: {
-    marginTop: "1%",
+    marginTop: "2%",
+    marginBottom: "2%",
+    marginLeft: "3%",
+    color: "black",
+    backgroundColor: "rgb(150, 50, 150)",
+    ":hover": {
+      backgroundColor: "rgb(100, 0, 100)",
+    }
   },
   modal: {},
   boxModal: {
@@ -503,21 +550,50 @@ const styles = {
     p: 4,
     overflowY: "scroll",
     borderRadius: "10px",
-    '@media (max-width: 600px)': {
-      width: '90vw',
+    "@media (max-width: 600px)": {
+      width: "90vw",
     },
-    '@media (min-width: 601px) and (max-width: 960px)': {
-      width: '80vw',
+    "@media (min-width: 601px) and (max-width: 960px)": {
+      width: "80vw",
     },
   },
   interrestsText: {
-    fontSize: '3rem', 
-    fontWeight: 'bold',
-    marginBottom: "2%", 
+    fontSize: "3rem",
+    fontWeight: "bold",
+    marginBottom: "2%",
   },
   interrestsFinishedButton: {
-    marginTop: "3%"
+    marginTop: "3%",
   },
+  selection: {
+    backgroundColor: "rgb(253, 255, 252)",
+    border: "1px solid #DEE2E6"
+  },
+  selectionContent: {
+    margin: "3%",
+  },
+  interrestsBox: {
+    backgroundColor: "rgb(253, 255, 252)",
+    border: "1px solid #DEE2E6",
+    display: "flex",
+    alignItems: "baseline",
+    flexDirection: "column",
+  },
+  interrestsButton: {
+    margin: "1%",
+    borderRadius: "20px",
+    backgroundColor: "rgb(150, 50, 150)",
+    color: "white",
+    borderColor: "black",
+    cursor: "default",
+    ":hover": {
+      backgroundColor: "rgb(150, 50, 150)",
+      borderColor: "black",
+    }
+  },
+  tickbox: {
+    marginLeft: "1%",
+  }
 };
 
 export default CompleteProfile;
