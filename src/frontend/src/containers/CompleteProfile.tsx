@@ -195,7 +195,9 @@ function CompleteProfile() {
     country: "",
   });
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [pictures, setPictures] = useState<File[] | null>([]);
+  const [pictures, setPictures] = useState<(File | null)[]>(
+    Array.from({ length: 5 }, () => null)
+  );
   const [tags, setTags] = useState<string[] | null>();
   const [description, setDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -224,7 +226,18 @@ function CompleteProfile() {
     if (e.target.files) {
       toast.success("Profile photo submited!");
       setProfilePicture(e.target.files[0]);
-      setPictures((prev: File[] | null | undefined) => prev ? [...prev, e.target.files![0]] : [e.target.files![0]])
+    }
+  };
+
+  const handlePictureUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.target.files) {
+      toast.success("photo submited!");
+      var nPictures = [...pictures];
+      nPictures[index] = e.target.files[0];
+      setPictures(nPictures);
     }
   };
 
@@ -246,8 +259,8 @@ function CompleteProfile() {
   }, [isLoading]);
 
   useEffect(() => {
-    console.log('pictures :>> ', pictures);
-  }, [pictures])
+    console.log("pictures :>> ", pictures);
+  }, [pictures]);
 
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -301,32 +314,33 @@ function CompleteProfile() {
 
   return (
     <Container sx={styles.mainBox}>
-      <Button
-        component="label"
-        variant="contained"
-        startIcon={<CloudUploadIcon />}
-        sx={styles.uploadProfileButton}
-      >
-        Upload Profile Picture
-        <VisuallyHiddenInput
-          type="file"
-          accept=".jpg, .png, .jpeg, .webp"
-          onChange={handleProfilePictureUpload}
-        />
-      </Button>
-
-      <Box sx={styles.picturesBox}>
-        {pictures?.map((picture, index) => {
-          return (
-          picture === undefined ?
-          <div key={index} style={styles.onePictureBox}>
-            <AddCircleOutlineIcon fontSize="large" />
-          </div>
-          :
-          <div key={index} style={{backgroundImage: "url(\"/home/abarot/Desktop/cactus5.jpeg\")"}}>
-          </div>
-        )})}
-      </Box>
+      <div>
+        <FormLabel>Please select at least one photo :</FormLabel>
+        <Box sx={styles.picturesBox}>
+          {pictures.map((picture, index) => (
+            <div
+              key={index}
+              style={{
+                ...styles.onePictureBox,
+                backgroundImage: picture
+                  ? `url(${URL.createObjectURL(picture)})`
+                  : "none",
+              }}
+            >
+              {picture ? null : (
+                <Button component="label">
+                  <AddCircleOutlineIcon fontSize="large" />
+                  <VisuallyHiddenInput
+                    type="file"
+                    accept=".jpg, .png, .jpeg, .webp"
+                    onChange={(e) => handlePictureUpload(e, index)}
+                  />
+                </Button>
+              )}
+            </div>
+          ))}
+        </Box>
+      </div>
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
@@ -555,6 +569,9 @@ const styles = {
   },
   picturesBox: {
     padding: "1%",
+    display: "flex",
+    fexDirection: "row",
+    gap: "10px",
   },
   onePictureBox: {
     backgroundColor: "rgb(150, 150, 150, 0.3)",
