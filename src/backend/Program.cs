@@ -51,8 +51,10 @@ if (app.Environment.IsDevelopment())
 }
 
 // global cors policy
+var allowedOrigins = new[] { builder.Configuration.GetSection("AppSettings")["FrontendHost"] };
+
 app.UseCors(x => x
-    .WithOrigins(new[] { builder.Configuration.GetSection("AppSettings")["FrontendHost"] })
+    .WithOrigins(allowedOrigins)
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());

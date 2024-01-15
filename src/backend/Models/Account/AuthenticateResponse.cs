@@ -11,8 +11,9 @@ namespace Backend.Models.Account
         public string LastName { get; set; }
         public bool IsProfileCompleted { get; set; }
         public string JwtToken { get; set; }
-        public float Latitude { get; set; }
-        public float Longitude { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public List<string> Tags { get; set; }
         [JsonIgnore] // refresh token is returned in http only cookie
         public string RefreshToken { get; set; }
     }
