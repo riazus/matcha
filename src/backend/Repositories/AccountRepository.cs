@@ -210,14 +210,14 @@ public class AccountRepository : IAccountRepository
 
         if (currUser.Longitude != null 
             && currUser.Latitude != null
-            && filter.MinGap != null
-            && filter.MaxGap != null)
+            && filter.MinDistance != null
+            && filter.MaxDistance != null)
         {
             where.Append(
                 $" AND ACOS(SIN(RADIANS(Latitude)) * SIN(RADIANS({currUser.Latitude})) +" +
                     $" COS(RADIANS(Latitude)) * COS(RADIANS({currUser.Latitude})) *" +
                     $" COS(RADIANS(Longitude - {currUser.Longitude}))) * 6371" +
-                    $" BETWEEN {filter.MinGap} AND {filter.MaxGap}");
+                    $" BETWEEN {filter.MinDistance} AND {filter.MaxDistance}");
         }
 
         where.Append($" AND Id != \'{currUser.Id}\';");

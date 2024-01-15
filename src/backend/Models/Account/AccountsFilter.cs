@@ -12,6 +12,7 @@ public class AccountsFilter
     public int MinTag { get; set; }
     [Required]
     public int MaxTag { get; set; }
-    public int? MinGap { get; set; }
-    public int? MaxGap { get; set; }
+    public int? MinDistance { get; set; }
+    public int? MaxDistance { get; set; }
+    public int Page {  get; set; }
 }
