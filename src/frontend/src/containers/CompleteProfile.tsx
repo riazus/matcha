@@ -1,6 +1,8 @@
 import { Box, Container, display, minWidth, padding } from "@mui/system";
 import { useAppSelector } from "../app/hooks";
 import dayjs from "dayjs";
+import CancelIcon from "@mui/icons-material/Cancel";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import {
   Stack,
   Grid,
@@ -193,6 +195,7 @@ function CompleteProfile() {
     country: "",
   });
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [pictures, setPictures] = useState<File[] | null>([]);
   const [tags, setTags] = useState<string[] | null>();
   const [description, setDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -221,6 +224,7 @@ function CompleteProfile() {
     if (e.target.files) {
       toast.success("Profile photo submited!");
       setProfilePicture(e.target.files[0]);
+      setPictures((prev: File[] | null | undefined) => prev ? [...prev, e.target.files![0]] : [e.target.files![0]])
     }
   };
 
@@ -240,6 +244,10 @@ function CompleteProfile() {
       }
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    console.log('pictures :>> ', pictures);
+  }, [pictures])
 
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -302,29 +310,23 @@ function CompleteProfile() {
         Upload Profile Picture
         <VisuallyHiddenInput
           type="file"
-          accept=".jpg, .png"
+          accept=".jpg, .png, .jpeg, .webp"
           onChange={handleProfilePictureUpload}
         />
       </Button>
 
-      {/* <Box>
-          <LoadingButton variant="contained" loading={isLoading}>
-            Additional Picture 1
-            <input type="file" hidden onSubmit={handleProfilePictureUpload} />
-          </LoadingButton>
-          <LoadingButton variant="contained" loading={isLoading}>
-            Additional Picture 2
-            <input type="file" hidden onSubmit={handleProfilePictureUpload} />
-          </LoadingButton>
-          <LoadingButton variant="contained" loading={isLoading}>
-            Additional Picture 3
-            <input type="file" hidden onSubmit={handleProfilePictureUpload} />
-          </LoadingButton>
-          <LoadingButton variant="contained" loading={isLoading}>
-            Additional Picture 4
-            <input type="file" hidden onSubmit={handleProfilePictureUpload} />
-          </LoadingButton>
-        </Box> */}
+      <Box sx={styles.picturesBox}>
+        {pictures?.map((picture, index) => {
+          return (
+          picture === undefined ?
+          <div key={index} style={styles.onePictureBox}>
+            <AddCircleOutlineIcon fontSize="large" />
+          </div>
+          :
+          <div key={index} style={{backgroundImage: "url(\"/home/abarot/Desktop/cactus5.jpeg\")"}}>
+          </div>
+        )})}
+      </Box>
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
@@ -381,32 +383,33 @@ function CompleteProfile() {
           <div style={styles.selectionContent}>
             <FormLabel>I am searching for :</FormLabel>
             <div style={styles.tickbox}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={state.gender.iSearchMan}
-                  name="iSearchMan"
-                  onChange={handleChangeGender}
-                />
-              }
-              label="Men"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={state.gender.iSearchWomen}
-                  name="iSearchWomen"
-                  onChange={handleChangeGender}
-                />
-              }
-              label="Women"
-            />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.gender.iSearchMan}
+                    name="iSearchMan"
+                    onChange={handleChangeGender}
+                  />
+                }
+                label="Men"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={state.gender.iSearchWomen}
+                    name="iSearchWomen"
+                    onChange={handleChangeGender}
+                  />
+                }
+                label="Women"
+              />
             </div>
           </div>
         </div>
       </FormGroup>
 
       <TextField
+        sx={{ marginTop: "1%", marginBottom: "1%" }}
         label="Please enter a bio"
         multiline
         rows={6}
@@ -417,17 +420,29 @@ function CompleteProfile() {
       />
 
       <Box sx={styles.interrestsBox}>
-        <Button
-          variant="contained"
-          onClick={() => setOpenModal(!openModal)}
-          sx={styles.openModalButton}
-        >
-          Add an interrest
-        </Button>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <Button
+            variant="contained"
+            onClick={() => setOpenModal(!openModal)}
+            sx={styles.openModalButton}
+          >
+            Add an interrest
+          </Button>
+          <Button
+            startIcon={<CancelIcon />}
+            onClick={() => setTags([])}
+            sx={styles.interrestsFinishedButton}
+          >
+            Clear all
+          </Button>
+        </div>
         <div>
-          {tags!.map((tag) => (
-            <Button variant="outlined" sx={styles.interrestsButton}>{tag}</Button>
-          ))}
+          {tags &&
+            tags.map((tag) => (
+              <Button key={tag} variant="outlined" sx={styles.interrestsButton}>
+                {tag}
+              </Button>
+            ))}
         </div>
         <Modal
           sx={styles.modal}
@@ -440,9 +455,8 @@ function CompleteProfile() {
             </Typography>
             <Grid container spacing={2}>
               {tagsData.map((tag) => (
-                <Grid item xs={10} sm={4}>
+                <Grid key={tag} item xs={10} sm={4}>
                   <Button
-                    key={tag}
                     onClick={() => handleTag(tag)}
                     color="secondary"
                     variant={
@@ -457,6 +471,12 @@ function CompleteProfile() {
               ))}
             </Grid>
             <Button
+              onClick={() => setTags([])}
+              sx={styles.interrestsFinishedButton}
+            >
+              Clear all
+            </Button>
+            <Button
               onClick={() => setOpenModal(!openModal)}
               sx={styles.interrestsFinishedButton}
             >
@@ -467,16 +487,18 @@ function CompleteProfile() {
       </Box>
 
       <Box sx={styles.locationBox}>
-        <Typography color={"black"} sx={styles.locationText}>
-          Click on the map to select your location :
-        </Typography>
+        <FormLabel>Click on the map to select your location :</FormLabel>
         <Box sx={styles.location}>
           <OpenStreetMap setAddressData={setAddressData} />
         </Box>
       </Box>
 
       <Box sx={{ my: 5 }}>
-        <LoadingButton loading={isLoading} onClick={handleSubmitClick}>
+        <LoadingButton
+          sx={styles.savingButton}
+          loading={isLoading}
+          onClick={handleSubmitClick}
+        >
           Saving
         </LoadingButton>
       </Box>
@@ -505,15 +527,13 @@ const styles = {
   bithdayText: {
     paddingBottom: "10px",
     paddingTop: "10px",
-    marginTop: "1%",
-    marginBottom: "1%",
   },
   locationText: {
     fontWeight: "600",
   },
   locationBox: {
     backgroundColor: "rgb(253, 255, 252)",
-    border: "1px solid #DEE2E6"
+    padding: "1%",
   },
   location: {
     height: "25vh",
@@ -524,14 +544,25 @@ const styles = {
     },
   },
   openModalButton: {
-    marginTop: "2%",
-    marginBottom: "2%",
+    marginTop: "1%",
+    marginBottom: "1%",
     marginLeft: "3%",
     color: "black",
     backgroundColor: "rgb(150, 50, 150)",
     ":hover": {
       backgroundColor: "rgb(100, 0, 100)",
-    }
+    },
+  },
+  picturesBox: {
+    padding: "1%",
+  },
+  onePictureBox: {
+    backgroundColor: "rgb(150, 150, 150, 0.3)",
+    height: "25vh",
+    width: "15%",
+    borderRadius: "10px",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modal: {},
   boxModal: {
@@ -567,17 +598,15 @@ const styles = {
   },
   selection: {
     backgroundColor: "rgb(253, 255, 252)",
-    border: "1px solid #DEE2E6"
+    padding: "1%",
   },
-  selectionContent: {
-    margin: "3%",
-  },
+  selectionContent: {},
   interrestsBox: {
     backgroundColor: "rgb(253, 255, 252)",
-    border: "1px solid #DEE2E6",
     display: "flex",
     alignItems: "baseline",
     flexDirection: "column",
+    padding: "1%",
   },
   interrestsButton: {
     margin: "1%",
@@ -589,11 +618,14 @@ const styles = {
     ":hover": {
       backgroundColor: "rgb(150, 50, 150)",
       borderColor: "black",
-    }
+    },
   },
   tickbox: {
     marginLeft: "1%",
-  }
+  },
+  savingButton: {
+    backgroundColor: "rgb(150, 50, 150)",
+  },
 };
 
 export default CompleteProfile;
