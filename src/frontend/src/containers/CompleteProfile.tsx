@@ -1,8 +1,16 @@
-import { Box, Container, display, minWidth, padding } from "@mui/system";
+import {
+  Box,
+  Container,
+  display,
+  fontWeight,
+  minWidth,
+  padding,
+} from "@mui/system";
 import { useAppSelector } from "../app/hooks";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
   Stack,
   Grid,
@@ -121,21 +129,6 @@ function isUser18YearsOrOlder(birthdate: Date): boolean {
   return birthdate <= minBirthdate;
 }
 
-// const completeProfileSchema = object({
-//   profilePicture: z
-//     .any()
-//     .refine((file) => !file, "You must upload the main profile picture")
-//     .refine((file) => file?.size < MAX_FILE_SIZE, "Max image size is 5MB.")
-//     .refine(
-//       (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-//       "Only .jpg, .jpeg, .png and .webp formats are supported."
-//     ),
-//   birthday: date().refine(
-//     (date) => isUser18YearsOrOlder(date),
-//     "You must be legal age for using this app"
-//   ),
-// });
-
 export interface AddressData {
   latitude: number;
   longitude: number;
@@ -175,7 +168,7 @@ function CompleteProfile() {
   } = methods;
   const [state, setState] = useState({
     gender: {
-      iAmMan: false,
+      iAmMan: true,
       iAmWoman: false,
       iSearchMan: false,
       iSearchWomen: false,
@@ -187,6 +180,7 @@ function CompleteProfile() {
   });
   const navigate = useNavigate();
   const [birthday, setBirthday] = useState<Dayjs | null>(null);
+  const [age, setAge] = useState<number | null>(null);
   const [addressData, setAddressData] = useState<AddressData>({
     latitude: 0,
     longitude: 0,
@@ -210,6 +204,11 @@ function CompleteProfile() {
   };
 
   const handleTag = (tag: string) => {
+    if (tags && tags.length === 8) {
+      toast.error("You have too many hobbies, you can only choose 8");
+      return ;
+    }
+
     if (tags?.find((x) => x === tag) !== undefined) {
       const nTags = tags?.filter((oneTag) => oneTag !== tag);
       setTags(nTags);
@@ -220,25 +219,30 @@ function CompleteProfile() {
     }
   };
 
-  const handleProfilePictureUpload = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files) {
-      toast.success("Profile photo submited!");
-      setProfilePicture(e.target.files[0]);
-    }
-  };
-
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     if (e.target.files) {
-      toast.success("photo submited!");
       var nPictures = [...pictures];
       nPictures[index] = e.target.files[0];
+      if (pictures.every((el) => el === null))
+        setProfilePicture(e.target.files[0]);
       setPictures(nPictures);
     }
+  };
+
+  const suppressPictureUpload = (index: number) => {
+    var nPictures = [...pictures];
+    nPictures[index] = null;
+    for (let i = 0; i < nPictures.length - 2; i++) {
+      if (nPictures[i] === null && nPictures[i + 1] !== null) {
+        nPictures[i] = nPictures[i + 1];
+        nPictures[i + 1] = null;
+      }
+    }
+    setPictures(nPictures);
+    setProfilePicture(nPictures[0]);
   };
 
   useEffect(() => {
@@ -258,10 +262,6 @@ function CompleteProfile() {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    console.log("pictures :>> ", pictures);
-  }, [pictures]);
-
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -276,6 +276,9 @@ function CompleteProfile() {
       return;
     } else if (!tags || tags?.length < 1) {
       toast.error("You need provide at least one hobbie!");
+      return;
+    } else if (age && age < 18) {
+      toast.error("You need to be at least 18 year old");
       return;
     }
 
@@ -296,7 +299,7 @@ function CompleteProfile() {
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: null,
+      additionalPictures: pictures.slice(1, 4),
       gender: gender,
       genderPreferences: preferedGender,
       tags: tags,
@@ -322,12 +325,12 @@ function CompleteProfile() {
               key={index}
               style={{
                 ...styles.onePictureBox,
-                backgroundImage: picture
+                backgroundImage: picture && pictures
                   ? `url(${URL.createObjectURL(picture)})`
                   : "none",
               }}
             >
-              {picture ? null : (
+              {!pictures[index] && (index === 0 || pictures[index - 1]) ? (
                 <Button component="label">
                   <AddCircleOutlineIcon fontSize="large" />
                   <VisuallyHiddenInput
@@ -336,30 +339,40 @@ function CompleteProfile() {
                     onChange={(e) => handlePictureUpload(e, index)}
                   />
                 </Button>
-              )}
+              ) : pictures[index] ? (
+                <Button onClick={() => suppressPictureUpload(index)}>
+                  <RemoveCircleOutlineIcon fontSize="large" />
+                </Button>
+              ) : null}
             </div>
           ))}
         </Box>
       </div>
 
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          sx={styles.datePicker}
-          label="Enter your birthday date here !"
-          value={birthday}
-          onChange={(newDate) => {
-            setBirthday(newDate);
-          }}
-          maxDate={dayjs()}
-          defaultValue={dayjs("2000-01-01")}
-        />
-        <Typography style={styles.bithdayText} sx={{ mt: 5 }}>
-          {birthday?.isValid() &&
-            `You are: ${Math.abs(
-              new Date(Date.now() - +birthday?.toDate()).getUTCFullYear() - 1970
-            )} old`}
-        </Typography>
-      </LocalizationProvider>
+      <Box sx={styles.dateBox}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            sx={styles.datePicker}
+            label={
+              age === null
+                ? "Enter your birthday date here !"
+                : `You are ${age} years old`
+            }
+            value={birthday}
+            onChange={(newDate) => {
+              setBirthday(newDate);
+              setAge(
+                Math.abs(
+                  new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -
+                    1970
+                )
+              );
+            }}
+            maxDate={dayjs()}
+            defaultValue={dayjs("2000-01-01")}
+          />
+        </LocalizationProvider>
+      </Box>
 
       <FormGroup>
         <div style={styles.selection}>
@@ -534,6 +547,9 @@ const styles = {
     marginTop: "1%",
     marginBottom: "3%",
   },
+  dateBox: {
+    padding: "1%",
+  },
   datePicker: {
     width: "40%",
     minWidth: "230px",
@@ -541,6 +557,8 @@ const styles = {
   bithdayText: {
     paddingBottom: "10px",
     paddingTop: "10px",
+    fontWeight: "600",
+    fontSize: "large",
   },
   locationText: {
     fontWeight: "600",

@@ -47,7 +47,7 @@ export interface RefreshTokenResponse {
 
 export interface CompleteProfileBody {
   profilePicture: File;
-  additionalPictures: File[] | null;
+  additionalPictures: (File | null)[];
   tags: string[];
   gender: number;
   genderPreferences: number;
@@ -103,7 +103,8 @@ export function convertCompleteProfileBodyToFormData(
 
   if (body.additionalPictures) {
     body.additionalPictures.forEach((file, index) => {
-      formData.append(`additionalPictures[${index}]`, file);
+      if (file !== null)
+        formData.append(`additionalPictures[${index}]`, file as string | Blob);
     });
   }
 
