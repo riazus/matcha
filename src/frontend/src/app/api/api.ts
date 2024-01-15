@@ -33,6 +33,8 @@ import { MessageRequest, MessageDataResponse } from "../../types/api/message";
 import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
+import { Filter } from "../slices/filter";
+import { PaginationData } from "../../types/list/userLists";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -313,6 +315,41 @@ export const api = createApi({
         }
       },
     }),
+    getUsersWithFilters: builder.query<
+      AccountsResponse[],
+      { filter: Filter; listData: PaginationData }
+    >({
+      query: ({ filter, listData }) => ({
+        url: ACCOUNT_ROUTES.WITH_FILTER(
+          filter.minAge,
+          filter.maxAge,
+          filter.minTagMatch,
+          filter.maxTagMatch,
+          filter.minDistance,
+          filter.maxDistance,
+          listData.page
+        ),
+      }),
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems, { arg }) => {
+        if (arg.listData.resetListRequested) {
+          currentCache.splice(0, currentCache.length);
+          currentCache.push(...newItems);
+        } else {
+          currentCache.push(...newItems);
+        }
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        if (!currentArg || !previousArg) return false;
+
+        return (
+          currentArg.listData.page !== previousArg.listData.page ||
+          currentArg.listData.resetListRequested
+        );
+      },
+    }),
   }),
 });
 
@@ -335,4 +372,5 @@ export const {
   useGetViewedProfilesQuery,
   useGetProfileMeViewedQuery,
   useGetFavoriteProfilesQuery,
+  useGetUsersWithFiltersQuery,
 } = api;

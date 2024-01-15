@@ -36,6 +36,9 @@ export const currentUserSlice = createSlice({
           lastName: payload.lastName,
           username: payload.username,
           isProfileCompleted: payload.isProfileCompleted,
+          latitude: payload.latitude,
+          longitude: payload.longitude,
+          tags: payload.tags,
         };
         persistUser(state.user);
       }
@@ -65,6 +68,9 @@ export const currentUserSlice = createSlice({
             lastName: payload.lastName,
             username: payload.username,
             isProfileCompleted: payload.isProfileCompleted,
+            latitude: payload.latitude,
+            longitude: payload.longitude,
+            tags: payload.tags,
           };
           persistUser(state.user);
         }
@@ -82,6 +88,9 @@ export const currentUserSlice = createSlice({
             lastName: payload.lastName,
             username: payload.username,
             isProfileCompleted: payload.isProfileCompleted,
+            latitude: payload.latitude,
+            longitude: payload.longitude,
+            tags: payload.tags,
           };
           persistUser(state.user);
         }

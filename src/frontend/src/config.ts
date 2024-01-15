@@ -26,6 +26,29 @@ export const ACCOUNT_ROUTES = {
   VIEWED_ME: "/accounts/viewed-me",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
   USERS: `/accounts`,
+  WITH_FILTER: (
+    minAge: number,
+    maxAge: number,
+    minTag: number,
+    maxTag: number,
+    minDistance: number,
+    maxDistance: number,
+    page: number
+  ) =>
+    "accounts/filter/options?minAge=" +
+    minAge +
+    "&maxAge=" +
+    maxAge +
+    "&minTag=" +
+    minTag +
+    "&maxTag=" +
+    maxTag +
+    "&minDistance=" +
+    minDistance +
+    "&maxDistance=" +
+    maxDistance +
+    "&page=" +
+    page,
 };
 
 export const MESSAGE_ROUTES = {
@@ -56,7 +79,7 @@ export enum ChatEvent {
   NewMessage = "NewMessage",
   MessageNotValid = "MessageNotValid",
   NotifyInterlocutor = "NotifyInterlocutor",
-  DeleteMessages = "DeleteMessages"
+  DeleteMessages = "DeleteMessages",
 }
 
 export const ACCESS_TOKEN = "jwtToken";
