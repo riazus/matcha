@@ -13,52 +13,30 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { PaginationData } from "../types/list/userLists";
 import Filter from "../components/Filter";
-//import InfiniteLoader from "react-window-infinite-loader";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-interface IListRef {
-  offsetHeight: number;
-}
-
 function UsersList() {
   const [listData, setListData] = useState<PaginationData>({
     page: 0,
     resetListRequested: false,
   });
-  const listRef = useRef<HTMLUListElement>(null);
   const filter = useAppSelector((root) => root.filter);
   const { data, isLoading, isFetching } = useGetUsersWithFiltersQuery({
     filter,
     listData,
   });
   const navigate = useNavigate();
+  const dataLength = useRef(0);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    const onScroll = () => {
-      // const scrolledToBottom =
-      //   window.innerHeight + window.scrollY >= document.body.offsetHeight;
-      // if (scrolledToBottom && !isFetching) {
-      //   console.log("Fetching more data...");
-      //   //setListData((prev) => ({ ...prev, page: prev.page + 1 }));
-      // }
-      if (listRef.current) {
-        console.log(
-          `${window.innerHeight + document.documentElement.scrollTop} =?= ${
-            document.documentElement.offsetHeight
-          }`
-        );
-      }
-    };
-
-    document.addEventListener("scroll", onScroll);
-
-    return function () {
-      document.removeEventListener("scroll", onScroll);
-    };
+    return () => {
+      dataLength.current = 0;
+    }
   }, []);
 
   useEffect(() => {
@@ -70,8 +48,17 @@ function UsersList() {
   useEffect(() => {
     if (listData.resetListRequested) {
       setListData((prev) => ({ ...prev, resetListRequested: false }));
+      dataLength.current = 0;
     }
   }, [data]);
+
+  useEffect(() => {
+    if (data && !isFetching && data.length === dataLength.current) {
+      setHasMore(false);
+    } else if (data && !isFetching) {
+      dataLength.current = data?.length;
+    }
+  }, [isFetching])
 
   if (isLoading || (isFetching && listData.resetListRequested)) {
     return <FullScreenLoader />;
@@ -86,13 +73,13 @@ function UsersList() {
             Users List {data?.length}
           </Typography>
           <Demo>
-            <List ref={listRef} dense={false}>
+            <List dense={false}>
               <InfiniteScroll
                 dataLength={data?.length ?? 0}
                 next={() =>
                   setListData((prev) => ({ ...prev, page: prev.page + 1 }))
                 }
-                hasMore={true}
+                hasMore={hasMore}
                 loader={<h4>Loading...</h4>}
               >
                 {data?.map((user, ind) => {
