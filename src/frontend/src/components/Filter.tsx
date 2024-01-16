@@ -90,15 +90,19 @@ function Filter() {
             valueLabelDisplay="on"
             min={18}
           ></StyledSlider>
-          <Typography>Distance filter:</Typography>
-          <StyledSlider
-            getAriaLabel={() => "Distance filter range"}
-            value={[newFilter.minDistance, newFilter.maxDistance]}
-            onChange={handleDistanceFilterChange}
-            valueLabelDisplay="on"
-            valueLabelFormat={distanceValueLabelFormat}
-            max={13588}
-          ></StyledSlider>
+          {user?.longitude && user?.latitude && (
+            <>
+              <Typography>Distance filter:</Typography>
+              <StyledSlider
+                getAriaLabel={() => "Distance filter range"}
+                value={[newFilter.minDistance, newFilter.maxDistance]}
+                onChange={handleDistanceFilterChange}
+                valueLabelDisplay="on"
+                valueLabelFormat={distanceValueLabelFormat}
+                max={13588}
+              ></StyledSlider>
+            </>
+          )}
           <Typography>How much common interests:</Typography>
           <StyledSlider
             getAriaLabel={() => "Matched tags range"}

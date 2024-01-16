@@ -29,7 +29,7 @@ public interface IAccountService
     AuthenticateResponse RefreshToken(string token, string ipAddress);
     Task<TokenResponse> GoogleOAuth(string code, string ipAddress);
     Task<TokenResponse> GithubOAuth(string code, string ipAddress);
-    void CompleteProfile(CompleteProfileRequest profileData, Account currUser);
+    CompleteProfileResponse CompleteProfile(CompleteProfileRequest profileData, Account currUser);
     IEnumerable<AccountsResponse> GetFavoriteAccounts(Account currUser);
     void LikeAccount(Guid currUserId, Guid id);
     void DislikeAccount(Guid currUserId, Guid id);
@@ -326,7 +326,7 @@ public class AccountService : IAccountService
         return createAuthTokens(account, ipAddress);
     }
 
-    public void CompleteProfile(CompleteProfileRequest profileData, Account currUser)
+    public CompleteProfileResponse CompleteProfile(CompleteProfileRequest profileData, Account currUser)
     {
         string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
         string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
@@ -376,6 +376,13 @@ public class AccountService : IAccountService
         currUser.IsProfileCompleted = true;
 
         _accountRepository.Update(currUser);
+
+        return new CompleteProfileResponse()
+        {
+            Latitude = currUser.Latitude,
+            Longitude = currUser.Longitude,
+            Tags = currUser.Tags,
+        };
     }
 
     public IEnumerable<AccountsResponse> GetFavoriteAccounts(Account currUser)

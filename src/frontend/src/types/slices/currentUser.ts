@@ -5,7 +5,7 @@ export interface UserState {
   lastName: string;
   email: string;
   isProfileCompleted: boolean;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   tags: string[];
 }

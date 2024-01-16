@@ -63,6 +63,12 @@ export interface CompleteProfileBody {
   postcode: string | null;
 }
 
+export interface CompleteProfileResponse {
+  latitude: number | null;
+  longitude: number | null;
+  tags: string[];
+}
+
 export interface AccountsResponse {
   id: string;
   username: string;

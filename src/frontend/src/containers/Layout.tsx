@@ -14,7 +14,7 @@ const Layout: React.FC = () => {
           height: "auto",
         }}
       >
-        <Filter />
+        {/* <Filter /> */}
         <Outlet />
       </Container>
       <Footer />

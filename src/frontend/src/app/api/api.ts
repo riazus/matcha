@@ -25,6 +25,7 @@ import {
   convertCompleteProfileBodyToFormData,
   AccountsResponse,
   AccountResponse,
+  CompleteProfileResponse,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -133,7 +134,7 @@ export const api = createApi({
         body: body,
       }),
     }),
-    completeProfile: builder.mutation<GenericResponse, CompleteProfileBody>({
+    completeProfile: builder.mutation<CompleteProfileResponse, CompleteProfileBody>({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
         return {

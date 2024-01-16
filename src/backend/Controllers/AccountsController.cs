@@ -145,8 +145,8 @@ public class AccountsController : BaseController
     [HttpPatch("complete-profile")]
     public ActionResult CompleteProfile([FromForm] CompleteProfileRequest formData)
     {
-        _accountService.CompleteProfile(formData, Account);
-        return Ok();
+        var res = _accountService.CompleteProfile(formData, Account);
+        return Ok(res);
     }
 
     [HttpGet("favorites")]

@@ -102,9 +102,12 @@ export const currentUserSlice = createSlice({
     });
     builder.addMatcher(
       api.endpoints.completeProfile.matchFulfilled,
-      (state) => {
+      (state, action) => {
         if (state.user) {
           state.user.isProfileCompleted = true;
+          state.user.longitude = action.payload.longitude;
+          state.user.latitude = action.payload.latitude;
+          state.user.tags = action.payload.tags;
           persistUser(state.user);
         }
       }
