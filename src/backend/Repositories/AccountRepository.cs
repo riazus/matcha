@@ -214,13 +214,15 @@ public class AccountRepository : IAccountRepository
             && filter.MaxDistance != null)
         {
             where.Append(
-                $" AND ACOS(SIN(RADIANS(Latitude)) * SIN(RADIANS({currUser.Latitude})) +" +
-                    $" COS(RADIANS(Latitude)) * COS(RADIANS({currUser.Latitude})) *" +
-                    $" COS(RADIANS(Longitude - {currUser.Longitude}))) * 6371" +
+                $" AND ACOS((SELECT MIN(x) FROM (VALUES" +
+                    $" (SIN(RADIANS(Latitude)) * SIN(RADIANS({currUser.Latitude})) + COS(RADIANS(Latitude)) * COS(RADIANS({currUser.Latitude})))" +
+                    $" ,(1)) AS value(x))) * 6371" +
                     $" BETWEEN {filter.MinDistance} AND {filter.MaxDistance}");
         }
 
-        where.Append($" AND Id != \'{currUser.Id}\';");
+        where.Append($" AND Id != \'{currUser.Id}\'");
+
+        where.Append($" ORDER BY Id OFFSET (20 * {filter.Page}) ROWS FETCH NEXT 20 ROWS ONLY;");
 
         var accounts = _context.GetWhereList<Account>(where.ToString());
 
