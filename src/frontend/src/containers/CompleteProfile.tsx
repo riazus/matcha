@@ -1,53 +1,39 @@
 import {
   Box,
   Container,
-  display,
-  fontWeight,
-  minWidth,
-  padding,
 } from "@mui/system";
-import { useAppSelector } from "../app/hooks";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
-  Stack,
   Grid,
-  Popover,
   Typography,
   Checkbox,
   FormGroup,
   FormControlLabel,
-  TextareaAutosize,
   TextField,
-  Input,
   Button,
-  Tooltip,
   Radio,
   RadioGroup,
   FormLabel,
-  FormControl,
   Modal,
-  Switch,
+  InputAdornment,
 } from "@mui/material";
-import { SubmitHandler, useForm, FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import { date, object, string, z } from "zod";
+import { object, string } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CompleteProfileBody } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useRef, useState, SetStateAction } from "react";
-import UnstyledSelectMultiple from "../components/SelectMultiply";
+import { useEffect, useState } from "react";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
 import { toast } from "react-toastify";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useNavigate } from "react-router-dom";
-import { setColors } from "../styles/colors";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -219,6 +205,14 @@ function CompleteProfile() {
     }
   };
 
+  const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length > 300) {
+      toast.error("You cannot exceed 300 characters for your bio ;)");
+      return;
+    } 
+    setDescription(e.target.value);
+  }
+
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -279,6 +273,9 @@ function CompleteProfile() {
       return;
     } else if (age && age < 18) {
       toast.error("You need to be at least 18 year old");
+      return;
+    } else if (age && isNaN(age)) {
+      toast.error("Your birthday date is not valid!");
       return;
     }
 
@@ -354,19 +351,14 @@ function CompleteProfile() {
           <DatePicker
             sx={styles.datePicker}
             label={
-              age === null
+              age === null || isNaN(age)
                 ? "Enter your birthday date here !"
                 : `You are ${age} years old`
             }
             value={birthday}
             onChange={(newDate) => {
               setBirthday(newDate);
-              setAge(
-                Math.abs(
-                  new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -
-                    1970
-                )
-              );
+              setAge(Math.abs(new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -1970));
             }}
             maxDate={dayjs()}
             defaultValue={dayjs("2000-01-01")}
@@ -407,7 +399,7 @@ function CompleteProfile() {
           </div>
         </div>
         <div style={styles.selection}>
-          <div style={styles.selectionContent}>
+          <div style={styles.selectionContentSearch}>
             <FormLabel>I am searching for :</FormLabel>
             <div style={styles.tickbox}>
               <FormControlLabel
@@ -436,13 +428,21 @@ function CompleteProfile() {
       </FormGroup>
 
       <TextField
-        sx={{ marginTop: "1%", marginBottom: "1%" }}
+        sx={{marginBottom: "1%", width: "60%" }}
         label="Please enter a bio"
         multiline
         rows={6}
+        value={description}
         variant="filled"
+        InputProps={{endAdornment: 
+          <InputAdornment position="end">
+          <FormLabel sx={{fontSize: "small"}}>
+            {description.length} characters
+          </FormLabel>
+          </InputAdornment>
+          }}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setDescription(e.target.value)
+          handleDescription(e)
         }
       />
 
@@ -636,6 +636,9 @@ const styles = {
     padding: "1%",
   },
   selectionContent: {},
+  selectionContentSearch: {
+    margin: 0,
+  },
   interrestsBox: {
     backgroundColor: "rgb(253, 255, 252)",
     display: "flex",
