@@ -33,7 +33,9 @@ export const ACCOUNT_ROUTES = {
     maxTag: number,
     minDistance: number,
     maxDistance: number,
-    page: number
+    page: number,
+    orderByField: string,
+    orderByAsc: boolean
   ) =>
     "accounts/filter/options?minAge=" +
     minAge +
@@ -48,7 +50,11 @@ export const ACCOUNT_ROUTES = {
     "&maxDistance=" +
     maxDistance +
     "&page=" +
-    page,
+    page +
+    "&orderByField=" +
+    orderByField +
+    "&orderByAsc=" +
+    orderByAsc,
 };
 
 export const MESSAGE_ROUTES = {

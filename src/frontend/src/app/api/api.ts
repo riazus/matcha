@@ -134,7 +134,10 @@ export const api = createApi({
         body: body,
       }),
     }),
-    completeProfile: builder.mutation<CompleteProfileResponse, CompleteProfileBody>({
+    completeProfile: builder.mutation<
+      CompleteProfileResponse,
+      CompleteProfileBody
+    >({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
         return {
@@ -328,7 +331,9 @@ export const api = createApi({
           filter.maxTagMatch,
           filter.minDistance,
           filter.maxDistance,
-          listData.page
+          listData.page,
+          filter.orderByField,
+          filter.orderByAsc
         ),
       }),
       serializeQueryArgs: ({ endpointName }) => {

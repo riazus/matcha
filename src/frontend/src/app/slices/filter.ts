@@ -7,6 +7,8 @@ export interface Filter {
   minDistance: number;
   minTagMatch: number;
   maxTagMatch: number;
+  orderByField: string;
+  orderByAsc: boolean;
 }
 
 const defaultFilter: Filter = {
@@ -16,6 +18,8 @@ const defaultFilter: Filter = {
   minDistance: 0,
   minTagMatch: 0,
   maxTagMatch: 5,
+  orderByField: "Age",
+  orderByAsc: true,
 };
 
 export const filterSlice = createSlice({
