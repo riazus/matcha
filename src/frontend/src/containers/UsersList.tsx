@@ -11,7 +11,6 @@ import { useGetUsersWithFiltersQuery } from "../app/api/api";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
-import { PaginationData } from "../types/list/userLists";
 import Filter from "../components/Filter";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -20,34 +19,34 @@ const Demo = styled("div")(({ theme }) => ({
 }));
 
 function UsersList() {
-  const [listData, setListData] = useState<PaginationData>({
-    page: 0,
-    resetListRequested: false,
-  });
+  const [pageCountState, setPageCountState] = useState(0);
+  // reset all cache on the entry
+  const [resetListState, setResetListState] = useState(true);
   const { filter } = useAppSelector((root) => root.user);
-  const { data, isLoading, isFetching } = useGetUsersWithFiltersQuery({
-    filter,
-    listData,
-  }, {skip: !filter});
+  const { data, isLoading, isFetching } = useGetUsersWithFiltersQuery(
+    {
+      filter,
+      listData: {
+        page: pageCountState,
+        resetListRequested: resetListState,
+      },
+    },
+    { skip: !filter }
+  );
   const navigate = useNavigate();
   const dataLength = useRef(0);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    return () => {
-      dataLength.current = 0;
-    };
-  }, []);
-
-  useEffect(() => {
     if (!isLoading) {
-      setListData({ resetListRequested: true, page: 0 });
+      setResetListState(true);
+      setPageCountState(0);
     }
   }, [filter]);
 
   useEffect(() => {
-    if (listData.resetListRequested) {
-      setListData((prev) => ({ ...prev, resetListRequested: false }));
+    if (resetListState) {
+      setResetListState(false);
       setHasMore(true);
       dataLength.current = 0;
     }
@@ -61,10 +60,11 @@ function UsersList() {
     }
   }, [isFetching]);
 
-  const increasePageCount = () =>
-    setListData((prev) => ({ ...prev, page: prev.page + 1 }));
+  const increasePageCount = () => {
+    setPageCountState((prev) => prev + 1);
+  };
 
-  if (isLoading || (isFetching && listData.resetListRequested)) {
+  if (isLoading || (isFetching && resetListState)) {
     return <FullScreenLoader />;
   }
 
