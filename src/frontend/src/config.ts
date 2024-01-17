@@ -1,5 +1,5 @@
-import { Filter } from "./app/slices/filter";
 import { MessageRequest } from "./types/api/message";
+import { Filter } from "./types/slices/currentUser";
 
 export const API_BASE_URL: string = `http://localhost:${
   (process.env.REACT_APP_BACKEND_PORT as string) ?? 5000

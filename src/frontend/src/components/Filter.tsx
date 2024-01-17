@@ -9,10 +9,11 @@ import {
   InputLabel,
   SelectChangeEvent,
 } from "@mui/material";
-import { Filter as IFilter, applyFilter } from "../app/slices/filter";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { styled } from "@mui/material/styles";
+import { Filter as IFilter } from "../types/slices/currentUser";
+import { applyFilter } from "../app/slices/currentUserSlice";
 
 const StyledSlider = styled(Slider)(() => ({
   marginTop: 25,
@@ -33,11 +34,11 @@ const StyledSlider = styled(Slider)(() => ({
 }));
 
 function Filter() {
-  const filter = useAppSelector((root) => root.filter);
+  const { filter } = useAppSelector((root) => root.user);
   const { user } = useAppSelector((root) => root.user);
   const dispatch = useAppDispatch();
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [newFilter, setNewFilter] = useState<IFilter>(filter);
+  const [newFilter, setNewFilter] = useState<IFilter>(filter!);
 
   const handleAgeFilterChange = (_: Event, newValue: number | number[]) => {
     if (typeof newValue === "number" || newValue[0] > newValue[1]) return;

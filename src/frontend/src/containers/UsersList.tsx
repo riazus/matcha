@@ -24,11 +24,11 @@ function UsersList() {
     page: 0,
     resetListRequested: false,
   });
-  const filter = useAppSelector((root) => root.filter);
+  const { filter } = useAppSelector((root) => root.user);
   const { data, isLoading, isFetching } = useGetUsersWithFiltersQuery({
     filter,
     listData,
-  });
+  }, {skip: !filter});
   const navigate = useNavigate();
   const dataLength = useRef(0);
   const [hasMore, setHasMore] = useState(true);

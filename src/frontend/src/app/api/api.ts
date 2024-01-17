@@ -34,8 +34,8 @@ import { MessageRequest, MessageDataResponse } from "../../types/api/message";
 import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
-import { Filter } from "../slices/filter";
 import { PaginationData } from "../../types/list/userLists";
+import { Filter } from "../../types/slices/currentUser";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -321,10 +321,10 @@ export const api = createApi({
     }),
     getUsersWithFilters: builder.query<
       AccountsResponse[],
-      { filter: Filter; listData: PaginationData }
+      { filter: Filter | null; listData: PaginationData }
     >({
       query: ({ filter, listData }) => ({
-        url: ACCOUNT_ROUTES.WITH_FILTER(filter, listData.page),
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, listData.page),
       }),
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;

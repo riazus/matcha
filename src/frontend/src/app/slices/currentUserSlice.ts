@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserState } from "../../types/slices/currentUser";
+import { Filter, UserState } from "../../types/slices/currentUser";
 import { api } from "../api/api";
 import { deleteUser, persistUser } from "../services/localStorageService";
 import { RefreshTokenResponse } from "../../types/api/accounts";
@@ -8,12 +8,25 @@ export interface CurrentUserState {
   user: UserState | null;
   access_token: string | null;
   interlocutorId: string | null;
+  filter: Filter | null;
 }
 
 const initialState: CurrentUserState = {
   user: null,
   access_token: null,
   interlocutorId: null,
+  filter: null,
+};
+
+const defaultFilter: Filter = {
+  maxAge: 100,
+  minAge: 18,
+  maxDistance: undefined, // | 13588, // https://en.wikipedia.org/wiki/Extremes_on_Earth#Along_any_geodesic
+  minDistance: undefined,
+  minTagMatch: 0,
+  maxTagMatch: 5,
+  orderByField: "",
+  orderByAsc: true,
 };
 
 export const currentUserSlice = createSlice({
@@ -40,6 +53,17 @@ export const currentUserSlice = createSlice({
           longitude: payload.longitude,
           tags: payload.tags,
         };
+
+        if (payload.latitude && payload.longitude) {
+          state.filter = {
+            ...defaultFilter,
+            minDistance: 0,
+            maxDistance: 13588,
+          };
+        } else {
+          state.filter = defaultFilter;
+        }
+
         persistUser(state.user);
       }
     },
@@ -53,6 +77,10 @@ export const currentUserSlice = createSlice({
       window.location.href = "/";
       deleteUser();
       return initialState;
+    },
+    applyFilter: (state, action: PayloadAction<Filter>) => {
+      //Object.assign(state.filter, action.payload);
+      state.filter = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -72,6 +100,17 @@ export const currentUserSlice = createSlice({
             longitude: payload.longitude,
             tags: payload.tags,
           };
+
+          if (payload.latitude && payload.longitude) {
+            state.filter = {
+              ...defaultFilter,
+              minDistance: 0,
+              maxDistance: 13588,
+            };
+          } else {
+            state.filter = defaultFilter;
+          }
+
           persistUser(state.user);
         }
       }
@@ -92,6 +131,17 @@ export const currentUserSlice = createSlice({
             longitude: payload.longitude,
             tags: payload.tags,
           };
+
+          if (payload.latitude && payload.longitude) {
+            state.filter = {
+              ...defaultFilter,
+              minDistance: 0,
+              maxDistance: 13588,
+            };
+          } else {
+            state.filter = defaultFilter;
+          }
+
           persistUser(state.user);
         }
       }
@@ -102,12 +152,23 @@ export const currentUserSlice = createSlice({
     });
     builder.addMatcher(
       api.endpoints.completeProfile.matchFulfilled,
-      (state, action) => {
+      (state, { payload }) => {
         if (state.user) {
           state.user.isProfileCompleted = true;
-          state.user.longitude = action.payload.longitude;
-          state.user.latitude = action.payload.latitude;
-          state.user.tags = action.payload.tags;
+          state.user.longitude = payload.longitude;
+          state.user.latitude = payload.latitude;
+          state.user.tags = payload.tags;
+
+          if (payload.latitude && payload.longitude) {
+            state.filter = {
+              ...defaultFilter,
+              minDistance: 0,
+              maxDistance: 13588,
+            };
+          } else {
+            state.filter = defaultFilter;
+          }
+
           persistUser(state.user);
         }
       }
@@ -123,4 +184,5 @@ export const {
   loggedOut,
   setInterlocuterId,
   removeInterlocuterId,
+  applyFilter,
 } = currentUserSlice.actions;
