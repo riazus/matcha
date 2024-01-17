@@ -196,35 +196,72 @@ public class AccountRepository : IAccountRepository
 
     public IEnumerable<Account> GetWithFilters(AccountsFilter filter, Account currUser)
     {
-        StringBuilder where = new();
+        StringBuilder query = new();
+        bool isDistanceFilterable = 
+            filter.MinDistance.HasValue
+            && filter.MaxDistance.HasValue
+            && currUser.Latitude.HasValue
+            && currUser.Longitude.HasValue;
 
-        where.Append(
-            $"JSON_QUERY(TagsDB) IS NOT NULL AND" +
-            $"(" +
-                $" SELECT COUNT(*)" +
-                $" FROM OPENJSON(\'{currUser.TagsDB}\') mainUserTag" +
-                $" JOIN OPENJSON(TagsDB) userTag ON mainUserTag.value = userTag.value" +
-            $") BETWEEN {filter.MinTag} AND {filter.MaxTag}");
 
-        where.Append($" AND DATEDIFF(YEAR, Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}");
+        query.Append("SELECT Account.* FROM Account" +
+            $" CROSS APPLY ( SELECT COUNT(*) as CommonTagsCount FROM OPENJSON(\'{currUser.TagsDB}\') mainUserTag" +
+            $" JOIN OPENJSON(TagsDB) userTag ON mainUserTag.value = userTag.value" +
+            $" ) AS Tags");
 
-        if (currUser.Longitude != null 
-            && currUser.Latitude != null
-            && filter.MinDistance != null
-            && filter.MaxDistance != null)
+        if (isDistanceFilterable)
         {
-            where.Append(
-                $" AND ACOS((SELECT MIN(x) FROM (VALUES" +
-                    $" (SIN(RADIANS(Latitude)) * SIN(RADIANS({currUser.Latitude})) + COS(RADIANS(Latitude)) * COS(RADIANS({currUser.Latitude})))" +
-                    $" ,(1)) AS value(x))) * 6371" +
-                    $" BETWEEN {filter.MinDistance} AND {filter.MaxDistance}");
+            query.Append(" CROSS APPLY (" +
+                $" SELECT ROUND(GEOGRAPHY::Point(Latitude, Longitude, 4326).STDistance(GEOGRAPHY::Point({currUser.Latitude}, {currUser.Latitude}, 4326)) / 1000, 4) AS Distance" +
+                $" ) AS Distance");
         }
 
-        where.Append($" AND Id != \'{currUser.Id}\'");
+        query.Append($" WHERE JSON_QUERY(TagsDB) IS NOT NULL" +
+            $" AND Tags.CommonTagsCount BETWEEN {filter.MinTag} AND {filter.MaxTag}" +
+            $" AND DATEDIFF(YEAR, Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}" +
+            $" AND Account.Id != \'{currUser.Id}\'");
 
-        where.Append($" ORDER BY Id OFFSET (20 * {filter.Page}) ROWS FETCH NEXT 20 ROWS ONLY;");
+        if (isDistanceFilterable)
+        {
+            query.Append($" AND Distance.Distance BETWEEN {filter.MinDistance} AND {filter.MaxDistance}" +
+                $" AND Latitude IS NOT NULL AND Longitude IS NOT NULL");
+        }
 
-        var accounts = _context.GetWhereList<Account>(where.ToString());
+        query.Append(" ORDER BY");
+
+        if (filter.OrderByField.IsNullOrEmpty())
+        {
+            if (isDistanceFilterable)
+            {
+                query.Append(" Distance.Distance");
+            }
+            else
+            {
+                query.Append(" Tags.CommonTagsCount");
+            }
+        }
+        else if (filter.OrderByField == "Distance" && isDistanceFilterable)
+        {
+            query.Append(" Distance.Distance");
+        } 
+        else if (filter.OrderByField == "Age")
+        {
+            query.Append(" Birthday");
+        }
+        else if (filter.OrderByField == "Tags")
+        {
+            query.Append(" Tags.CommonTagsCount");
+        }
+        else
+        {
+            throw new Exception("Provided invalid order by column");
+        }
+
+        query.Append((filter.OrderByAsc ? " ASC" : " DESC") + ", Id");
+
+        query.Append($" OFFSET (20 * {filter.Page}) ROWS FETCH NEXT 20 ROWS ONLY;");
+
+        var accounts = _context.GetListWithQuery<Account>(query.ToString());
 
         return accounts;
     }

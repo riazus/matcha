@@ -36,18 +36,19 @@ function UsersList() {
   useEffect(() => {
     return () => {
       dataLength.current = 0;
-    }
+    };
   }, []);
 
   useEffect(() => {
     if (!isLoading) {
-      setListData((prev) => ({ ...prev, resetListRequested: true }));
+      setListData({ resetListRequested: true, page: 0 });
     }
   }, [filter]);
 
   useEffect(() => {
     if (listData.resetListRequested) {
       setListData((prev) => ({ ...prev, resetListRequested: false }));
+      setHasMore(true);
       dataLength.current = 0;
     }
   }, [data]);
@@ -58,7 +59,10 @@ function UsersList() {
     } else if (data && !isFetching) {
       dataLength.current = data?.length;
     }
-  }, [isFetching])
+  }, [isFetching]);
+
+  const increasePageCount = () =>
+    setListData((prev) => ({ ...prev, page: prev.page + 1 }));
 
   if (isLoading || (isFetching && listData.resetListRequested)) {
     return <FullScreenLoader />;
@@ -76,9 +80,7 @@ function UsersList() {
             <List dense={false}>
               <InfiniteScroll
                 dataLength={data?.length ?? 0}
-                next={() =>
-                  setListData((prev) => ({ ...prev, page: prev.page + 1 }))
-                }
+                next={increasePageCount}
                 hasMore={hasMore}
                 loader={<h4>Loading...</h4>}
               >
