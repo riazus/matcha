@@ -324,17 +324,7 @@ export const api = createApi({
       { filter: Filter; listData: PaginationData }
     >({
       query: ({ filter, listData }) => ({
-        url: ACCOUNT_ROUTES.WITH_FILTER(
-          filter.minAge,
-          filter.maxAge,
-          filter.minTagMatch,
-          filter.maxTagMatch,
-          filter.minDistance,
-          filter.maxDistance,
-          listData.page,
-          filter.orderByField,
-          filter.orderByAsc
-        ),
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter, listData.page),
       }),
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;

@@ -3,8 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export interface Filter {
   maxAge: number;
   minAge: number;
-  maxDistance: number;
-  minDistance: number;
+  maxDistance: number | undefined;
+  minDistance: number | undefined;
   minTagMatch: number;
   maxTagMatch: number;
   orderByField: string;
@@ -18,7 +18,7 @@ const defaultFilter: Filter = {
   minDistance: 0,
   minTagMatch: 0,
   maxTagMatch: 5,
-  orderByField: "Age",
+  orderByField: "",
   orderByAsc: true,
 };
 

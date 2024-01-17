@@ -1,4 +1,14 @@
-import { Box, Modal, Typography, Button, Slider } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Typography,
+  Button,
+  Slider,
+  Select,
+  MenuItem,
+  InputLabel,
+  SelectChangeEvent,
+} from "@mui/material";
 import { Filter as IFilter, applyFilter } from "../app/slices/filter";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
@@ -62,6 +72,13 @@ function Filter() {
     }));
   };
 
+  const handleOrderByChange = (event: SelectChangeEvent) => {
+    setNewFilter((prev) => ({
+      ...prev,
+      orderByField: event.target.value as string,
+    }));
+  };
+
   const distanceValueLabelFormat = (value: number) => `${value} km`;
 
   const handleModalClose = () => {
@@ -95,7 +112,7 @@ function Filter() {
               <Typography>Distance filter:</Typography>
               <StyledSlider
                 getAriaLabel={() => "Distance filter range"}
-                value={[newFilter.minDistance, newFilter.maxDistance]}
+                value={[newFilter.minDistance!, newFilter.maxDistance!]}
                 onChange={handleDistanceFilterChange}
                 valueLabelDisplay="on"
                 valueLabelFormat={distanceValueLabelFormat}
@@ -111,6 +128,27 @@ function Filter() {
             max={user?.tags.length}
             valueLabelDisplay="on"
           ></StyledSlider>
+          <Box
+            sx={{
+              minWidth: 120,
+              // display: "flex",
+              // justifyContent: "space-between",
+              // alignItems: "center",
+            }}
+          >
+            <InputLabel>Order by</InputLabel>
+            <Select
+              label="Order by"
+              value={newFilter.orderByField}
+              onChange={handleOrderByChange}
+            >
+              <MenuItem value={"Age"}>Age</MenuItem>
+              {user?.latitude && user?.longitude && (
+                <MenuItem value={"Distance"}>Distance</MenuItem>
+              )}
+              <MenuItem value={"Tags"}>Common tags</MenuItem>
+            </Select>
+          </Box>
           <Button onClick={handleModalClose} sx={styles.applyButton}>
             Apply
           </Button>

@@ -1,3 +1,4 @@
+import { Filter } from "./app/slices/filter";
 import { MessageRequest } from "./types/api/message";
 
 export const API_BASE_URL: string = `http://localhost:${
@@ -26,35 +27,27 @@ export const ACCOUNT_ROUTES = {
   VIEWED_ME: "/accounts/viewed-me",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
   USERS: `/accounts`,
-  WITH_FILTER: (
-    minAge: number,
-    maxAge: number,
-    minTag: number,
-    maxTag: number,
-    minDistance: number,
-    maxDistance: number,
-    page: number,
-    orderByField: string,
-    orderByAsc: boolean
-  ) =>
+  WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
-    minAge +
+    filter.minAge +
     "&maxAge=" +
-    maxAge +
+    filter.maxAge +
     "&minTag=" +
-    minTag +
+    filter.minTagMatch +
     "&maxTag=" +
-    maxTag +
-    "&minDistance=" +
-    minDistance +
-    "&maxDistance=" +
-    maxDistance +
+    filter.maxTagMatch +
     "&page=" +
     page +
     "&orderByField=" +
-    orderByField +
+    (filter.orderByField.length === 0
+      ? filter.minDistance
+        ? "Distance"
+        : "Age"
+      : filter.orderByField) +
     "&orderByAsc=" +
-    orderByAsc,
+    filter.orderByAsc +
+    (filter.minDistance !== undefined && "&minDistance=" + filter.minDistance) +
+    (filter.maxDistance !== undefined && "&maxDistance=" + filter.maxDistance),
 };
 
 export const MESSAGE_ROUTES = {
