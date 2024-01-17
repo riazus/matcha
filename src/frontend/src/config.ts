@@ -46,8 +46,12 @@ export const ACCOUNT_ROUTES = {
       : filter.orderByField) +
     "&orderByAsc=" +
     filter.orderByAsc +
-    (filter.minDistance !== undefined && "&minDistance=" + filter.minDistance) +
-    (filter.maxDistance !== undefined && "&maxDistance=" + filter.maxDistance),
+    (filter.minDistance !== undefined
+      ? "&minDistance=" + filter.minDistance
+      : "") +
+    (filter.maxDistance !== undefined
+      ? "&maxDistance=" + filter.maxDistance
+      : ""),
 };
 
 export const MESSAGE_ROUTES = {

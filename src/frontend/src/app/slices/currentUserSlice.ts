@@ -25,7 +25,7 @@ const defaultFilter: Filter = {
   minDistance: undefined,
   minTagMatch: 0,
   maxTagMatch: 5,
-  orderByField: "",
+  orderByField: "Age",
   orderByAsc: true,
 };
 
@@ -59,10 +59,14 @@ export const currentUserSlice = createSlice({
             ...defaultFilter,
             minDistance: 0,
             maxDistance: 13588,
+            orderByField: "Distance",
+            maxTagMatch: payload.tags.length,
           };
         } else {
           state.filter = defaultFilter;
         }
+
+        state.filter.maxTagMatch = payload.tags.length;
 
         persistUser(state.user);
       }
@@ -79,7 +83,6 @@ export const currentUserSlice = createSlice({
       return initialState;
     },
     applyFilter: (state, action: PayloadAction<Filter>) => {
-      //Object.assign(state.filter, action.payload);
       state.filter = action.payload;
     },
   },
@@ -106,10 +109,14 @@ export const currentUserSlice = createSlice({
               ...defaultFilter,
               minDistance: 0,
               maxDistance: 13588,
+              orderByField: "Distance",
+              maxTagMatch: payload.tags.length,
             };
           } else {
             state.filter = defaultFilter;
           }
+
+          state.filter.maxTagMatch = payload.tags.length;
 
           persistUser(state.user);
         }
@@ -137,10 +144,13 @@ export const currentUserSlice = createSlice({
               ...defaultFilter,
               minDistance: 0,
               maxDistance: 13588,
+              orderByField: "Distance",
             };
           } else {
             state.filter = defaultFilter;
           }
+
+          state.filter.maxTagMatch = payload.tags.length;
 
           persistUser(state.user);
         }
@@ -164,10 +174,13 @@ export const currentUserSlice = createSlice({
               ...defaultFilter,
               minDistance: 0,
               maxDistance: 13588,
+              orderByField: "Distance",
             };
           } else {
             state.filter = defaultFilter;
           }
+
+          state.filter.maxTagMatch = payload.tags.length;
 
           persistUser(state.user);
         }

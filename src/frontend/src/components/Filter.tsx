@@ -8,7 +8,10 @@ import {
   MenuItem,
   InputLabel,
   SelectChangeEvent,
+  IconButton,
 } from "@mui/material";
+import NorthIcon from "@mui/icons-material/North";
+import SouthIcon from "@mui/icons-material/South";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { styled } from "@mui/material/styles";
@@ -80,6 +83,12 @@ function Filter() {
     }));
   };
 
+  const handleOrderByAscClick = () =>
+    setNewFilter((prev) => ({
+      ...prev,
+      orderByAsc: !prev.orderByAsc,
+    }));
+
   const distanceValueLabelFormat = (value: number) => `${value} km`;
 
   const handleModalClose = () => {
@@ -132,9 +141,6 @@ function Filter() {
           <Box
             sx={{
               minWidth: 120,
-              // display: "flex",
-              // justifyContent: "space-between",
-              // alignItems: "center",
             }}
           >
             <InputLabel>Order by</InputLabel>
@@ -149,6 +155,9 @@ function Filter() {
               )}
               <MenuItem value={"Tags"}>Common tags</MenuItem>
             </Select>
+            <IconButton onClick={handleOrderByAscClick}>
+              {newFilter.orderByAsc ? <NorthIcon /> : <SouthIcon />}
+            </IconButton>
           </Box>
           <Button onClick={handleModalClose} sx={styles.applyButton}>
             Apply
