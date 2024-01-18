@@ -33,17 +33,7 @@ import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 
-const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
-
-function isUser18YearsOrOlder(birthdate: Date): boolean {
-  const currentDate = new Date();
-
-  const minBirthdate = new Date(currentDate);
-  minBirthdate.setFullYear(minBirthdate.getFullYear() - 18);
-
-  return birthdate <= minBirthdate;
-}
 
 export interface AddressData {
   latitude: number;
@@ -77,11 +67,13 @@ function CompleteProfile() {
   const methods = useForm<CompleteProfileBody>({
     resolver: zodResolver(registerSchema),
   });
+
   const {
     reset,
     handleSubmit,
     formState: { isSubmitSuccessful },
   } = methods;
+
   const [state, setState] = useState({
     gender: {
       iAmMan: true,
@@ -89,13 +81,9 @@ function CompleteProfile() {
       iSearchMan: false,
       iSearchWomen: false,
     },
-    years: {
-      yearsOld: null,
-      birthday: Date,
-    },
   });
   const navigate = useNavigate();
-  const [birthday, setBirthday] = useState<Dayjs | null>(null);
+  const [birthday, setBirthday] = useState<Dayjs | null>(dayjs('2000-01-01'));
   const [age, setAge] = useState<number | null>(null);
   const [addressData, setAddressData] = useState<AddressData>({
     latitude: 0,
@@ -188,7 +176,6 @@ function CompleteProfile() {
   
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(pictures.slice(1, 4))
     
     if (!profilePicture) {
       toast.error("Profile picture cannot be empty!");
@@ -202,10 +189,10 @@ function CompleteProfile() {
     } else if (!tags || tags?.length < 1) {
       toast.error("You need provide at least one hobbie!");
       return;
-    } else if (age && Number(age < 18)) {
+    } else if (age !== null && age < 18) {
       toast.error("You need to be at least 18 year old");
       return;
-    } else if (age && isNaN(age)) {
+    } else if (age  !== null && isNaN(age)) {
       toast.error("Your birthday date is not valid!");
       return;
     }
@@ -227,7 +214,7 @@ function CompleteProfile() {
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.slice(1, 4),
+      additionalPictures: pictures.slice(1, 5),
       gender: gender,
       genderPreferences: preferedGender,
       tags: tags,

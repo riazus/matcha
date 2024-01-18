@@ -100,14 +100,16 @@ export function convertCompleteProfileBodyToFormData(
   const formData = new FormData();
 
   formData.append("profilePicture", body.profilePicture);
+  console.log("profile picture", body.profilePicture)
+  console.log("additionnal picture", body.additionalPictures)
 
   if (body.additionalPictures) {
     body.additionalPictures.forEach((file, index) => {
+      console.log("file : ", index, file)
       if (file !== null)
-        formData.append(`additionalPictures[${index}]`, file as string | Blob);
+        formData.append(`additionalPictures[${index}]`, file);
     });
   }
-
   formData.append("tags", JSON.stringify(body.tags));
   formData.append("gender", body.gender.toString());
   formData.append("genderPreferences", body.genderPreferences.toString());
@@ -118,6 +120,11 @@ export function convertCompleteProfileBodyToFormData(
   if (body.town) formData.append("town", body.town);
   if (body.country) formData.append("country", body.country);
   if (body.postcode) formData.append("postcode", body.postcode);
+
+  const entriesArray = Array.from(formData.entries());
+  for (const entry of entriesArray) {
+    console.log(entry);
+  }
 
   return formData;
 }
