@@ -214,7 +214,9 @@ function CompleteProfile() {
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.slice(1, 5),
+      additionalPictures: pictures.filter(
+        (val, i) => val !== null && i !== 0
+      ) as File[] | null,
       gender: gender,
       genderPreferences: preferedGender,
       tags: tags,
