@@ -54,19 +54,20 @@ export const currentUserSlice = createSlice({
           tags: payload.tags,
         };
 
-        if (payload.latitude && payload.longitude) {
-          state.filter = {
-            ...defaultFilter,
-            minDistance: 0,
-            maxDistance: 13588,
-            orderByField: "Distance",
-            maxTagMatch: payload.tags.length,
-          };
-        } else {
-          state.filter = defaultFilter;
-        }
+        if (payload.isProfileCompleted) {
+          if (payload.latitude && payload.longitude) {
+            state.filter = {
+              ...defaultFilter,
+              minDistance: 0,
+              maxDistance: 13588,
+              orderByField: "Distance",
+            };
+          } else {
+            state.filter = defaultFilter;
+          }
 
-        state.filter.maxTagMatch = payload.tags.length;
+          state.filter.maxTagMatch = payload.tags.length;
+        }
 
         persistUser(state.user);
       }
@@ -104,19 +105,20 @@ export const currentUserSlice = createSlice({
             tags: payload.tags,
           };
 
-          if (payload.latitude && payload.longitude) {
-            state.filter = {
-              ...defaultFilter,
-              minDistance: 0,
-              maxDistance: 13588,
-              orderByField: "Distance",
-              maxTagMatch: payload.tags.length,
-            };
-          } else {
-            state.filter = defaultFilter;
-          }
+          if (payload.isProfileCompleted) {
+            if (payload.latitude && payload.longitude) {
+              state.filter = {
+                ...defaultFilter,
+                minDistance: 0,
+                maxDistance: 13588,
+                orderByField: "Distance",
+              };
+            } else {
+              state.filter = defaultFilter;
+            }
 
-          state.filter.maxTagMatch = payload.tags.length;
+            state.filter.maxTagMatch = payload.tags.length;
+          }
 
           persistUser(state.user);
         }
@@ -139,18 +141,20 @@ export const currentUserSlice = createSlice({
             tags: payload.tags,
           };
 
-          if (payload.latitude && payload.longitude) {
-            state.filter = {
-              ...defaultFilter,
-              minDistance: 0,
-              maxDistance: 13588,
-              orderByField: "Distance",
-            };
-          } else {
-            state.filter = defaultFilter;
-          }
+          if (payload.isProfileCompleted) {
+            if (payload.latitude && payload.longitude) {
+              state.filter = {
+                ...defaultFilter,
+                minDistance: 0,
+                maxDistance: 13588,
+                orderByField: "Distance",
+              };
+            } else {
+              state.filter = defaultFilter;
+            }
 
-          state.filter.maxTagMatch = payload.tags.length;
+            state.filter.maxTagMatch = payload.tags.length;
+          }
 
           persistUser(state.user);
         }
