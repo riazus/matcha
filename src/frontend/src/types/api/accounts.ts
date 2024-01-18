@@ -94,6 +94,14 @@ export interface AccountResponse {
   isProfilesMatched: boolean;
 }
 
+export interface AddressData {
+  latitude: number;
+  longitude: number;
+  postCode: string;
+  town: string;
+  country: string;
+}
+
 export function convertCompleteProfileBodyToFormData(
   body: CompleteProfileBody
 ): FormData {
@@ -105,7 +113,6 @@ export function convertCompleteProfileBodyToFormData(
 
   if (body.additionalPictures) {
     body.additionalPictures.forEach((file, index) => {
-      console.log("file : ", index, file)
       if (file !== null)
         formData.append(`additionalPictures[${index}]`, file);
     });

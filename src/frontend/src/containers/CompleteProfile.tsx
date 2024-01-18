@@ -108,21 +108,6 @@ function CompleteProfile() {
     });
   };
 
-  const handleTag = (tag: string) => {
-    if (tags?.find((x) => x === tag) !== undefined) {
-      const nTags = tags?.filter((oneTag) => oneTag !== tag);
-      setTags(nTags);
-    } else {
-      if (tags && tags.length === 8) {
-        toast.error("You have too many hobbies, you can only choose 8");
-        return;
-      }
-      setTags((prevTags: string[] | null | undefined) =>
-        prevTags ? [...prevTags, tag] : [tag]
-      );
-    }
-  };
-
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
       toast.error("You cannot exceed 300 characters for your bio");

@@ -345,7 +345,6 @@ public class AccountService : IAccountService
         using var profileStream = new FileStream(profilePictureUrl, FileMode.Create);
         profileData.ProfilePicture.CopyTo(profileStream);
 
-        Console.WriteLine($"additional pictures in account service : {profileData.AdditionalPictures}")
         if (profileData.AdditionalPictures != null)
         {
             var additionalPicturesUrls = new List<string>();
