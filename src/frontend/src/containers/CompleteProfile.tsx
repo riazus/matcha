@@ -1,7 +1,4 @@
-import {
-  Box,
-  Container,
-} from "@mui/system";
+import { Box, Container } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -28,83 +25,16 @@ import { CompleteProfileBody } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
 import { toast } from "react-toastify";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import { useNavigate } from "react-router-dom";
+import HobbiesModal from "../components/HobbiesModal";
 
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-// TAGS DATA ↓↓↓
-const tagsData = [
-  "food",
-  "science",
-  "intello",
-  "coding",
-  "dodo",
-  "bio",
-  "geek",
-  "vegan",
-  "artiste",
-  "meditation",
-  "paresse",
-  "fitness",
-  "aventure",
-  "timide",
-  "marketing",
-  "fastfood",
-  "intelligence",
-  "humour",
-  "cool",
-  "highTech",
-  "globetrotting",
-  "histoire",
-  "shopping",
-  "nature",
-  "sport",
-  "football",
-  "literature",
-  "math",
-  "action",
-  "faitsDivers",
-  "decouverte",
-  "cinema",
-  "musique",
-  "actualite",
-  "politique",
-  "social",
-  "etudes",
-  "cuisine",
-  "humanitaire",
-  "animaux",
-  "environnement",
-  "jeuxVideo",
-  "peinture",
-  "dessin",
-  "ecriture",
-  "lecture",
-  "photographie",
-  "chasse",
-  "randonnee",
-  "marche",
-  "plage",
-  "detente",
-  "automobile",
-  "couture",
-  "innovation",
-  "terroir",
-  "informatique",
-  "marathon",
-  "blogging",
-];
+const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
 function isUser18YearsOrOlder(birthdate: Date): boolean {
   const currentDate = new Date();
@@ -178,9 +108,10 @@ function CompleteProfile() {
   const [pictures, setPictures] = useState<(File | null)[]>(
     Array.from({ length: 5 }, () => null)
   );
-  const [tags, setTags] = useState<string[] | null>();
+  const [tags, setTags] = useState<string[] | null>(null);
   const [description, setDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const memoPictures = useMemo(() => pictures, [pictures]);
 
   const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -190,15 +121,14 @@ function CompleteProfile() {
   };
 
   const handleTag = (tag: string) => {
-    if (tags && tags.length === 8) {
-      toast.error("You have too many hobbies, you can only choose 8");
-      return ;
-    }
-
     if (tags?.find((x) => x === tag) !== undefined) {
       const nTags = tags?.filter((oneTag) => oneTag !== tag);
       setTags(nTags);
     } else {
+      if (tags && tags.length === 8) {
+        toast.error("You have too many hobbies, you can only choose 8");
+        return;
+      }
       setTags((prevTags: string[] | null | undefined) =>
         prevTags ? [...prevTags, tag] : [tag]
       );
@@ -207,11 +137,11 @@ function CompleteProfile() {
 
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
-      toast.error("You cannot exceed 300 characters for your bio ;)");
+      toast.error("You cannot exceed 300 characters for your bio");
       return;
-    } 
+    }
     setDescription(e.target.value);
-  }
+  };
 
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -226,7 +156,7 @@ function CompleteProfile() {
     }
   };
 
-  const suppressPictureUpload = (index: number) => {
+  const suppressPictureUploaded = (index: number) => {
     var nPictures = [...pictures];
     nPictures[index] = null;
     for (let i = 0; i < nPictures.length - 2; i++) {
@@ -255,10 +185,11 @@ function CompleteProfile() {
       }
     }
   }, [isLoading]);
-
+  
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+    console.log(pictures.slice(1, 4))
+    
     if (!profilePicture) {
       toast.error("Profile picture cannot be empty!");
       return;
@@ -271,14 +202,14 @@ function CompleteProfile() {
     } else if (!tags || tags?.length < 1) {
       toast.error("You need provide at least one hobbie!");
       return;
-    } else if (age && age < 18) {
+    } else if (age && Number(age < 18)) {
       toast.error("You need to be at least 18 year old");
       return;
     } else if (age && isNaN(age)) {
       toast.error("Your birthday date is not valid!");
       return;
     }
-
+    
     const gender: number = state.gender.iAmMan ? 0 : 1;
     let preferedGender: number;
 
@@ -307,8 +238,7 @@ function CompleteProfile() {
       country: addressData.country,
       town: addressData.town,
     };
-
-    //console.log(res);
+    
     completeProfile(res);
   };
 
@@ -317,27 +247,29 @@ function CompleteProfile() {
       <div>
         <FormLabel>Please select at least one photo :</FormLabel>
         <Box sx={styles.picturesBox}>
-          {pictures.map((picture, index) => (
+          {memoPictures.map((picture, index) => (
             <div
               key={index}
               style={{
                 ...styles.onePictureBox,
-                backgroundImage: picture && pictures
-                  ? `url(${URL.createObjectURL(picture)})`
-                  : "none",
+                backgroundImage:
+                  picture && memoPictures
+                    ? `url(${URL.createObjectURL(picture)})`
+                    : "none",
               }}
             >
-              {!pictures[index] && (index === 0 || pictures[index - 1]) ? (
+              {!memoPictures[index] &&
+              (index === 0 || memoPictures[index - 1]) ? (
                 <Button component="label">
                   <AddCircleOutlineIcon fontSize="large" />
                   <VisuallyHiddenInput
                     type="file"
-                    accept=".jpg, .png, .jpeg, .webp"
+                    accept={ACCEPTED_IMAGE_TYPES}
                     onChange={(e) => handlePictureUpload(e, index)}
                   />
                 </Button>
-              ) : pictures[index] ? (
-                <Button onClick={() => suppressPictureUpload(index)}>
+              ) : memoPictures[index] ? (
+                <Button onClick={() => suppressPictureUploaded(index)}>
                   <RemoveCircleOutlineIcon fontSize="large" />
                 </Button>
               ) : null}
@@ -358,7 +290,12 @@ function CompleteProfile() {
             value={birthday}
             onChange={(newDate) => {
               setBirthday(newDate);
-              setAge(Math.abs(new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -1970));
+              setAge(
+                Math.abs(
+                  new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -
+                    1970
+                )
+              );
             }}
             maxDate={dayjs()}
             defaultValue={dayjs("2000-01-01")}
@@ -398,6 +335,7 @@ function CompleteProfile() {
             </RadioGroup>
           </div>
         </div>
+
         <div style={styles.selection}>
           <div style={styles.selectionContentSearch}>
             <FormLabel>I am searching for :</FormLabel>
@@ -428,19 +366,21 @@ function CompleteProfile() {
       </FormGroup>
 
       <TextField
-        sx={{marginBottom: "1%", width: "60%" }}
+        sx={{ marginBottom: "1%", width: "60%" }}
         label="Please enter a bio"
         multiline
         rows={6}
         value={description}
         variant="filled"
-        InputProps={{endAdornment: 
-          <InputAdornment position="end">
-          <FormLabel sx={{fontSize: "small"}}>
-            {description.length} characters
-          </FormLabel>
-          </InputAdornment>
-          }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <FormLabel sx={{ fontSize: "small" }}>
+                {description.length} characters
+              </FormLabel>
+            </InputAdornment>
+          ),
+        }}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           handleDescription(e)
         }
@@ -476,40 +416,12 @@ function CompleteProfile() {
           open={openModal}
           onClose={() => setOpenModal(!openModal)}
         >
-          <Box sx={styles.boxModal}>
-            <Typography variant="h1" sx={styles.interrestsText}>
-              Interrests :
-            </Typography>
-            <Grid container spacing={2}>
-              {tagsData.map((tag) => (
-                <Grid key={tag} item xs={10} sm={4}>
-                  <Button
-                    onClick={() => handleTag(tag)}
-                    color="secondary"
-                    variant={
-                      tags && tags.includes(tag) === true
-                        ? "contained"
-                        : "outlined"
-                    }
-                  >
-                    {tag}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-            <Button
-              onClick={() => setTags([])}
-              sx={styles.interrestsFinishedButton}
-            >
-              Clear all
-            </Button>
-            <Button
-              onClick={() => setOpenModal(!openModal)}
-              sx={styles.interrestsFinishedButton}
-            >
-              Finished
-            </Button>
-          </Box>
+          <HobbiesModal
+            tags={tags}
+            setTags={setTags}
+            setOpenModal={setOpenModal}
+            ref={useRef(null)}
+          />
         </Modal>
       </Box>
 
@@ -598,6 +510,8 @@ const styles = {
     borderRadius: "10px",
     justifyContent: "center",
     alignItems: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
   modal: {},
   boxModal: {
