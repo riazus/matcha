@@ -17,7 +17,8 @@ public class AccountsFilter
     [Required]
     public string OrderByField {  get; set; }
     [Required]
-    public bool OrderByAsc {  get; set; }
+    public bool OrderByAsc { get; set; }
+    public bool IsForBrowsing { get; set; } = false;
     public int? MinDistance { get; set; }
     public int? MaxDistance { get; set; }
 }
