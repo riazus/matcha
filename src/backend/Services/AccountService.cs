@@ -348,6 +348,7 @@ public class AccountService : IAccountService
         if (profileData.AdditionalPictures != null)
         {
             var additionalPicturesUrls = new List<string>();
+
             foreach (var picture in profileData.AdditionalPictures)
             {
                 var additionalPictureId = Guid.NewGuid().ToString();

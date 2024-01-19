@@ -47,7 +47,7 @@ export interface RefreshTokenResponse {
 
 export interface CompleteProfileBody {
   profilePicture: File;
-  additionalPictures: (File | null)[];
+  additionalPictures: File[] | null;
   tags: string[];
   gender: number;
   genderPreferences: number;
@@ -108,30 +108,21 @@ export function convertCompleteProfileBodyToFormData(
   const formData = new FormData();
 
   formData.append("profilePicture", body.profilePicture);
-  console.log("profile picture", body.profilePicture)
-  console.log("additionnal picture", body.additionalPictures)
-
-  if (body.additionalPictures) {
-    body.additionalPictures.forEach((file, index) => {
-      if (file !== null)
-        formData.append(`additionalPictures[${index}]`, file);
-    });
-  }
   formData.append("tags", JSON.stringify(body.tags));
   formData.append("gender", body.gender.toString());
   formData.append("genderPreferences", body.genderPreferences.toString());
   formData.append("description", body.description);
   formData.append("birthday", body.birthday.toISOString());
+
+  body.additionalPictures?.forEach((picture) => {
+    formData.append("additionalPictures", picture);
+  });
+
   if (body.latitude) formData.append("latitude", body.latitude.toString());
   if (body.longitude) formData.append("longitude", body.longitude.toString());
   if (body.town) formData.append("town", body.town);
   if (body.country) formData.append("country", body.country);
   if (body.postcode) formData.append("postcode", body.postcode);
-
-  const entriesArray = Array.from(formData.entries());
-  for (const entry of entriesArray) {
-    console.log(entry);
-  }
 
   return formData;
 }

@@ -141,7 +141,7 @@ function SettingsForm() {
 
     const res: CompleteProfileBody = {
       profilePicture: profilePicture as File,
-      additionalPictures: pictures.slice(1, 5),
+      additionalPictures: pictures.slice(1, 5) as File[],
       birthday: userInfo!.birthday,
       gender: gender,
       genderPreferences: preferedGender,
