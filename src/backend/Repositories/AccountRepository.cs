@@ -204,27 +204,32 @@ public class AccountRepository : IAccountRepository
             && currUser.Longitude.HasValue;
 
 
-        query.Append("SELECT Account.* FROM Account" +
-            $" CROSS APPLY ( SELECT COUNT(*) as CommonTagsCount FROM OPENJSON(\'{currUser.TagsDB}\') mainUserTag" +
-            $" JOIN OPENJSON(TagsDB) userTag ON mainUserTag.value = userTag.value" +
-            $" ) AS Tags");
+        query.Append("SELECT acc1.* FROM Account acc1");
+
+        query.Append($" CROSS APPLY (SELECT COUNT(*) as CommonTagsCount FROM OPENJSON(\'{currUser.TagsDB}\') mainUserTag" +
+            $" JOIN OPENJSON(acc1.TagsDB) userTag ON mainUserTag.value = userTag.value) AS Tags");
 
         if (isDistanceFilterable)
         {
             query.Append(" CROSS APPLY (" +
-                $" SELECT ROUND(GEOGRAPHY::Point(Latitude, Longitude, 4326).STDistance(GEOGRAPHY::Point({currUser.Latitude}, {currUser.Longitude}, 4326)) / 1000, 4) AS Distance" +
+                $" SELECT ROUND(GEOGRAPHY::Point(acc1.Latitude, acc1.Longitude, 4326).STDistance(GEOGRAPHY::Point({currUser.Latitude}, {currUser.Longitude}, 4326)) / 1000, 4) AS Distance" +
                 $" ) AS Distance");
         }
 
-        query.Append($" WHERE JSON_QUERY(TagsDB) IS NOT NULL" +
+        query.Append($" WHERE JSON_QUERY(acc1.TagsDB) IS NOT NULL" +
             $" AND Tags.CommonTagsCount BETWEEN {filter.MinTag} AND {filter.MaxTag}" +
-            $" AND DATEDIFF(YEAR, Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}" +
-            $" AND Account.Id != \'{currUser.Id}\'");
+            $" AND DATEDIFF(YEAR, acc1.Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}" +
+            $" AND acc1.Id != \'{currUser.Id}\'");
 
         if (isDistanceFilterable)
         {
             query.Append($" AND Distance.Distance BETWEEN {filter.MinDistance} AND {filter.MaxDistance}" +
-                $" AND Latitude IS NOT NULL AND Longitude IS NOT NULL");
+                $" AND acc1.Latitude IS NOT NULL AND acc1.Longitude IS NOT NULL");
+        }
+
+        if (filter.IsForBrowsing)
+        {
+            query.Append($" AND acc1.GenderDB = {currUser.GenderPreferencesDB} AND acc1.GenderPreferencesDB = {currUser.GenderDB}");
         }
 
         query.Append(" ORDER BY");
