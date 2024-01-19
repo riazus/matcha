@@ -177,6 +177,7 @@ CREATE TABLE [Notification] (
     [Text] NVARCHAR(256) NOT NULL,
     [Date] DATETIME NOT NULL,
     IsViewed BIT NOT NULL,
+    NotificationTypeDB INT NOT NULL,
     FOREIGN KEY (AccountId) REFERENCES Account(Id)
 );
 GO

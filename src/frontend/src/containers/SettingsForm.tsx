@@ -84,25 +84,25 @@ function SettingsForm() {
     index: number
   ) => {
     if (e.target.files) {
-      var pictures = [...pictures];
-      pictures[index] = e.target.files[0];
-      if (pictures.every((el) => el === null))
+      var nPictures = [...pictures];
+      nPictures[index] = e.target.files[0];
+      if (nPictures.every((el) => el === null))
         setProfilePicture(e.target.files[0]);
-      setPictures(pictures);
+      setPictures(nPictures);
     }
   };
 
   const suppressPictureUploaded = (index: number) => {
-    var pictures = [...pictures];
-    pictures[index] = null;
+    var nPictures = [...pictures];
+    nPictures[index] = null;
     for (let i = 0; i < pictures.length - 2; i++) {
-      if (pictures[i] === null && pictures[i + 1] !== null) {
-        pictures[i] = pictures[i + 1];
-        pictures[i + 1] = null;
+      if (nPictures[i] === null && nPictures[i + 1] !== null) {
+        nPictures[i] = nPictures[i + 1];
+        nPictures[i + 1] = null;
       }
     }
-    setPictures(pictures);
-    setProfilePicture(pictures[0]);
+    setPictures(nPictures);
+    setProfilePicture(nPictures[0]);
   };
 
   useEffect(() => {
