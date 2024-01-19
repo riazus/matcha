@@ -212,7 +212,7 @@ public class AccountRepository : IAccountRepository
         if (isDistanceFilterable)
         {
             query.Append(" CROSS APPLY (" +
-                $" SELECT ROUND(GEOGRAPHY::Point(Latitude, Longitude, 4326).STDistance(GEOGRAPHY::Point({currUser.Latitude}, {currUser.Latitude}, 4326)) / 1000, 4) AS Distance" +
+                $" SELECT ROUND(GEOGRAPHY::Point(Latitude, Longitude, 4326).STDistance(GEOGRAPHY::Point({currUser.Latitude}, {currUser.Longitude}, 4326)) / 1000, 4) AS Distance" +
                 $" ) AS Distance");
         }
 
