@@ -46,6 +46,8 @@ export const ACCOUNT_ROUTES = {
       : filter.orderByField) +
     "&orderByAsc=" +
     filter.orderByAsc +
+    "&isForBrowsing=" +
+    filter.isForBrowsing +
     (filter.minDistance !== undefined
       ? "&minDistance=" + filter.minDistance
       : "") +

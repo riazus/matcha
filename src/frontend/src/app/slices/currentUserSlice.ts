@@ -6,16 +6,28 @@ import { RefreshTokenResponse } from "../../types/api/accounts";
 
 export interface CurrentUserState {
   user: UserState | null;
-  access_token: string | null;
-  interlocutorId: string | null;
+  access_token: string | undefined;
+  interlocutorId: string | undefined;
   filter: Filter | null;
+  browsingPage: number | undefined;
+  searchingPage: number | undefined;
+  hasMoreSearchingPage: boolean | undefined;
+}
+
+interface FillFilterPayload {
+  latitude: number | undefined;
+  longitude: number | undefined;
+  tagsLength: number;
 }
 
 const initialState: CurrentUserState = {
   user: null,
-  access_token: null,
-  interlocutorId: null,
+  access_token: undefined,
+  interlocutorId: undefined,
   filter: null,
+  browsingPage: undefined,
+  searchingPage: undefined,
+  hasMoreSearchingPage: undefined,
 };
 
 const defaultFilter: Filter = {
@@ -27,6 +39,50 @@ const defaultFilter: Filter = {
   maxTagMatch: 5,
   orderByField: "Age",
   orderByAsc: true,
+  isForBrowsing: false,
+};
+
+const fillUserData = (state: CurrentUserState, payload: UserState) => {
+  state.user = {
+    id: payload.id,
+    email: payload.email,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    username: payload.username,
+    isProfileCompleted: payload.isProfileCompleted,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
+    tags: payload.tags,
+  };
+
+  if (payload.isProfileCompleted) {
+    state.browsingPage = 0;
+    state.searchingPage = 0;
+    state.hasMoreSearchingPage = false;
+
+    fillFilter(state, {
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      tagsLength: payload.tags.length,
+    });
+  }
+
+  persistUser(state.user);
+};
+
+const fillFilter = (state: CurrentUserState, payload: FillFilterPayload) => {
+  if (payload.latitude && payload.longitude) {
+    state.filter = {
+      ...defaultFilter,
+      minDistance: 0,
+      maxDistance: 13588,
+      orderByField: "Distance",
+    };
+  } else {
+    state.filter = defaultFilter;
+  }
+
+  state.filter.maxTagMatch = payload.tagsLength;
 };
 
 export const currentUserSlice = createSlice({
@@ -42,41 +98,14 @@ export const currentUserSlice = createSlice({
     ) => {
       if (payload) {
         state.access_token = payload.jwtToken;
-        state.user = {
-          id: payload.id,
-          email: payload.email,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          username: payload.username,
-          isProfileCompleted: payload.isProfileCompleted,
-          latitude: payload.latitude,
-          longitude: payload.longitude,
-          tags: payload.tags,
-        };
-
-        if (payload.isProfileCompleted) {
-          if (payload.latitude && payload.longitude) {
-            state.filter = {
-              ...defaultFilter,
-              minDistance: 0,
-              maxDistance: 13588,
-              orderByField: "Distance",
-            };
-          } else {
-            state.filter = defaultFilter;
-          }
-
-          state.filter.maxTagMatch = payload.tags.length;
-        }
-
-        persistUser(state.user);
+        fillUserData(state, payload);
       }
     },
     setInterlocuterId: (state, { payload }) => {
       state.interlocutorId = payload;
     },
     removeInterlocuterId: (state) => {
-      state.interlocutorId = null;
+      state.interlocutorId = undefined;
     },
     loggedOut: () => {
       window.location.href = "/";
@@ -84,7 +113,20 @@ export const currentUserSlice = createSlice({
       return initialState;
     },
     applyFilter: (state, action: PayloadAction<Filter>) => {
-      state.filter = action.payload;
+      if (JSON.stringify(state.filter) !== JSON.stringify(action.payload)) {
+        state.filter = action.payload;
+        state.browsingPage = 0;
+        state.searchingPage = 0;
+      }
+    },
+    increaseBrowsingPage: (state) => {
+      state.browsingPage!++;
+    },
+    increaseSearchingPage: (state) => {
+      state.searchingPage!++;
+    },
+    setHasMoreSearchingPage: (state, { payload }) => {
+      state.hasMoreSearchingPage = payload;
     },
   },
   extraReducers: (builder) => {
@@ -93,34 +135,7 @@ export const currentUserSlice = createSlice({
       (state, { payload }) => {
         if (payload.id) {
           state.access_token = payload.jwtToken;
-          state.user = {
-            id: payload.id,
-            email: payload.email,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            username: payload.username,
-            isProfileCompleted: payload.isProfileCompleted,
-            latitude: payload.latitude,
-            longitude: payload.longitude,
-            tags: payload.tags,
-          };
-
-          if (payload.isProfileCompleted) {
-            if (payload.latitude && payload.longitude) {
-              state.filter = {
-                ...defaultFilter,
-                minDistance: 0,
-                maxDistance: 13588,
-                orderByField: "Distance",
-              };
-            } else {
-              state.filter = defaultFilter;
-            }
-
-            state.filter.maxTagMatch = payload.tags.length;
-          }
-
-          persistUser(state.user);
+          fillUserData(state, payload);
         }
       }
     );
@@ -129,34 +144,7 @@ export const currentUserSlice = createSlice({
       (state, { payload }) => {
         if (payload.id) {
           state.access_token = payload.jwtToken;
-          state.user = {
-            id: payload.id,
-            email: payload.email,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            username: payload.username,
-            isProfileCompleted: payload.isProfileCompleted,
-            latitude: payload.latitude,
-            longitude: payload.longitude,
-            tags: payload.tags,
-          };
-
-          if (payload.isProfileCompleted) {
-            if (payload.latitude && payload.longitude) {
-              state.filter = {
-                ...defaultFilter,
-                minDistance: 0,
-                maxDistance: 13588,
-                orderByField: "Distance",
-              };
-            } else {
-              state.filter = defaultFilter;
-            }
-
-            state.filter.maxTagMatch = payload.tags.length;
-          }
-
-          persistUser(state.user);
+          fillUserData(state, payload);
         }
       }
     );
@@ -173,21 +161,20 @@ export const currentUserSlice = createSlice({
           state.user.latitude = payload.latitude;
           state.user.tags = payload.tags;
 
-          if (payload.latitude && payload.longitude) {
-            state.filter = {
-              ...defaultFilter,
-              minDistance: 0,
-              maxDistance: 13588,
-              orderByField: "Distance",
-            };
-          } else {
-            state.filter = defaultFilter;
-          }
-
-          state.filter.maxTagMatch = payload.tags.length;
+          fillFilter(state, {
+            latitude: payload.longitude,
+            longitude: payload.longitude,
+            tagsLength: payload.tags.length,
+          });
 
           persistUser(state.user);
         }
+      }
+    );
+    builder.addMatcher(
+      api.endpoints.getUsersWithFilters.matchFulfilled,
+      (state, { payload }) => {
+        state.hasMoreSearchingPage = payload.length !== 0;
       }
     );
   },
@@ -202,4 +189,6 @@ export const {
   setInterlocuterId,
   removeInterlocuterId,
   applyFilter,
+  increaseBrowsingPage,
+  increaseSearchingPage,
 } = currentUserSlice.actions;

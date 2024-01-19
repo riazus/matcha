@@ -321,16 +321,16 @@ export const api = createApi({
     }),
     getUsersWithFilters: builder.query<
       AccountsResponse[],
-      { filter: Filter | null; listData: PaginationData }
+      { filter: Filter | null; page: number }
     >({
-      query: ({ filter, listData }) => ({
-        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, listData.page),
+      query: ({ filter, page }) => ({
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, page),
       }),
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;
       },
       merge: (currentCache, newItems, { arg }) => {
-        if (arg.listData.resetListRequested) {
+        if (arg.page === 0) {
           currentCache.splice(0, currentCache.length);
           currentCache.push(...newItems);
         } else {
@@ -341,9 +341,29 @@ export const api = createApi({
         if (!currentArg || !previousArg) return false;
 
         return (
-          currentArg.listData.page !== previousArg.listData.page ||
-          currentArg.listData.resetListRequested
+          currentArg.page !== previousArg.page ||
+          JSON.stringify(currentArg.filter) !==
+            JSON.stringify(previousArg.filter)
         );
+      },
+    }),
+    getBrowsingUsersWithFilters: builder.query<
+      AccountsResponse[],
+      { filter: Filter | null; page: number }
+    >({
+      query: ({ filter, page }) => ({
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, page),
+      }),
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        if (!currentArg || !previousArg) return false;
+
+        return currentArg.page !== previousArg.page;
       },
     }),
   }),
@@ -369,4 +389,5 @@ export const {
   useGetProfileMeViewedQuery,
   useGetFavoriteProfilesQuery,
   useGetUsersWithFiltersQuery,
+  useGetBrowsingUsersWithFiltersQuery,
 } = api;

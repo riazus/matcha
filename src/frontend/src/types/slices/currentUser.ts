@@ -19,4 +19,5 @@ export interface Filter {
   maxTagMatch: number;
   orderByField: string;
   orderByAsc: boolean;
+  isForBrowsing: boolean;
 }
