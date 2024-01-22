@@ -9,9 +9,6 @@ const Layout: React.FC = () => {
       <Header />
       <Container
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           backgroundColor: "#1F3044",
           height: "auto",
         }}

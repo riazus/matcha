@@ -43,6 +43,9 @@ export interface RefreshTokenResponse {
   lastName: string;
   jwtToken: string;
   isProfileCompleted: boolean;
+  latitude: number | undefined;
+  longitude: number | undefined;
+  tags: string[];
 }
 
 export interface CompleteProfileBody {
@@ -53,11 +56,17 @@ export interface CompleteProfileBody {
   genderPreferences: number;
   description: string;
   birthday: Date;
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number | undefined;
+  longitude: number | undefined;
   town: string | null;
   country: string | null;
   postcode: string | null;
+}
+
+export interface CompleteProfileResponse {
+  latitude: number | undefined;
+  longitude: number | undefined;
+  tags: string[];
 }
 
 export interface AccountsResponse {
@@ -70,6 +79,9 @@ export interface AccountsResponse {
   birthday: Date;
   country: string;
   town: string;
+  latitude: number;
+  longitude: number;
+  tags: string[];
 }
 
 export interface AccountResponse {

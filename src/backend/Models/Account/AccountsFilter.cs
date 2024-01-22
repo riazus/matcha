@@ -12,6 +12,13 @@ public class AccountsFilter
     public int MinTag { get; set; }
     [Required]
     public int MaxTag { get; set; }
-    public int? MinGap { get; set; }
-    public int? MaxGap { get; set; }
+    [Required]
+    public int Page {  get; set; }
+    [Required]
+    public string OrderByField {  get; set; }
+    [Required]
+    public bool OrderByAsc { get; set; }
+    public bool IsForBrowsing { get; set; } = false;
+    public int? MinDistance { get; set; }
+    public int? MaxDistance { get; set; }
 }

@@ -12,6 +12,7 @@ services:
       - TZ=Europe/Paris
       - MSSQL_SA_PASSWORD=${MSSQL_PASSWORD}
       - MSSQL_TCP_PORT=${MSSQL_PORT}
+      - MSSQL_PID=Express
     volumes:
       - msdata:/var/lib/mssql/data
     ports:

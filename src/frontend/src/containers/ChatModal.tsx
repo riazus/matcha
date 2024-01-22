@@ -73,7 +73,7 @@ function ChatModal(props: ChatModalProps) {
         spacing={3}
       >
         <Grid item component={Typography}>
-          Chat ebat'
+          Chat
         </Grid>
 
         <MessageDisplay

@@ -21,6 +21,7 @@ import NotificationsList from "./containers/NotificationsList";
 import HistoryList from "./containers/HistoryList";
 import { disconnectNotificationConnection } from "./sockets/notificationConnection";
 import { useEffect } from "react";
+import UsersBrowsing from "./containers/UsersBrowsing";
 
 const router = createBrowserRouter([
   {
@@ -69,7 +70,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "/",
-                element: <Home />,
+                element: <UsersBrowsing />,
               },
               {
                 path: "/users",

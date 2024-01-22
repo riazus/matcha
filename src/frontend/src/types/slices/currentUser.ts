@@ -5,4 +5,19 @@ export interface UserState {
   lastName: string;
   email: string;
   isProfileCompleted: boolean;
+  latitude: number | undefined;
+  longitude: number | undefined;
+  tags: string[];
+}
+
+export interface Filter {
+  maxAge: number;
+  minAge: number;
+  maxDistance: number | undefined;
+  minDistance: number | undefined;
+  minTagMatch: number;
+  maxTagMatch: number;
+  orderByField: string;
+  orderByAsc: boolean;
+  isForBrowsing: boolean;
 }

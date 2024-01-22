@@ -9,15 +9,7 @@ export const store = configureStore({
     user: currentUserReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredPaths: ["sockets"],
-        ignoredActions: [
-          "socketsSlice/setNotificationConnection",
-          "socketsSlice/setChatConnection",
-        ],
-      },
-    }).concat([api.middleware, rtkQueryErrorMiddleware]),
+    getDefaultMiddleware().concat([api.middleware, rtkQueryErrorMiddleware]),
 });
 
 export type AppDispatch = typeof store.dispatch;
