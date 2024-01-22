@@ -1,16 +1,13 @@
 import {
   Avatar,
   Box,
-  Container,
   Button,
   Modal,
   Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Grid,
   Checkbox,
-  FormGroup,
   FormControlLabel,
   TextField,
   Radio,
@@ -18,32 +15,32 @@ import {
   FormLabel,
   InputAdornment,
 } from "@mui/material";
-import { useEffect, useState, useMemo, useRef } from "react";
-import { CompleteProfileBody } from "../types/api/accounts";
+import { useEffect, useState, useMemo, useRef, ReactElement } from "react";
+import { ProfileBody, Location } from "../types/api/accounts";
 import { toast } from "react-toastify";
-import { AccountResponse } from "../types/api/accounts";
-import { readUser } from "../app/services/localStorageService";
-import { useCompleteProfileMutation } from "../app/api/api";
-import { useGetUserByIdQuery } from "../app/api/api";
+import { useChangeProfileMutation } from "../app/api/api";
+import { useGetUserByIdQuery, useGetPicturesFileQuery } from "../app/api/api";
 import { useAppSelector } from "../app/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HobbiesModal from "../components/HobbiesModal";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
-import { AddressData } from "../types/api/accounts";
+import { url } from "inspector";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
 function SettingsForm() {
+  const [changeProfile, { isLoading, isError, isSuccess, error }] =
+    useChangeProfileMutation();
+
   const { user } = useAppSelector((root) => root.user);
   const { data: userInfo } = useGetUserByIdQuery(user!.id) || null;
+  const { data: picturesFile} = useGetPicturesFileQuery(user!.id) || null;
   const [tags, setTags] = useState<string[] | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [pictures, setPictures] = useState<(File | null)[]>(
-    Array.from({ length: 5 }, () => null)
-  );
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [pictures, setPictures] = useState<(File | null)[] | null>(null);
   const memoPictures = useMemo(() => pictures, [pictures]);
   const [state, setState] = useState({
     gender: {
@@ -51,18 +48,17 @@ function SettingsForm() {
       iAmWoman: false,
       iSearchMan: false,
       iSearchWomen: false,
+      iSearchBoth: false,
     },
   });
   const [description, setDescription] = useState<string>("");
-  const [addressData, setAddressData] = useState<AddressData>({
+  const [addressData, setAddressData] = useState<Location>({
     latitude: 0,
     longitude: 0,
-    postCode: "",
+    postcode: "",
     town: "",
     country: "",
   });
-  const [completeProfile, { isLoading, isError, isSuccess, error }] =
-    useCompleteProfileMutation();
 
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
@@ -83,33 +79,36 @@ function SettingsForm() {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.target.files) {
-      var nPictures = [...pictures];
-      nPictures[index] = e.target.files[0];
-      if (nPictures.every((el) => el === null))
-        setProfilePicture(e.target.files[0]);
-      setPictures(nPictures);
-    }
+    // if (e.target.files) {
+    //   var nPictures = [...pictures];
+    //   nPictures[index] = e.target.files[0];
+    //   if (nPictures.every((el) => el === null))
+    //     setProfilePicture(e.target.files[0]);
+    //   setPictures(nPictures);
+    // }
   };
 
   const suppressPictureUploaded = (index: number) => {
-    var nPictures = [...pictures];
-    nPictures[index] = null;
-    for (let i = 0; i < pictures.length - 2; i++) {
-      if (nPictures[i] === null && nPictures[i + 1] !== null) {
-        nPictures[i] = nPictures[i + 1];
-        nPictures[i + 1] = null;
-      }
-    }
-    setPictures(nPictures);
-    setProfilePicture(nPictures[0]);
+    // var nPictures = [...pictures];
+    // nPictures[index] = null;
+    // for (let i = 0; i < pictures.length - 2; i++) {
+    //   if (nPictures[i] === null && nPictures[i + 1] !== null) {
+    //     nPictures[i] = nPictures[i + 1];
+    //     nPictures[i + 1] = null;
+    //   }
+    // }
+    // setPictures(nPictures);
+    // setProfilePicture(nPictures[0]);
   };
 
   useEffect(() => {
     if (!isLoading && !isError && userInfo) {
-      setTags(userInfo.tags || null);
+      setTags(userInfo.tags);
       setDescription(userInfo.description);
+      setProfilePicture(picturesFile!.profilePictureUrl);
+      setPictures(picturesFile!.additionalPicturesUrl);
       console.log(userInfo);
+      console.log("types of additionnal pictures : ", typeof(userInfo.profilePictureUrl));
     }
   }, [isLoading, isError, userInfo]);
 
@@ -139,33 +138,37 @@ function SettingsForm() {
       return;
     }
 
-    const res: CompleteProfileBody = {
-      profilePicture: profilePicture as File,
-      additionalPictures: pictures.slice(1, 5) as File[],
-      birthday: userInfo!.birthday,
+    const res: ProfileBody = {
+      profilePicture: profilePicture,
+      additionalPictures: pictures !== null ? pictures.filter(file => file !== null) : null,
       gender: gender,
       genderPreferences: preferedGender,
       tags: tags as string[],
       description: description,
-      latitude: addressData.latitude,
-      longitude: addressData.longitude,
-      postcode: addressData.postCode,
-      country: addressData.country,
-      town: addressData.town,
+      location: {
+        latitude: addressData.latitude,
+        longitude: addressData.longitude,
+        postcode: addressData.postcode,
+        country: addressData.country,
+        town: addressData.town,
+      },
     };
-
-    completeProfile(res);
+    console.log("res : ", res);
+    changeProfile(res);
   };
 
   return (
     <Box sx={styles.settingsBox}>
+
       <Avatar
-        src={userInfo?.profilePictureUrl}
+        src={profilePicture ? URL.createObjectURL(profilePicture as File) : ""}
         sx={{ width: 150, height: 150 }}
       />
+
       <Typography variant="h2" sx={styles.nameText}>
         {userInfo?.firstName} {userInfo?.lastName}
       </Typography>
+
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           Change profile settings
@@ -173,19 +176,16 @@ function SettingsForm() {
         <AccordionDetails>
           <Box sx={styles.profileBox}>
             <Box sx={styles.picturesBox}>
-              {memoPictures.map((picture, index) => (
+              {pictures && pictures.map((picture, index) => (
                 <div
                   key={index}
                   style={{
                     ...styles.onePictureBox,
-                    backgroundImage:
-                      picture && memoPictures
-                        ? `url(${URL.createObjectURL(picture)})`
-                        : "none",
+                    backgroundImage: `url(${URL.createObjectURL(profilePicture as File)})`,
                   }}
                 >
-                  {!memoPictures[index] &&
-                  (index === 0 || memoPictures[index - 1]) ? (
+                  {!pictures[index] &&
+                  (index === 0 || pictures[index - 1]) ? (
                     <Button component="label">
                       <AddCircleOutlineIcon fontSize="large" />
                       <VisuallyHiddenInput
@@ -194,7 +194,7 @@ function SettingsForm() {
                         onChange={(e) => handlePictureUpload(e, index)}
                       />
                     </Button>
-                  ) : memoPictures[index] ? (
+                  ) : pictures[index] ? (
                     <Button onClick={() => suppressPictureUploaded(index)}>
                       <RemoveCircleOutlineIcon fontSize="large" />
                     </Button>
@@ -298,7 +298,7 @@ function SettingsForm() {
                 endAdornment: (
                   <InputAdornment position="end">
                     <FormLabel sx={{ fontSize: "small" }}>
-                      {description.length} characters
+                      {description ? `${description.length} characters` : null}
                     </FormLabel>
                   </InputAdornment>
                 ),

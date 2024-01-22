@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { LoadingButton } from "../components/LoadingButtonForm";
 import { object, string } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CompleteProfileBody } from "../types/api/accounts";
+import { CompleteProfileBody, Location } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -34,14 +34,6 @@ import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
-
-export interface AddressData {
-  latitude: number;
-  longitude: number;
-  postCode: string;
-  town: string;
-  country: string;
-}
 
 const registerSchema = object({
   firstName: string().min(1, "First Name is required"),
@@ -80,21 +72,24 @@ function CompleteProfile() {
       iAmWoman: false,
       iSearchMan: false,
       iSearchWomen: false,
+      iSearchBoth: true,
     },
   });
   const navigate = useNavigate();
-  const [birthday, setBirthday] = useState<Dayjs | null>(dayjs('2000-01-01'));
+  const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
-  const [addressData, setAddressData] = useState<AddressData>({
+  const [addressData, setAddressData] = useState<Location>({
     latitude: 0,
     longitude: 0,
-    postCode: "",
+    postcode: "",
     town: "",
     country: "",
   });
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicture, setProfilePicture] = useState<File | null>(
+    null
+  );
   const [pictures, setPictures] = useState<(File | null)[]>(
-    Array.from({ length: 5 }, () => null)
+    Array.from({ length: 4 }, () => null)
   );
   const [tags, setTags] = useState<string[] | null>(null);
   const [description, setDescription] = useState("");
@@ -116,6 +111,11 @@ function CompleteProfile() {
     setDescription(e.target.value);
   };
 
+  const changeProfilePicture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files)
+      setProfilePicture(e.target.files[0])
+  };
+
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -123,8 +123,6 @@ function CompleteProfile() {
     if (e.target.files) {
       var nPictures = [...pictures];
       nPictures[index] = e.target.files[0];
-      if (pictures.every((el) => el === null))
-        setProfilePicture(e.target.files[0]);
       setPictures(nPictures);
     }
   };
@@ -132,14 +130,13 @@ function CompleteProfile() {
   const suppressPictureUploaded = (index: number) => {
     var nPictures = [...pictures];
     nPictures[index] = null;
-    for (let i = 0; i < nPictures.length - 2; i++) {
+    for (let i = 0; i < nPictures.length - 1; i++) {
       if (nPictures[i] === null && nPictures[i + 1] !== null) {
         nPictures[i] = nPictures[i + 1];
         nPictures[i + 1] = null;
       }
     }
     setPictures(nPictures);
-    setProfilePicture(nPictures[0]);
   };
 
   useEffect(() => {
@@ -158,10 +155,10 @@ function CompleteProfile() {
       }
     }
   }, [isLoading]);
-  
+
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    
+
     if (!profilePicture) {
       toast.error("Profile picture cannot be empty!");
       return;
@@ -177,49 +174,75 @@ function CompleteProfile() {
     } else if (age !== null && age < 18) {
       toast.error("You need to be at least 18 year old");
       return;
-    } else if (age  !== null && isNaN(age)) {
+    } else if (age !== null && isNaN(age)) {
       toast.error("Your birthday date is not valid!");
       return;
     }
-    
+
     const gender: number = state.gender.iAmMan ? 0 : 1;
     let preferedGender: number;
 
-    if (state.gender.iSearchMan && state.gender.iSearchWomen) {
+    if (state.gender.iSearchBoth) {
       preferedGender = 2;
     } else if (state.gender.iSearchMan) {
       preferedGender = 0;
     } else if (state.gender.iSearchWomen) {
       preferedGender = 1;
     } else {
-      toast.error("Prefered gender cannot be empty!");
-      return;
+      preferedGender = 0;
     }
 
     const res: CompleteProfileBody = {
-      profilePicture: profilePicture,
+      profileBody: {
+        profilePicture: profilePicture,
+        additionalPictures: pictures.filter(
+          (val) => val !== null
+        ),
+        gender: gender,
+        genderPreferences: preferedGender,
+        tags: tags,
+        description: description,
+        location: {
+          latitude: addressData.latitude,
+          longitude: addressData.longitude,
+          postcode: addressData.postcode,
+          country: addressData.country,
+          town: addressData.town,
+        },
+      },
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter(
-        (val, i) => val !== null && i !== 0
-      ) as File[] | null,
-      gender: gender,
-      genderPreferences: preferedGender,
-      tags: tags,
-      description: description,
-      latitude: addressData.latitude,
-      longitude: addressData.longitude,
-      postcode: addressData.postCode,
-      country: addressData.country,
-      town: addressData.town,
     };
-    
+
     completeProfile(res);
   };
 
   return (
     <Container sx={styles.mainBox}>
       <div>
-        <FormLabel>Please select at least one photo :</FormLabel>
+        <FormLabel>Please select a photo for your profile :</FormLabel>
+        <Box sx={styles.picturesBox}>
+          <div
+            style={{
+              ...styles.onePictureBox,
+              backgroundImage: profilePicture
+                ? `url(${URL.createObjectURL(profilePicture as File)})`
+                : "none",
+            }}
+          >
+            <Button component="label">
+              <AddCircleOutlineIcon fontSize="large" />
+              <VisuallyHiddenInput
+                type="file"
+                accept={ACCEPTED_IMAGE_TYPES}
+                onChange={(e) => changeProfilePicture(e)}
+              />
+            </Button>
+          </div>
+        </Box>
+      </div>
+
+      <div>
+        <FormLabel>Please select a maximum of four photos :</FormLabel>
         <Box sx={styles.picturesBox}>
           {memoPictures.map((picture, index) => (
             <div
@@ -228,7 +251,7 @@ function CompleteProfile() {
                 ...styles.onePictureBox,
                 backgroundImage:
                   picture && memoPictures
-                    ? `url(${URL.createObjectURL(picture)})`
+                    ? `url(${URL.createObjectURL(picture as File)})`
                     : "none",
               }}
             >
@@ -311,30 +334,31 @@ function CompleteProfile() {
         </div>
 
         <div style={styles.selection}>
-          <div style={styles.selectionContentSearch}>
+          <div style={styles.selectionContent}>
             <FormLabel>I am searching for :</FormLabel>
-            <div style={styles.tickbox}>
+            <RadioGroup defaultValue="iSearchMen">
               <FormControlLabel
+                value="iSearchMen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchMan}
-                    name="iSearchMan"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchMen" onChange={handleChangeGender} />
                 }
                 label="Men"
               />
               <FormControlLabel
+                value="iSearchWomen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchWomen}
-                    name="iSearchWomen"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchWomen" onChange={handleChangeGender} />
                 }
                 label="Women"
               />
-            </div>
+              <FormControlLabel
+                value="iSearchBoth"
+                control={
+                  <Radio name="iSearchBoth" onChange={handleChangeGender} />
+                }
+                label="Both"
+              />
+            </RadioGroup>
           </div>
         </div>
       </FormGroup>

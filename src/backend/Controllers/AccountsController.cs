@@ -149,6 +149,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    // [HttpPatch("change-profile")]
+    // public ActionResult ChangeProfile([FromForm] ChangeProfileRequest formData)
+    // {
+    //     _accountService.ChangeProfile(formData, Account);
+    //     return Ok();
+    // }
+
     [HttpGet("favorites")]
     public ActionResult<IEnumerable<AccountsResponse>> Favorites()
     {
@@ -168,6 +175,13 @@ public class AccountsController : BaseController
     {
         _accountService.DislikeAccount(Account.Id, id);
         return Created($"accounts/dislike/{id}", null);
+    }
+
+    [HttpGet("pictures/{id:Guid}")]
+    public ActionResult Pictures(Guid id)
+    {
+        var res = _accountService.GetPicturesById(Account);
+        return Ok(res);
     }
 
     // accounts which I viewed

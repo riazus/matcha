@@ -45,20 +45,29 @@ export interface RefreshTokenResponse {
   isProfileCompleted: boolean;
 }
 
-export interface CompleteProfileBody {
-  profilePicture: File;
-  additionalPictures: File[] | null;
+export interface Location {
+  latitude: number;
+  longitude: number;
+  postcode: string;
+  town: string;
+  country: string;
+}
+
+export interface ProfileBody {
+  profilePicture: File | null;
+  additionalPictures: (File | null)[] | null;
   tags: string[];
   gender: number;
   genderPreferences: number;
   description: string;
-  birthday: Date;
-  latitude: number | null;
-  longitude: number | null;
-  town: string | null;
-  country: string | null;
-  postcode: string | null;
+  location: Location;
 }
+
+export interface CompleteProfileBody {
+  profileBody: ProfileBody;
+  birthday: Date;
+}
+
 
 export interface AccountsResponse {
   id: string;
@@ -94,35 +103,40 @@ export interface AccountResponse {
   isProfilesMatched: boolean;
 }
 
-export interface AddressData {
-  latitude: number;
-  longitude: number;
-  postCode: string;
-  town: string;
-  country: string;
+export interface Pictures {
+  profilePictureUrl: File | null;
+  additionalPicturesUrl: (File | null)[] | null;
+}
+
+export function convertProfileBodyToFormData(body: ProfileBody) {
+  const formData = new FormData();
+  
+  formData.append("profilePicture", body.profilePicture as File);
+  formData.append("tags", JSON.stringify(body.tags));
+  formData.append("gender", body.gender.toString());
+  formData.append("genderPreferences", body.genderPreferences.toString());
+  formData.append("description", body.description);
+  
+  body.additionalPictures?.forEach((picture) => {
+    if (picture)
+      formData.append("additionalPictures", picture as File);
+  });
+  
+  if (body.location.latitude) formData.append("latitude", body.location.latitude.toString());
+  if (body.location.longitude) formData.append("longitude", body.location.longitude.toString());
+  if (body.location.town) formData.append("town", body.location.town);
+  if (body.location.country) formData.append("country", body.location.country);
+  if (body.location.postcode) formData.append("postcode", body.location.postcode);
+  
+  return formData; 
 }
 
 export function convertCompleteProfileBodyToFormData(
   body: CompleteProfileBody
 ): FormData {
-  const formData = new FormData();
+  const formData = convertProfileBodyToFormData(body.profileBody);
 
-  formData.append("profilePicture", body.profilePicture);
-  formData.append("tags", JSON.stringify(body.tags));
-  formData.append("gender", body.gender.toString());
-  formData.append("genderPreferences", body.genderPreferences.toString());
-  formData.append("description", body.description);
   formData.append("birthday", body.birthday.toISOString());
-
-  body.additionalPictures?.forEach((picture) => {
-    formData.append("additionalPictures", picture);
-  });
-
-  if (body.latitude) formData.append("latitude", body.latitude.toString());
-  if (body.longitude) formData.append("longitude", body.longitude.toString());
-  if (body.town) formData.append("town", body.town);
-  if (body.country) formData.append("country", body.country);
-  if (body.postcode) formData.append("postcode", body.postcode);
 
   return formData;
 }

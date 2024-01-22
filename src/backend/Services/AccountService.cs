@@ -34,6 +34,7 @@ public interface IAccountService
     void LikeAccount(Guid currUserId, Guid id);
     void DislikeAccount(Guid currUserId, Guid id);
     void AddProfileView(Guid currUserId, Guid id);
+    IEnumerable<Pictures> GetPicturesById(Guid id);
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
 }
