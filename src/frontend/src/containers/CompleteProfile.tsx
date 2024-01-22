@@ -1,11 +1,7 @@
 import { Box, Container } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
-  Grid,
-  Typography,
   Checkbox,
   FormGroup,
   FormControlLabel,
@@ -17,23 +13,18 @@ import {
   Modal,
   InputAdornment,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import { object, string } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CompleteProfileBody } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
 import { toast } from "react-toastify";
-import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
-
-const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
+import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
 
 export interface AddressData {
   latitude: number;
@@ -43,37 +34,9 @@ export interface AddressData {
   country: string;
 }
 
-const registerSchema = object({
-  firstName: string().min(1, "First Name is required"),
-  lastName: string().min(1, "Last Name is required"),
-  username: string().min(1, "Username is required"),
-  email: string()
-    .min(1, "Email address is required")
-    .email("Email Address is invalid"),
-  password: string()
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
-  confirmPassword: string().min(1, "Please confirm your password"),
-}).refine((data) => data.password === data.confirmPassword, {
-  path: ["confirmPassword"],
-  message: "Passwords do not match",
-});
-
 function CompleteProfile() {
-  const [completeProfile, { isLoading, isError, isSuccess, error }] =
+  const [completeProfile, { isLoading, isSuccess }] =
     useCompleteProfileMutation();
-
-  const methods = useForm<CompleteProfileBody>({
-    resolver: zodResolver(registerSchema),
-  });
-
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitSuccessful },
-  } = methods;
-
   const [state, setState] = useState({
     gender: {
       iAmMan: true,
@@ -83,7 +46,7 @@ function CompleteProfile() {
     },
   });
   const navigate = useNavigate();
-  const [birthday, setBirthday] = useState<Dayjs | null>(dayjs('2000-01-01'));
+  const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
   const [addressData, setAddressData] = useState<AddressData>({
     latitude: 0,
@@ -92,14 +55,13 @@ function CompleteProfile() {
     town: "",
     country: "",
   });
+  const [tags, setTags] = useState<string[] | null>(null);
+  const [description, setDescription] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [pictures, setPictures] = useState<(File | null)[]>(
     Array.from({ length: 5 }, () => null)
   );
-  const [tags, setTags] = useState<string[] | null>(null);
-  const [description, setDescription] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const memoPictures = useMemo(() => pictures, [pictures]);
 
   const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -116,52 +78,15 @@ function CompleteProfile() {
     setDescription(e.target.value);
   };
 
-  const handlePictureUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (e.target.files) {
-      var nPictures = [...pictures];
-      nPictures[index] = e.target.files[0];
-      if (pictures.every((el) => el === null))
-        setProfilePicture(e.target.files[0]);
-      setPictures(nPictures);
-    }
-  };
-
-  const suppressPictureUploaded = (index: number) => {
-    var nPictures = [...pictures];
-    nPictures[index] = null;
-    for (let i = 0; i < nPictures.length - 2; i++) {
-      if (nPictures[i] === null && nPictures[i + 1] !== null) {
-        nPictures[i] = nPictures[i + 1];
-        nPictures[i + 1] = null;
-      }
-    }
-    setPictures(nPictures);
-    setProfilePicture(nPictures[0]);
-  };
-
   useEffect(() => {
     if (isSuccess) {
       navigate("/");
     }
-
-    // TODO: Delete this error handler (look rtkQueryErrorMiddleware.tsx)
-    if (isError) {
-      if ((error as any).error) {
-        toast.error((error as any).error);
-      } else if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) => toast.error(el.message));
-      } else {
-        toast.error((error as any).data.message);
-      }
-    }
   }, [isLoading]);
-  
+
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    
+
     if (!profilePicture) {
       toast.error("Profile picture cannot be empty!");
       return;
@@ -177,11 +102,11 @@ function CompleteProfile() {
     } else if (age !== null && age < 18) {
       toast.error("You need to be at least 18 year old");
       return;
-    } else if (age  !== null && isNaN(age)) {
+    } else if (age !== null && isNaN(age)) {
       toast.error("Your birthday date is not valid!");
       return;
     }
-    
+
     const gender: number = state.gender.iAmMan ? 0 : 1;
     let preferedGender: number;
 
@@ -212,46 +137,17 @@ function CompleteProfile() {
       country: addressData.country,
       town: addressData.town,
     };
-    
+
     completeProfile(res);
   };
 
   return (
     <Container sx={styles.mainBox}>
-      <div>
-        <FormLabel>Please select at least one photo :</FormLabel>
-        <Box sx={styles.picturesBox}>
-          {memoPictures.map((picture, index) => (
-            <div
-              key={index}
-              style={{
-                ...styles.onePictureBox,
-                backgroundImage:
-                  picture && memoPictures
-                    ? `url(${URL.createObjectURL(picture)})`
-                    : "none",
-              }}
-            >
-              {!memoPictures[index] &&
-              (index === 0 || memoPictures[index - 1]) ? (
-                <Button component="label">
-                  <AddCircleOutlineIcon fontSize="large" />
-                  <VisuallyHiddenInput
-                    type="file"
-                    accept={ACCEPTED_IMAGE_TYPES}
-                    onChange={(e) => handlePictureUpload(e, index)}
-                  />
-                </Button>
-              ) : memoPictures[index] ? (
-                <Button onClick={() => suppressPictureUploaded(index)}>
-                  <RemoveCircleOutlineIcon fontSize="large" />
-                </Button>
-              ) : null}
-            </div>
-          ))}
-        </Box>
-      </div>
-
+      <ProfilePicturesUploading
+        pictures={pictures}
+        setPictures={setPictures}
+        setProfilePicture={setProfilePicture}
+      />
       <Box sx={styles.dateBox}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -470,22 +366,6 @@ const styles = {
     ":hover": {
       backgroundColor: "rgb(100, 0, 100)",
     },
-  },
-  picturesBox: {
-    padding: "1%",
-    display: "flex",
-    fexDirection: "row",
-    gap: "10px",
-  },
-  onePictureBox: {
-    backgroundColor: "rgb(150, 150, 150, 0.3)",
-    height: "25vh",
-    width: "15%",
-    borderRadius: "10px",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
   },
   modal: {},
   boxModal: {
