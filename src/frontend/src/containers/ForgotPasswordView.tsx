@@ -21,23 +21,12 @@ function ForgotPasswordView() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const [forgotPasswordUser, { isLoading, isSuccess, error, isError, data }] =
+  const [forgotPasswordUser, { isLoading, isSuccess, data }] =
     useForgotPasswordMutation();
 
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message);
-    }
-
-    // TODO: Delete this error handler (look rtkQueryErrorMiddleware.tsx)
-    if (isError) {
-      if ((error as any).error) {
-        toast.error((error as any).error);
-      } else if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) => toast.error(el.message));
-      } else {
-        toast.error((error as any).data.message);
-      }
     }
   }, [isLoading]);
 
