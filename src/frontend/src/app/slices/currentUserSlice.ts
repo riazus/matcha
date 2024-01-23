@@ -153,6 +153,10 @@ export const currentUserSlice = createSlice({
           state.user.latitude = payload.latitude;
           state.user.tags = payload.tags;
 
+          state.browsingPage = 0;
+          state.searchingPage = 0;
+          state.hasMoreSearchingPage = false;
+
           fillFilter(state, {
             latitude: payload.longitude,
             longitude: payload.longitude,
