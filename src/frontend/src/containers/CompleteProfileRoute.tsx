@@ -4,11 +4,13 @@ import { useAppSelector } from "../app/hooks";
 function CompleteProfileRoute() {
   const { user } = useAppSelector((root) => root.user);
 
-  if (user?.isProfileCompleted === false) {
-    return <Navigate to={"/complete-profile"} />;
-  } else {
-    return <Outlet />;
-  }
+  return !user ? (
+    <Navigate to={"/"} />
+  ) : !user.isProfileCompleted ? (
+    <Navigate to={"/complete-profile"} />
+  ) : (
+    <Outlet />
+  );
 }
 
 export default CompleteProfileRoute;

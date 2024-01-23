@@ -1,20 +1,18 @@
-import { Box, Container, Typography, Link as MuiLink } from "@mui/material";
+import { Box, Typography, Link as MuiLink } from "@mui/material";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { object, string } from "zod";
-import { useNavigate } from "react-router-dom";
 import FormInput from "../components/FormInput";
 import { LoginBody } from "../types/api/accounts";
-import { toast } from "react-toastify";
-import { useEffect } from "react";
 import { LinkItem } from "../components/LinkItemForm";
 import { LoadingButton } from "../components/LoadingButtonForm";
 import { getGoogleUrl } from "../helpers/getGoogleUrl";
 import { ReactComponent as GoogleLogo } from "../assets/google.svg";
 import { ReactComponent as GitHubLogo } from "../assets/github.svg";
 import { getGitHubUrl } from "../helpers/getGithubUrl";
-import { readUser } from "../app/services/localStorageService";
 import { useLoginMutation } from "../app/api/api";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 const loginSchema = object({
   email: string()
@@ -26,37 +24,16 @@ const loginSchema = object({
     .max(32, "Password must be less than 32 characters"),
 });
 
-//type LoginInput = TypeOf<typeof loginSchema>;
-
 function LoginForm() {
   const methods = useForm<LoginBody>({
     resolver: zodResolver(loginSchema),
   });
+  const [loginUser, { isLoading, isSuccess }] = useLoginMutation();
   const navigate = useNavigate();
-
-  const [loginUser, { isLoading, isSuccess, error, isError }] =
-    useLoginMutation();
 
   useEffect(() => {
     if (isSuccess) {
-      const user = readUser();
-      if (user?.isProfileCompleted) {
-        navigate("/");
-      } else {
-        navigate("/complete-profile");
-      }
-      //window.location.href = "/";
-    }
-
-    // TODO: Delete this error handler (look rtkQueryErrorMiddleware.tsx)
-    if (isError) {
-      if ((error as any).error) {
-        toast.error((error as any).error);
-      } else if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) => toast.error(el.message));
-      } else {
-        toast.error((error as any).data.message);
-      }
+      navigate("/home");
     }
   }, [isLoading]);
 

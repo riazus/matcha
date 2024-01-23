@@ -9,13 +9,15 @@ import {
 import { useAppSelector } from "../app/hooks";
 
 function ProtectedRoute() {
-  const { isError, isLoading, isSuccess } = useRefreshTokenQuery();
   const { user } = useAppSelector((root) => root.user);
+  const { isError, isLoading, isSuccess } = useRefreshTokenQuery();
 
   useEffect(() => {
     if (isSuccess) {
-      initializeNotificationConnection(user!.id);
-      connectNotificationConnection();
+      if (user) {
+        initializeNotificationConnection(user.id);
+        connectNotificationConnection();
+      }
     }
   }, [isLoading]);
 
@@ -24,9 +26,9 @@ function ProtectedRoute() {
       {isLoading ? (
         <FullScreenLoader />
       ) : isError ? (
-        <Navigate to="/login" />
+        <Navigate to="/" />
       ) : (
-        isSuccess && <Outlet />
+        <Outlet />
       )}
     </>
   );

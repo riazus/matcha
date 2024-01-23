@@ -99,6 +99,10 @@ function Filter() {
     setIsOpenModal(false);
   };
 
+  if (!filter) {
+    return <Typography>Error while rendering filter</Typography>;
+  }
+
   return (
     <Box>
       <Button

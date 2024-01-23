@@ -56,8 +56,7 @@ public class AccountsController : BaseController
     public IActionResult VerifyEmail(VerifyEmailRequest model)
     {
         _accountService.VerifyEmail(model.Token);
-
-        return Ok(new { message = "Verification successful, you can now login" });
+        return Ok();
     }
 
     [AllowAnonymous]
