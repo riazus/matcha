@@ -15,6 +15,7 @@ import CompleteProfileRoute from "./containers/CompleteProfileRoute";
 import CompleteProfileWrapper from "./containers/CompleteProfileWrapper";
 import CompleteProfile from "./containers/CompleteProfile";
 import UserForm from "./containers/UserForm";
+import SettingsForm from "./containers/SettingsForm";
 import FavoritesList from "./containers/FavoriteProfilesList";
 import UsersList from "./containers/UsersList";
 import NotificationsList from "./containers/NotificationsList";
@@ -22,6 +23,7 @@ import HistoryList from "./containers/HistoryList";
 import { disconnectNotificationConnection } from "./sockets/notificationConnection";
 import { useEffect } from "react";
 import UsersBrowsing from "./containers/UsersBrowsing";
+
 
 const router = createBrowserRouter([
   {
@@ -88,10 +90,10 @@ const router = createBrowserRouter([
                 path: "/history",
                 element: <HistoryList />,
               },
-              // {
-              //   path: "/settings",
-              //   element: <SettingsForm />,
-              // },
+              {
+                path: "/settings",
+                element: <SettingsForm />,
+              },
               {
                 path: "/users/:id",
                 element: <UserForm />,

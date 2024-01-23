@@ -106,24 +106,30 @@ export interface AccountResponse {
   isProfilesMatched: boolean;
 }
 
+export interface AddressData {
+  latitude: number;
+  longitude: number;
+  postCode: string;
+  town: string;
+  country: string;
+}
+
 export function convertCompleteProfileBodyToFormData(
   body: CompleteProfileBody
 ): FormData {
   const formData = new FormData();
 
   formData.append("profilePicture", body.profilePicture);
-
-  if (body.additionalPictures) {
-    body.additionalPictures.forEach((file, index) => {
-      formData.append(`additionalPictures[${index}]`, file);
-    });
-  }
-
   formData.append("tags", JSON.stringify(body.tags));
   formData.append("gender", body.gender.toString());
   formData.append("genderPreferences", body.genderPreferences.toString());
   formData.append("description", body.description);
   formData.append("birthday", body.birthday.toISOString());
+
+  body.additionalPictures?.forEach((picture) => {
+    formData.append("additionalPictures", picture);
+  });
+
   if (body.latitude) formData.append("latitude", body.latitude.toString());
   if (body.longitude) formData.append("longitude", body.longitude.toString());
   if (body.town) formData.append("town", body.town);

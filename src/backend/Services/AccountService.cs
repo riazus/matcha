@@ -153,7 +153,7 @@ public class AccountService : IAccountService
 
         await _emailService.SendAsync(
             to: email,
-            subject: "Sign-up Verification Camagru - Email Already Registered",
+            subject: "Sign-up Verification Matcha - Email Already Registered",
             html: $@"<h4>Email Already Registered</h4>
                         <p>Your email <strong>{email}</strong> is already registered.</p>
                         {message}"
@@ -168,7 +168,7 @@ public class AccountService : IAccountService
 
         await _emailService.SendAsync(
             to: account.Email,
-            subject: "Sign-up Verification Camagru - Reset Password",
+            subject: "Sign-up Verification Matcha - Reset Password",
             html: $@"<h4>Reset Password Email</h4>
                         {message}"
         );
@@ -182,7 +182,7 @@ public class AccountService : IAccountService
 
         await _emailService.SendAsync(
             to: account.Email,
-            subject: "Sign-up Verification Camagru - Verify Email",
+            subject: "Sign-up Verification Matcha - Verify Email",
             html: $@"<h4>Verify Email</h4>
                         <p>Thanks for registering!</p>
                         {message}"
@@ -348,6 +348,7 @@ public class AccountService : IAccountService
         if (profileData.AdditionalPictures != null)
         {
             var additionalPicturesUrls = new List<string>();
+
             foreach (var picture in profileData.AdditionalPictures)
             {
                 var additionalPictureId = Guid.NewGuid().ToString();
