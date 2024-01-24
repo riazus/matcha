@@ -5,7 +5,8 @@
 
 *.sln
 .env
-src/**/Images
+src/**/Images/*
+!src/**/Images/dummy.jpg
 
 # User-specific files
 *.rsuser

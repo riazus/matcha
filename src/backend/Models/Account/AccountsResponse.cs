@@ -13,4 +13,7 @@ public class AccountsResponse
     public DateTime? Birthday { get; set; }
     public string Country { get; set; }
     public string Town { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public List<string> Tags { get; set; }
 }

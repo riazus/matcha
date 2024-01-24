@@ -81,7 +81,7 @@ function CompleteProfile() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
+      navigate("/home");
     }
   }, [isLoading]);
 

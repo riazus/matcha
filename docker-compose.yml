@@ -5,8 +5,8 @@ services:
   # MSSQL - Database
   # ------------------------------------------------------------
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
+    build: ./src/database
     environment:
       - ACCEPT_EULA=Y
       - TZ=Europe/Paris
@@ -17,7 +17,7 @@ services:
     ports:
       - ${MSSQL_PORT}:${MSSQL_PORT}
     networks:
-      - matcha-networke
+      - matcha-network
     restart: always
 
   # ------------------------------------------------------------
@@ -31,13 +31,14 @@ services:
     environment:
       - TZ=Europe/Paris
       - ConnectionStrings__DefaultConnection=Data Source=db;Initial Catalog=${DB_NAME};User ID=sa;Password=${MSSQL_PASSWORD};Encrypt=False
-      - AppSettings__Secret=${JWT_SECRET}
-      - AppSettings__SmtpUser=${SMTP_USER}
-      - AppSettings__SmtpPass=${SMTP_PASS}
-      - AppSettings__Secrets__GoogleClientId=${GOOGLE_CLIENT_ID}
-      - AppSettings__Secrets__GoogleClientSecret=${GOOGLE_CLIENT_SECRET}
-      - AppSettings__Secrets__GithubClientId=${GITHUB_CLIENT_ID}
-      - AppSettings__Secrets__GithubClientSecret=${GITHUB_CLIENT_SECRET}
+      - AppSettings:FrontendHost=http://localhost:${FRONTEND_PORT}
+      - AppSettings:Secret=${JWT_SECRET}
+      - AppSettings:SmtpUser=${SMTP_USER}
+      - AppSettings:SmtpPass=${SMTP_PASS}
+      - AppSettings:Secrets:GoogleClientId=${GOOGLE_CLIENT_ID}
+      - AppSettings:Secrets:GoogleClientSecret=${GOOGLE_CLIENT_SECRET}
+      - AppSettings:Secrets:GithubClientId=${GITHUB_CLIENT_ID}
+      - AppSettings:Secrets:GithubClientSecret=${GITHUB_CLIENT_SECRET}
     depends_on:
       - db
     ports:
@@ -46,26 +47,30 @@ services:
       - matcha-network
     restart: unless-stopped
 
-    # ------------------------------------------------------------
-    # React 18 - Frontend
-    # ------------------------------------------------------------
-    frontend:
-      container_name: frontend
-      build:
-        context: ./src/frontend
-        dockerfile: Dockerfile.prod
-      environment:
-        WDS_SOCKET_PORT: ${FRONTEND_PORT}
-        PORT: ${FRONTEND_PORT}
-        GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-        GOOGLE_OAUTH_REDIRECT: ${FRONTED_GOOGLE_OAUTH_REDIRECT}
-        GITHUB_OAUTH_CLIENT_ID: ${GITHUB_CLIENT_ID}
-        GITHUB_OAUTH_REDIRECT_URL: ${FRONTEND_GITHUB_OAUTH_REDIRECT_URL}
-      ports:
-        - ${FRONTEND_PORT}:${FRONTEND_PORT}
-      networks:
-        - matcha-network
-      restart: unless-stopped
+  # ------------------------------------------------------------
+  # React 18 - Frontend
+  # ------------------------------------------------------------
+  frontend:
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      WATCHPACK_POLLING: "true"
+      WDS_SOCKET_PORT: ${FRONTEND_PORT}
+      PORT: ${FRONTEND_PORT}
+      REACT_APP_BACKEND_PORT: ${BACKEND_PORT}
+      REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      REACT_APP_GOOGLE_OAUTH_REDIRECT: ${FRONTED_GOOGLE_OAUTH_REDIRECT}
+      REACT_APP_GITHUB_OAUTH_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      REACT_APP_GITHUB_OAUTH_REDIRECT_URL: ${FRONTEND_GITHUB_OAUTH_REDIRECT_URL}
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    volumes:
+      - ./src/frontend/src:/usr/src/app/src
+    networks:
+      - matcha-network
+    restart: unless-stopped
 
 volumes:
   msdata:

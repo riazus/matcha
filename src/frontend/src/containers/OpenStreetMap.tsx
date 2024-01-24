@@ -66,16 +66,7 @@ export default function OpenStreetMap(props: OpenStreetMapProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
-      {/* <Marker position={{ lat: 48.8589384, lng: 2.2646343 }}> */}
-        {/* <Popup>
-          <strong>Custom Marker</strong> <br />
-          This is a custom-styled popup.
-        </Popup>
-      </Marker> */}
-
       <LocationMarker setAddressData={props.setAddressData} />
     </MapContainer>
   );
 }
-

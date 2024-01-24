@@ -20,6 +20,9 @@ import { ProfileBody, Location } from "../types/api/accounts";
 import { toast } from "react-toastify";
 import { useChangeProfileMutation } from "../app/api/api";
 import { useGetUserByIdQuery, useGetPicturesFileQuery } from "../app/api/api";
+import { AccountResponse } from "../types/api/accounts";
+import { useCompleteProfileMutation } from "../app/api/api";
+import { useGetUserByIdQuery } from "../app/api/api";
 import { useAppSelector } from "../app/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HobbiesModal from "../components/HobbiesModal";
@@ -105,10 +108,6 @@ function SettingsForm() {
     if (!isLoading && !isError && userInfo) {
       setTags(userInfo.tags);
       setDescription(userInfo.description);
-      // setProfilePicture(picturesFile!.profilePictureUrl);
-      // setPictures(picturesFile!.additionalPicturesUrl);
-      console.log(userInfo);
-      console.log("types of additionnal pictures : ", typeof(userInfo.profilePictureUrl));
     }
   }, [isLoading, isError, userInfo]);
 

@@ -1,14 +1,11 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
 import { useAppSelector } from "../app/hooks";
 import MessageDisplay from "../components/MessageDisplay";
-import {
-  disconnectChatConnection,
-  emitChatConnectionEvent,
-} from "../sockets/chatConnection";
+import { emitChatConnectionEvent } from "../sockets/chatConnection";
 import { ChatEvent } from "../config";
 
 const chatStyle = {
@@ -73,7 +70,7 @@ function ChatModal(props: ChatModalProps) {
         spacing={3}
       >
         <Grid item component={Typography}>
-          Chat ebat'
+          Chat
         </Grid>
 
         <MessageDisplay

@@ -38,7 +38,7 @@ function Header() {
         <Toolbar>
           <Typography
             variant="h5"
-            onClick={() => navigate(user?.id ? "/" : "/login")}
+            onClick={() => navigate(user ? "/home" : "/")}
             sx={{ cursor: "pointer", color: "#222", fontWeight: 700 }}
           >
             Matcha
@@ -55,7 +55,7 @@ function Header() {
                 >
                   Notifications
                 </LoadingButton>
-                <Box>{notificationCount}</Box>
+                <Box sx={{ color: "black" }}>{notificationCount}</Box>
                 <LoadingButton onClick={() => navigate("/favorites")}>
                   Favorites
                 </LoadingButton>
@@ -102,9 +102,7 @@ const styles = {
     maxWidth: "100%",
     height: "4rem",
   },
-  container: {
-
-  },
-}
+  container: {},
+};
 
 export default Header;

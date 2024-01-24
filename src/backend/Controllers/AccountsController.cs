@@ -62,8 +62,7 @@ public class AccountsController : BaseController
     public IActionResult VerifyEmail(VerifyEmailRequest model)
     {
         _accountService.VerifyEmail(model.Token);
-
-        return Ok(new { message = "Verification successful, you can now login" });
+        return Ok();
     }
 
     [AllowAnonymous]
@@ -151,8 +150,8 @@ public class AccountsController : BaseController
     [HttpPatch("complete-profile")]
     public ActionResult CompleteProfile([FromForm] CompleteProfileRequest formData)
     {
-        _accountService.CompleteProfile(formData, Account);
-        return Ok();
+        var res = _accountService.CompleteProfile(formData, Account);
+        return Ok(res);
     }
 
     // [HttpPatch("change-profile")]

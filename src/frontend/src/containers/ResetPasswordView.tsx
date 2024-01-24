@@ -31,23 +31,12 @@ function ResetPasswordView() {
   const navigate = useNavigate();
   const { token } = useParams();
 
-  const [resetPasswordUser, { isLoading, isSuccess, error, isError }] =
+  const [resetPasswordUser, { isLoading, isSuccess }] =
     useResetPasswordMutation();
 
   useEffect(() => {
     if (isSuccess) {
       navigate("/login");
-    }
-
-    // TODO: Delete this error handler (look rtkQueryErrorMiddleware.tsx)
-    if (isError) {
-      if ((error as any).error) {
-        toast.error((error as any).error);
-      } else if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) => toast.error(el.message));
-      } else {
-        toast.error((error as any).data.message);
-      }
     }
   }, [isLoading]);
 

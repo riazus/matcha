@@ -1,4 +1,5 @@
 import { MessageRequest } from "./types/api/message";
+import { Filter } from "./types/slices/currentUser";
 
 export const API_BASE_URL: string = `http://localhost:${
   (process.env.REACT_APP_BACKEND_PORT as string) ?? 5000
@@ -28,6 +29,33 @@ export const ACCOUNT_ROUTES = {
   VIEWED_ME: "/accounts/viewed-me",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
   USERS: `/accounts`,
+  WITH_FILTER: (filter: Filter, page: number) =>
+    "accounts/filter/options?minAge=" +
+    filter.minAge +
+    "&maxAge=" +
+    filter.maxAge +
+    "&minTag=" +
+    filter.minTagMatch +
+    "&maxTag=" +
+    filter.maxTagMatch +
+    "&page=" +
+    page +
+    "&orderByField=" +
+    (filter.orderByField.length === 0
+      ? filter.minDistance
+        ? "Distance"
+        : "Age"
+      : filter.orderByField) +
+    "&orderByAsc=" +
+    filter.orderByAsc +
+    "&isForBrowsing=" +
+    filter.isForBrowsing +
+    (filter.minDistance !== undefined
+      ? "&minDistance=" + filter.minDistance
+      : "") +
+    (filter.maxDistance !== undefined
+      ? "&maxDistance=" + filter.maxDistance
+      : ""),
 };
 
 export const MESSAGE_ROUTES = {
@@ -58,7 +86,7 @@ export enum ChatEvent {
   NewMessage = "NewMessage",
   MessageNotValid = "MessageNotValid",
   NotifyInterlocutor = "NotifyInterlocutor",
-  DeleteMessages = "DeleteMessages"
+  DeleteMessages = "DeleteMessages",
 }
 
 export const ACCESS_TOKEN = "jwtToken";

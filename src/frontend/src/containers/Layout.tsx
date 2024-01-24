@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Container from "@mui/system/Container";
-import { borderColor, display, height, minHeight } from "@mui/system";
 
 interface Styles {
   webContainer: React.CSSProperties;
@@ -13,9 +12,7 @@ const Layout: React.FC = () => {
   return (
     <div style={styles.webContainer}>
       <Header />
-      <Container
-        sx={styles.layoutContainer}
-        >
+      <Container sx={styles.layoutContainer}>
         <Outlet />
       </Container>
       <Footer />
@@ -23,7 +20,7 @@ const Layout: React.FC = () => {
   );
 };
 
-const styles : Styles = {
+const styles: Styles = {
   webContainer: {
     display: "flex",
     flexDirection: "column",
@@ -40,8 +37,8 @@ const styles : Styles = {
     borderColor: "black",
     marginTop: "1rem",
     marginBottom: "1rem",
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.7)'
-  }
-}
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
+  },
+};
 
 export { Layout };

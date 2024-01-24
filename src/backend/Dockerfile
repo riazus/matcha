@@ -21,5 +21,5 @@ RUN dotnet publish "./backend.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN mkdir -p Images/
+COPY --from=build /src/Images/ Images/
 ENTRYPOINT ["dotnet", "backend.dll"]

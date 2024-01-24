@@ -27,6 +27,7 @@ import {
   convertProfileBodyToFormData,
   AccountsResponse,
   AccountResponse,
+  CompleteProfileResponse,
   Pictures,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
@@ -36,6 +37,8 @@ import { MessageRequest, MessageDataResponse } from "../../types/api/message";
 import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
+import { PaginationData } from "../../types/list/userLists";
+import { Filter } from "../../types/slices/currentUser";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -134,7 +137,10 @@ export const api = createApi({
         body: body,
       }),
     }),
-    completeProfile: builder.mutation<GenericResponse, CompleteProfileBody>({
+    completeProfile: builder.mutation<
+      CompleteProfileResponse,
+      CompleteProfileBody
+    >({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
         
@@ -331,6 +337,53 @@ export const api = createApi({
         }
       },
     }),
+    getUsersWithFilters: builder.query<
+      AccountsResponse[],
+      { filter: Filter | null; page: number }
+    >({
+      query: ({ filter, page }) => ({
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, page),
+      }),
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems, { arg }) => {
+        if (arg.page === 0) {
+          currentCache.splice(0, currentCache.length);
+          currentCache.push(...newItems);
+        } else {
+          currentCache.push(...newItems);
+        }
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        if (!currentArg || !previousArg) return false;
+
+        return (
+          currentArg.page !== previousArg.page ||
+          JSON.stringify(currentArg.filter) !==
+            JSON.stringify(previousArg.filter)
+        );
+      },
+    }),
+    getBrowsingUsersWithFilters: builder.query<
+      AccountsResponse[],
+      { filter: Filter | null; page: number }
+    >({
+      query: ({ filter, page }) => ({
+        url: ACCOUNT_ROUTES.WITH_FILTER(filter!, page),
+      }),
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        if (!currentArg || !previousArg) return false;
+
+        return currentArg.page !== previousArg.page;
+      },
+    }),
   }),
 });
 
@@ -355,4 +408,6 @@ export const {
   useGetViewedProfilesQuery,
   useGetProfileMeViewedQuery,
   useGetFavoriteProfilesQuery,
+  useGetUsersWithFiltersQuery,
+  useGetBrowsingUsersWithFiltersQuery,
 } = api;
