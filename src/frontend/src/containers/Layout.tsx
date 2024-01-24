@@ -33,7 +33,7 @@ const styles: Styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fffffc",
+    backgroundColor: "#055222d5",
     borderColor: "black",
     marginTop: "1rem",
     marginBottom: "1rem",
