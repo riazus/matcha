@@ -7,6 +7,12 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
+public class PictureResponse
+{
+    public IFormFile ProfilePicture { get; set; }
+    public List<IFormFile> AdditionalPictures { get; set; }
+}
+
 [Authorize]
 [ApiController]
 [Route("[controller]")]
@@ -149,6 +155,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    // [HttpPatch("change-profile")]
+    // public ActionResult ChangeProfile([FromForm] ChangeProfileRequest formData)
+    // {
+    //     _accountService.ChangeProfile(formData, Account);
+    //     return Ok();
+    // }
+
     [HttpGet("favorites")]
     public ActionResult<IEnumerable<AccountsResponse>> Favorites()
     {
@@ -168,6 +181,13 @@ public class AccountsController : BaseController
     {
         _accountService.DislikeAccount(Account.Id, id);
         return Created($"accounts/dislike/{id}", null);
+    }
+
+    [HttpGet("pictures/{id:Guid}")]
+    public ActionResult<PictureResponse> GetPictures(Guid id)
+    {
+        var res = _accountService.GetPicturesByUserId(id);
+        return Ok(res);
     }
 
     // accounts which I viewed

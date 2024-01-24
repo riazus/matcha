@@ -22,9 +22,12 @@ import {
   ResetPasswordBody,
   VerifyEmailBody,
   CompleteProfileBody,
+  ProfileBody,
   convertCompleteProfileBodyToFormData,
+  convertProfileBodyToFormData,
   AccountsResponse,
   AccountResponse,
+  Pictures,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -134,8 +137,20 @@ export const api = createApi({
     completeProfile: builder.mutation<GenericResponse, CompleteProfileBody>({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
+        
         return {
           url: ACCOUNT_ROUTES.COMPLETE_PROFILE,
+          method: "PATCH",
+          body: bodyFormData,
+          formData: true,
+        };
+      },
+    }),
+    changeProfile: builder.mutation<GenericResponse, ProfileBody>({
+      query(body) {
+        const bodyFormData = convertProfileBodyToFormData(body);
+        return {
+          url: ACCOUNT_ROUTES.CHANGE_PROFILE,
           method: "PATCH",
           body: bodyFormData,
           formData: true,
@@ -241,6 +256,9 @@ export const api = createApi({
         }
       },
     }),
+    getPicturesFile: builder.query<Pictures, string>({
+      query: (id) => ({ url: ACCOUNT_ROUTES.PICTURES(id) }),
+    }),
     getUsers: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.USERS }),
     }),
@@ -323,10 +341,12 @@ export const {
   useRefreshTokenQuery,
   useLogoutMutation,
   useCompleteProfileMutation,
+  useChangeProfileMutation,
   useResetPasswordMutation,
   useVerifyEmailQuery,
   useGetChatMessagesQuery,
   useGetUserByIdQuery,
+  useGetPicturesFileQuery,
   useSetLikeMutation,
   useRemoveLikeMutation,
   useGetUsersQuery,

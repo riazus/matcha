@@ -43,15 +43,16 @@ function CompleteProfile() {
       iAmWoman: false,
       iSearchMan: false,
       iSearchWomen: false,
+      iSearchBoth: true,
     },
   });
   const navigate = useNavigate();
   const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
-  const [addressData, setAddressData] = useState<AddressData>({
+  const [addressData, setAddressData] = useState<Location>({
     latitude: 0,
     longitude: 0,
-    postCode: "",
+    postcode: "",
     town: "",
     country: "",
   });
@@ -60,7 +61,7 @@ function CompleteProfile() {
   const [openModal, setOpenModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [pictures, setPictures] = useState<(File | null)[]>(
-    Array.from({ length: 5 }, () => null)
+    Array.from({ length: 4 }, () => null)
   );
 
   const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,32 +111,35 @@ function CompleteProfile() {
     const gender: number = state.gender.iAmMan ? 0 : 1;
     let preferedGender: number;
 
-    if (state.gender.iSearchMan && state.gender.iSearchWomen) {
+    if (state.gender.iSearchBoth) {
       preferedGender = 2;
     } else if (state.gender.iSearchMan) {
       preferedGender = 0;
     } else if (state.gender.iSearchWomen) {
       preferedGender = 1;
     } else {
-      toast.error("Prefered gender cannot be empty!");
-      return;
+      preferedGender = 0;
     }
 
     const res: CompleteProfileBody = {
-      profilePicture: profilePicture,
+      profileBody: {
+        profilePicture: profilePicture,
+        additionalPictures: pictures.filter(
+          (val) => val !== null
+        ),
+        gender: gender,
+        genderPreferences: preferedGender,
+        tags: tags,
+        description: description,
+        location: {
+          latitude: addressData.latitude,
+          longitude: addressData.longitude,
+          postcode: addressData.postcode,
+          country: addressData.country,
+          town: addressData.town,
+        },
+      },
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter(
-        (val, i) => val !== null && i !== 0
-      ) as File[] | null,
-      gender: gender,
-      genderPreferences: preferedGender,
-      tags: tags,
-      description: description,
-      latitude: addressData.latitude,
-      longitude: addressData.longitude,
-      postcode: addressData.postCode,
-      country: addressData.country,
-      town: addressData.town,
     };
 
     completeProfile(res);
@@ -207,30 +211,31 @@ function CompleteProfile() {
         </div>
 
         <div style={styles.selection}>
-          <div style={styles.selectionContentSearch}>
+          <div style={styles.selectionContent}>
             <FormLabel>I am searching for :</FormLabel>
-            <div style={styles.tickbox}>
+            <RadioGroup defaultValue="iSearchMen">
               <FormControlLabel
+                value="iSearchMen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchMan}
-                    name="iSearchMan"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchMen" onChange={handleChangeGender} />
                 }
                 label="Men"
               />
               <FormControlLabel
+                value="iSearchWomen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchWomen}
-                    name="iSearchWomen"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchWomen" onChange={handleChangeGender} />
                 }
                 label="Women"
               />
-            </div>
+              <FormControlLabel
+                value="iSearchBoth"
+                control={
+                  <Radio name="iSearchBoth" onChange={handleChangeGender} />
+                }
+                label="Both"
+              />
+            </RadioGroup>
           </div>
         </div>
       </FormGroup>
