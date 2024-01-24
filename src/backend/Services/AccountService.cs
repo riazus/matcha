@@ -11,6 +11,12 @@ using System.Text;
 
 namespace Backend.Services;
 
+public class PictureResponse
+{
+    public IFormFile ProfilePicture { get; set; }
+    public IEnumerable<IFormFile> AdditionalPictures { get; set; }
+}
+
 public interface IAccountService
 {
     IEnumerable<AccountsResponse> GetAll(Account currUser);
@@ -34,7 +40,7 @@ public interface IAccountService
     void LikeAccount(Guid currUserId, Guid id);
     void DislikeAccount(Guid currUserId, Guid id);
     void AddProfileView(Guid currUserId, Guid id);
-    IEnumerable<Pictures> GetPicturesById(Guid id);
+    Task<PictureResponse> GetPicturesByUserId(Guid id);
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
 }
@@ -52,9 +58,9 @@ public class AccountService : IAccountService
     private readonly IMatchedProfilesService _matchedProfilesService;
 
     public AccountService(
-        IAccountRepository accountRepository, 
-        IPasswordHasher passwordHasher, 
-        IJwtUtils jwtUtils, 
+        IAccountRepository accountRepository,
+        IPasswordHasher passwordHasher,
+        IJwtUtils jwtUtils,
         IOptions<AppSettings> appSettings,
         IMapper mapper,
         IEmailService emailService,
@@ -338,9 +344,9 @@ public class AccountService : IAccountService
         }
 
         var profilePictureId = Guid.NewGuid().ToString();
-        string profilePictureUrl = Path.Combine(userImagesDirectory, 
+        string profilePictureUrl = Path.Combine(userImagesDirectory,
             $"{profilePictureId}{Path.GetExtension(profileData.ProfilePicture.FileName)}");
-        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory, 
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
             $"{profilePictureId}{Path.GetExtension(profileData.ProfilePicture.FileName)}");
 
         using var profileStream = new FileStream(profilePictureUrl, FileMode.Create);
@@ -354,7 +360,7 @@ public class AccountService : IAccountService
             {
                 var additionalPictureId = Guid.NewGuid().ToString();
                 string additionalPictureUrl = Path.Combine(userImagesDirectory, $"{additionalPictureId}{Path.GetExtension(picture.FileName)}");
-                string relativeAdditionalPictureUrl = Path.Combine(relativeUserImageDirectory, 
+                string relativeAdditionalPictureUrl = Path.Combine(relativeUserImageDirectory,
                     $"{additionalPictureId}{Path.GetExtension(picture.FileName)}");
                 using var additionalStream = new FileStream(additionalPictureUrl, FileMode.Create);
                 picture.CopyTo(additionalStream);
@@ -415,7 +421,7 @@ public class AccountService : IAccountService
 
         if (profiles != null && profiles.Any())
         {
-            var alreadyLiked = profiles.SingleOrDefault(p => p.FavoriteAccountId == id) != null; 
+            var alreadyLiked = profiles.SingleOrDefault(p => p.FavoriteAccountId == id) != null;
             if (!alreadyLiked)
             {
                 throw new AppException("Account must first like this profile");
@@ -441,6 +447,61 @@ public class AccountService : IAccountService
         _accountRepository.AddProfileView(view);
     }
 
+    private async Task<byte[]> ReadFileAsync(string filePath)
+    {
+        try
+        {
+            return await File.ReadAllBytesAsync(filePath);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error reading file: {ex.Message}", ex);
+        }
+    }
+
+    private static IFormFile ConvertBytesToFormFile(byte[] fileBytes, string fileName, string contentType)
+    {
+        using (MemoryStream memoryStream = new MemoryStream(fileBytes))
+        {
+            IFormFile formFile = new FormFile(memoryStream, 0, memoryStream.Length, null, fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = contentType
+            };
+
+            return formFile;
+        }
+    }
+    public async Task<PictureResponse> GetPicturesByUserId(Guid id)
+    {
+        var acc = _accountRepository.Get(id) ??
+            throw new KeyNotFoundException($"Account with id {id} not found");
+        var pictureResponses = new List<PictureResponse>();
+
+        var pictureResponse = new PictureResponse();
+
+        // Profile picture
+        if (!string.IsNullOrEmpty(acc.ProfilePictureUrl))
+        {
+            var profilePictureBytes = await ReadFileAsync(acc.ProfilePictureUrl);
+            var profilePictureFormFile = ConvertBytesToFormFile(profilePictureBytes, "profilePicture", "image/jpeg");
+            pictureResponse.ProfilePicture = profilePictureFormFile;
+        }
+
+        // Additional pictures
+        pictureResponse.AdditionalPictures = new List<IFormFile>();
+        if (acc.AdditionalPicturesUrl != null && acc.AdditionalPicturesUrl.Any())
+        {
+            foreach (var additionalPicturesUrl in acc.AdditionalPicturesUrl)
+            {
+                var additionalPictureBytes = await ReadFileAsync(additionalPicturesUrl);
+                var additionalPictureFormFile = ConvertBytesToFormFile(additionalPictureBytes, "additionalPicture", "image/jpeg");
+                pictureResponse.AdditionalPictures.Add(additionalPictureFormFile);
+            }
+        }
+
+        return pictureResponse;
+    }
     public IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser)
     {
         var accs = _accountRepository.GetProfileViewsByAccount(currUser.Id);
@@ -527,9 +588,9 @@ public class AccountService : IAccountService
         try
         {
             var res = await httpClient.SendAsync(request);
-            
+
             var json = await res.Content.ReadFromJsonAsync<GoogleOauthTokensResponse>() ?? throw new Exception();
-            
+
             return json;
         }
         catch (Exception)
@@ -675,7 +736,7 @@ public class AccountService : IAccountService
         {
             var res = await httpClient.SendAsync(request);
             var json = await res.Content.ReadFromJsonAsync<GithubOauthUser>() ?? throw new Exception();
-            
+
             if (json.Email == null) // one more request for retreive email
             {
                 var requestEmail = new HttpRequestMessage()

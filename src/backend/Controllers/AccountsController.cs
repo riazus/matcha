@@ -7,6 +7,12 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
+public class PictureResponse
+{
+    public IFormFile ProfilePicture { get; set; }
+    public List<IFormFile> AdditionalPictures { get; set; }
+}
+
 [Authorize]
 [ApiController]
 [Route("[controller]")]
@@ -178,9 +184,9 @@ public class AccountsController : BaseController
     }
 
     [HttpGet("pictures/{id:Guid}")]
-    public ActionResult Pictures(Guid id)
+    public ActionResult<PictureResponse> GetPictures(Guid id)
     {
-        var res = _accountService.GetPicturesById(Account);
+        var res = _accountService.GetPicturesByUserId(id);
         return Ok(res);
     }
 

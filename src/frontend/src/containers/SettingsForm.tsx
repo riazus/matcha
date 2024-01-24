@@ -105,8 +105,8 @@ function SettingsForm() {
     if (!isLoading && !isError && userInfo) {
       setTags(userInfo.tags);
       setDescription(userInfo.description);
-      setProfilePicture(picturesFile!.profilePictureUrl);
-      setPictures(picturesFile!.additionalPicturesUrl);
+      // setProfilePicture(picturesFile!.profilePictureUrl);
+      // setPictures(picturesFile!.additionalPicturesUrl);
       console.log(userInfo);
       console.log("types of additionnal pictures : ", typeof(userInfo.profilePictureUrl));
     }
