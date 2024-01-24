@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filter, UserState } from "../../types/slices/currentUser";
 import { api } from "../api/api";
-import { deleteUser, persistUser } from "../services/localStorageService";
 import { RefreshTokenResponse } from "../../types/api/accounts";
 
 export interface CurrentUserState {
@@ -66,8 +65,6 @@ const fillUserData = (state: CurrentUserState, payload: UserState) => {
       tagsLength: payload.tags.length,
     });
   }
-
-  persistUser(state.user);
 };
 
 const fillFilter = (state: CurrentUserState, payload: FillFilterPayload) => {
@@ -89,9 +86,6 @@ export const currentUserSlice = createSlice({
   name: "currentUser",
   initialState,
   reducers: {
-    setToken: (state, action: PayloadAction<string>) => {
-      state.access_token = action.payload;
-    },
     setCurrentUserState: (
       state,
       { payload }: PayloadAction<RefreshTokenResponse>
@@ -109,7 +103,6 @@ export const currentUserSlice = createSlice({
     },
     loggedOut: () => {
       window.location.href = "/";
-      deleteUser();
       return initialState;
     },
     applyFilter: (state, action: PayloadAction<Filter>) => {
@@ -149,7 +142,6 @@ export const currentUserSlice = createSlice({
       }
     );
     builder.addMatcher(api.endpoints.logout.matchFulfilled, () => {
-      deleteUser();
       return initialState;
     });
     builder.addMatcher(
@@ -161,13 +153,15 @@ export const currentUserSlice = createSlice({
           state.user.latitude = payload.latitude;
           state.user.tags = payload.tags;
 
+          state.browsingPage = 0;
+          state.searchingPage = 0;
+          state.hasMoreSearchingPage = false;
+
           fillFilter(state, {
             latitude: payload.longitude,
             longitude: payload.longitude,
             tagsLength: payload.tags.length,
           });
-
-          persistUser(state.user);
         }
       }
     );
@@ -183,7 +177,6 @@ export const currentUserSlice = createSlice({
 export default currentUserSlice.reducer;
 
 export const {
-  setToken,
   setCurrentUserState,
   loggedOut,
   setInterlocuterId,

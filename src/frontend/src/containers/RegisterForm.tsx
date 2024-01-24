@@ -32,23 +32,11 @@ function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
-  const [registerUser, { isLoading, isSuccess, error, isError, data }] =
-    useRegisterMutation();
+  const [registerUser, { isLoading, isSuccess, data }] = useRegisterMutation();
 
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message);
-    }
-
-    // TODO: Delete this error handler (look rtkQueryErrorMiddleware.tsx)
-    if (isError) {
-      if ((error as any).error) {
-        toast.error((error as any).error);
-      } else if (Array.isArray((error as any).data.error)) {
-        (error as any).data.error.forEach((el: any) => toast.error(el.message));
-      } else {
-        toast.error((error as any).data.message);
-      }
     }
   }, [isLoading]);
 
@@ -70,18 +58,14 @@ function RegisterForm() {
 
   return (
     <Box sx={styles.registerBox}>
-      <Typography
-        textAlign="center"
-        component="h1"
-        sx={styles.matchaText}
-      >
+      <Typography textAlign="center" component="h1" sx={styles.matchaText}>
         Welcome to Matcha!
       </Typography>
       <Typography component="h2" sx={styles.signupText}>
         Sign Up To Get Started!
       </Typography>
       <FormProvider {...methods}>
-      <Box component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
           <FormInput name="firstName" label="First Name" />
           <FormInput name="lastName" label="Last Name" />
           <FormInput name="username" label="Username" />
@@ -93,8 +77,7 @@ function RegisterForm() {
             type="password"
           />
 
-          <Typography
-            sx={styles.alreadyHaveAccountText}>
+          <Typography sx={styles.alreadyHaveAccountText}>
             Already have an account? <LinkItem to="/login">Login Here</LinkItem>
           </Typography>
 
@@ -115,7 +98,7 @@ function RegisterForm() {
 }
 
 const styles = {
-  matchaText:  { 
+  matchaText: {
     color: "#00b4d8",
     fontSize: { xs: "2rem", md: "3rem" },
     fontWeight: 600,
@@ -123,10 +106,10 @@ const styles = {
     letterSpacing: 1,
   },
   registerBox: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
   },
   formBox: {
     borderRadius: "10px",
@@ -136,8 +119,8 @@ const styles = {
     margin: "10px",
   },
   signupText: {
-    color: "#e0aaff", 
-    mb: 2 
+    color: "#e0aaff",
+    mb: 2,
   },
   alreadyHaveAccountText: {
     fontSize: "0.9rem",
@@ -146,12 +129,12 @@ const styles = {
     color: "#003049",
   },
   signupButton: {
-    mt: 1, 
+    mt: 1,
     mb: 2,
     width: "10rem",
     display: "flex",
-    justifyContent: "center"
-  }
-}
+    justifyContent: "center",
+  },
+};
 
 export default RegisterForm;

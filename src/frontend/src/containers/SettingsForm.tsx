@@ -22,7 +22,6 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { CompleteProfileBody } from "../types/api/accounts";
 import { toast } from "react-toastify";
 import { AccountResponse } from "../types/api/accounts";
-import { readUser } from "../app/services/localStorageService";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { useGetUserByIdQuery } from "../app/api/api";
 import { useAppSelector } from "../app/hooks";
@@ -109,7 +108,6 @@ function SettingsForm() {
     if (!isLoading && !isError && userInfo) {
       setTags(userInfo.tags || null);
       setDescription(userInfo.description);
-      console.log(userInfo);
     }
   }, [isLoading, isError, userInfo]);
 

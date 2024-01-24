@@ -6,13 +6,11 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import { Layout } from "./containers/Layout";
 import LoginForm from "./containers/LoginForm";
-import Home from "./components/Home";
 import EmailVerificationView from "./containers/EmailVerificationView";
 import ResetPasswordView from "./containers/ResetPasswordView";
 import ForgotPasswordView from "./containers/ForgotPasswordView";
 import ProtectedRoute from "./containers/ProtectedRoute";
 import CompleteProfileRoute from "./containers/CompleteProfileRoute";
-import CompleteProfileWrapper from "./containers/CompleteProfileWrapper";
 import CompleteProfile from "./containers/CompleteProfile";
 import UserForm from "./containers/UserForm";
 import SettingsForm from "./containers/SettingsForm";
@@ -22,8 +20,8 @@ import NotificationsList from "./containers/NotificationsList";
 import HistoryList from "./containers/HistoryList";
 import { disconnectNotificationConnection } from "./sockets/notificationConnection";
 import { useEffect } from "react";
-import UsersBrowsing from "./containers/UsersBrowsing";
-
+import GreetingPage from "./components/GreetingPage";
+import Home from "./components/Home";
 
 const router = createBrowserRouter([
   {
@@ -31,48 +29,42 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       {
-        element: <CompleteProfileRoute />, // is profile completed
-        children: [
-          {
-            path: "/register",
-            element: <RegisterForm />,
-          },
-          {
-            path: "/login",
-            element: <LoginForm />,
-          },
-          {
-            path: "/verify-email/:token",
-            element: <EmailVerificationView />,
-          },
-          {
-            path: "/reset-password/:token",
-            element: <ResetPasswordView />,
-          },
-          {
-            path: "/forgot-password",
-            element: <ForgotPasswordView />,
-          },
-        ],
+        path: "/",
+        element: <GreetingPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterForm />,
+      },
+      {
+        path: "/login",
+        element: <LoginForm />,
+      },
+      {
+        path: "/verify-email/:token",
+        element: <EmailVerificationView />,
+      },
+      {
+        path: "/reset-password/:token",
+        element: <ResetPasswordView />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordView />,
       },
       {
         element: <ProtectedRoute />, // is profile authenticated
         children: [
           {
-            element: <CompleteProfileWrapper />,
-            children: [
-              {
-                path: "/complete-profile",
-                element: <CompleteProfile />,
-              },
-            ],
+            path: "/complete-profile",
+            element: <CompleteProfile />,
           },
           {
             element: <CompleteProfileRoute />, // is profile completed
             children: [
               {
-                path: "/",
-                element: <UsersBrowsing />,
+                path: "/home",
+                element: <Home />,
               },
               {
                 path: "/users",
