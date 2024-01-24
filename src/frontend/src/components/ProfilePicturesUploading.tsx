@@ -7,17 +7,18 @@ import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
 interface ProfilePictureUploadingProps {
+  profilePicture: File | null;
   setProfilePicture: React.Dispatch<React.SetStateAction<File | null>>;
   pictures: (File | null)[];
   setPictures: React.Dispatch<React.SetStateAction<(File | null)[]>>;
 }
 
 function ProfilePicturesUploading({
+  profilePicture,
   setProfilePicture,
   pictures,
   setPictures,
 }: ProfilePictureUploadingProps) {
-  const memoPictures = useMemo(() => pictures, [pictures]);
 
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -26,8 +27,6 @@ function ProfilePicturesUploading({
     if (e.target.files) {
       var nPictures = [...pictures];
       nPictures[index] = e.target.files[0];
-      if (pictures.every((el) => el === null))
-        setProfilePicture(e.target.files[0]);
       setPictures(nPictures);
     }
   };
@@ -35,33 +34,54 @@ function ProfilePicturesUploading({
   const suppressPictureUploaded = (index: number) => {
     var nPictures = [...pictures];
     nPictures[index] = null;
-    for (let i = 0; i < nPictures.length - 2; i++) {
+    for (let i = 0; i < nPictures.length - 1; i++) {
       if (nPictures[i] === null && nPictures[i + 1] !== null) {
         nPictures[i] = nPictures[i + 1];
         nPictures[i + 1] = null;
       }
     }
     setPictures(nPictures);
-    setProfilePicture(nPictures[0]);
   };
 
   return (
     <div>
-      <FormLabel>Please select at least one photo :</FormLabel>
+      <FormLabel>Please select a profile picture :</FormLabel>
       <Box sx={styles.picturesBox}>
-        {memoPictures.map((picture, index) => (
+          <div
+            style={{
+              ...styles.onePictureBox,
+              backgroundImage:
+                profilePicture
+                  ? `url(${URL.createObjectURL(profilePicture)})`
+                  : "none",
+            }}
+          >
+          <Button component="label">
+            <AddCircleOutlineIcon fontSize="large" />
+            <VisuallyHiddenInput
+              type="file"
+              accept={ACCEPTED_IMAGE_TYPES}
+              onChange={(e) => setProfilePicture(e.target.files ? e.target.files[0] : null)}
+            />
+          </Button>
+          </div>
+      </Box>
+
+      <FormLabel>You can select additionnal pictures :</FormLabel>
+      <Box sx={styles.picturesBox}>
+        {pictures.map((picture, index) => (
           <div
             key={index}
             style={{
               ...styles.onePictureBox,
               backgroundImage:
-                picture && memoPictures
+                picture && pictures
                   ? `url(${URL.createObjectURL(picture)})`
                   : "none",
             }}
           >
-            {!memoPictures[index] &&
-            (index === 0 || memoPictures[index - 1]) ? (
+            {!pictures[index] &&
+            (index === 0 || pictures[index - 1]) ? (
               <Button component="label">
                 <AddCircleOutlineIcon fontSize="large" />
                 <VisuallyHiddenInput
@@ -70,7 +90,7 @@ function ProfilePicturesUploading({
                   onChange={(e) => handlePictureUpload(e, index)}
                 />
               </Button>
-            ) : memoPictures[index] ? (
+            ) : pictures[index] ? (
               <Button onClick={() => suppressPictureUploaded(index)}>
                 <RemoveCircleOutlineIcon fontSize="large" />
               </Button>

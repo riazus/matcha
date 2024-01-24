@@ -41,8 +41,9 @@ function CompleteProfile() {
     gender: {
       iAmMan: true,
       iAmWoman: false,
-      iSearchMan: false,
+      iSearchMen: true,
       iSearchWomen: false,
+      iSearchBoth: false,
     },
   });
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ function CompleteProfile() {
   const [openModal, setOpenModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [pictures, setPictures] = useState<(File | null)[]>(
-    Array.from({ length: 5 }, () => null)
+    Array.from({ length: 4 }, () => null)
   );
 
   const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,9 +111,9 @@ function CompleteProfile() {
     const gender: number = state.gender.iAmMan ? 0 : 1;
     let preferedGender: number;
 
-    if (state.gender.iSearchMan && state.gender.iSearchWomen) {
+    if (state.gender.iSearchBoth) {
       preferedGender = 2;
-    } else if (state.gender.iSearchMan) {
+    } else if (state.gender.iSearchMen) {
       preferedGender = 0;
     } else if (state.gender.iSearchWomen) {
       preferedGender = 1;
@@ -144,6 +145,7 @@ function CompleteProfile() {
   return (
     <Container sx={styles.mainBox}>
       <ProfilePicturesUploading
+        profilePicture={profilePicture}
         pictures={pictures}
         setPictures={setPictures}
         setProfilePicture={setProfilePicture}
@@ -197,11 +199,6 @@ function CompleteProfile() {
                 }
                 label="Non Binary"
               />
-              <FormControlLabel
-                value="other"
-                control={<Radio name="other" onChange={handleChangeGender} />}
-                label="Not represented !"
-              />
             </RadioGroup>
           </div>
         </div>
@@ -209,28 +206,29 @@ function CompleteProfile() {
         <div style={styles.selection}>
           <div style={styles.selectionContentSearch}>
             <FormLabel>I am searching for :</FormLabel>
-            <div style={styles.tickbox}>
+            <RadioGroup defaultValue="iSearchMen">
               <FormControlLabel
+                value="iSearchMen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchMan}
-                    name="iSearchMan"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchMen" onChange={handleChangeGender} />
                 }
                 label="Men"
               />
               <FormControlLabel
+                value="iSearchWomen"
                 control={
-                  <Checkbox
-                    checked={state.gender.iSearchWomen}
-                    name="iSearchWomen"
-                    onChange={handleChangeGender}
-                  />
+                  <Radio name="iSearchWomen" onChange={handleChangeGender} />
                 }
                 label="Women"
               />
-            </div>
+              <FormControlLabel
+                value="iSearchBoth"
+                control={
+                  <Radio name="iSearchBoth" onChange={handleChangeGender} />
+                }
+                label="Both"
+              />
+            </RadioGroup>
           </div>
         </div>
       </FormGroup>
