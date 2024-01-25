@@ -11,12 +11,6 @@ using System.Text;
 
 namespace Backend.Services;
 
-public class PictureResponse
-{
-    public IFormFile ProfilePicture { get; set; }
-    public IEnumerable<IFormFile> AdditionalPictures { get; set; }
-}
-
 public interface IAccountService
 {
     IEnumerable<AccountsResponse> GetAll(Account currUser);
@@ -40,7 +34,9 @@ public interface IAccountService
     void LikeAccount(Guid currUserId, Guid id);
     void DislikeAccount(Guid currUserId, Guid id);
     void AddProfileView(Guid currUserId, Guid id);
-    Task<PictureResponse> GetPicturesByUserId(Guid id);
+    PictureResponse GetCurrentUserPictures(Account currUser);
+    void DeletePictureById(Account currUser, string pictureId);
+    string CreateNewPicture(Account currUser, IFormFile newPicture);
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
 }
@@ -364,12 +360,13 @@ public class AccountService : IAccountService
                     $"{additionalPictureId}{Path.GetExtension(picture.FileName)}");
                 using var additionalStream = new FileStream(additionalPictureUrl, FileMode.Create);
                 picture.CopyTo(additionalStream);
-                additionalPicturesUrls.Add(relativeAdditionalPictureUrl);
+                additionalPicturesUrls.Add(relativeAdditionalPictureUrl.Replace("\\", "/"));
             }
+
             currUser.RelativeAdditionalPicturesUrl = additionalPicturesUrls;
         }
 
-        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl;
+        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl.Replace("\\", "/");
         currUser.Birthday = profileData.Birthday;
         currUser.Description = profileData.Description;
         currUser.Gender = (Orientation)profileData.Gender;
@@ -454,61 +451,79 @@ public class AccountService : IAccountService
         _accountRepository.AddProfileView(view);
     }
 
-    private async Task<byte[]> ReadFileAsync(string filePath)
+    public PictureResponse GetCurrentUserPictures(Account currUser)
     {
-        try
+        var additionalPicturesUrl = new string[4];
+
+        int i = 0;
+        currUser.AdditionalPicturesUrl?.ForEach((picture) =>
         {
-            return await File.ReadAllBytesAsync(filePath);
-        }
-        catch (Exception ex)
+            additionalPicturesUrl[i] = picture;
+            i++;
+        });
+
+        return new PictureResponse()
         {
-            throw new InvalidOperationException($"Error reading file: {ex.Message}", ex);
-        }
+            ProfilePictureUrl = currUser.ProfilePictureUrl,
+            AdditionalPicturesUrl = additionalPicturesUrl,
+        };
     }
 
-    private static IFormFile ConvertBytesToFormFile(byte[] fileBytes, string fileName, string contentType)
+    public void DeletePictureById(Account currUser, string pictureId)
     {
-        using (MemoryStream memoryStream = new MemoryStream(fileBytes))
+        var imagePath = Path.Combine("Images", currUser.Id.ToString(), pictureId);
+
+        if (Path.Exists(imagePath))
         {
-            IFormFile formFile = new FormFile(memoryStream, 0, memoryStream.Length, null, fileName)
+            try
             {
-                Headers = new HeaderDictionary(),
-                ContentType = contentType
-            };
+                var ind = currUser.RelativeAdditionalPicturesUrl.FindIndex((url) =>
+                {
+                    return url.Contains(pictureId);
+                });
+                
+                var tmpList = currUser.RelativeAdditionalPicturesUrl;
+                tmpList.RemoveAt(ind);
+                currUser.RelativeAdditionalPicturesUrl = tmpList;
 
-            return formFile;
-        }
-    }
-    public async Task<PictureResponse> GetPicturesByUserId(Guid id)
-    {
-        var acc = _accountRepository.Get(id) ??
-            throw new KeyNotFoundException($"Account with id {id} not found");
-        var pictureResponses = new List<PictureResponse>();
+                File.Delete(imagePath);
 
-        var pictureResponse = new PictureResponse();
-
-        // Profile picture
-        if (!string.IsNullOrEmpty(acc.ProfilePictureUrl))
-        {
-            var profilePictureBytes = await ReadFileAsync(acc.ProfilePictureUrl);
-            var profilePictureFormFile = ConvertBytesToFormFile(profilePictureBytes, "profilePicture", "image/jpeg");
-            pictureResponse.ProfilePicture = profilePictureFormFile;
-        }
-
-        // Additional pictures
-        pictureResponse.AdditionalPictures = new List<IFormFile>();
-        if (acc.AdditionalPicturesUrl != null && acc.AdditionalPicturesUrl.Any())
-        {
-            foreach (var additionalPicturesUrl in acc.AdditionalPicturesUrl)
+                _accountRepository.Update(currUser);
+            }
+            catch (Exception ex)
             {
-                var additionalPictureBytes = await ReadFileAsync(additionalPicturesUrl);
-                var additionalPictureFormFile = ConvertBytesToFormFile(additionalPictureBytes, "additionalPicture", "image/jpeg");
-                pictureResponse.AdditionalPictures.Add(additionalPictureFormFile);
+                throw new AppException($"Error occured while deleting the file: {ex.Message}");
             }
         }
-
-        return pictureResponse;
+        else 
+        { 
+            throw new AppException("Image with following id doesn't exists");
+        }
     }
+
+    public string CreateNewPicture(Account currUser, IFormFile newPicture)
+    {
+        string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
+        string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
+
+        var additionalPictureId = Guid.NewGuid().ToString();
+        string addtionalPictureUrl = Path.Combine(userImagesDirectory,
+            $"{additionalPictureId}{Path.GetExtension(newPicture.FileName)}");
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
+            $"{additionalPictureId}{Path.GetExtension(newPicture.FileName)}");
+
+        using var profileStream = new FileStream(addtionalPictureUrl, FileMode.Create);
+        newPicture.CopyTo(profileStream);
+
+        var tmpList = currUser.RelativeAdditionalPicturesUrl ?? new List<string>();
+        tmpList.Add(relativeProfilePictureUrl.Replace("\\", "/"));
+        currUser.RelativeAdditionalPicturesUrl = tmpList;
+
+        _accountRepository.Update(currUser);
+
+        return currUser.AdditionalPicturesUrl[^1];
+    }
+
     public IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser)
     {
         var accs = _accountRepository.GetProfileViewsByAccount(currUser.Id);

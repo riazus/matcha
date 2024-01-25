@@ -143,7 +143,7 @@ export const api = createApi({
     >({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
-        
+
         return {
           url: ACCOUNT_ROUTES.COMPLETE_PROFILE,
           method: "PATCH",
@@ -262,8 +262,27 @@ export const api = createApi({
         }
       },
     }),
-    getPicturesFile: builder.query<Pictures, string>({
-      query: (id) => ({ url: ACCOUNT_ROUTES.PICTURES(id) }),
+    getPictures: builder.query<Pictures, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.PICTURES }),
+    }),
+    uploadPicture: builder.mutation<{ pictureUrl: string }, File>({
+      query(file) {
+        const formData = new FormData();
+        formData.append("picture", file as File);
+
+        return {
+          url: ACCOUNT_ROUTES.PICTURES,
+          method: "PATCH",
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
+    deletePicture: builder.mutation<void, string>({
+      query: (id) => ({
+        url: ACCOUNT_ROUTES.DELETE_PICTURE(id),
+        method: "DELETE",
+      }),
     }),
     getUsers: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.USERS }),
@@ -399,7 +418,9 @@ export const {
   useVerifyEmailQuery,
   useGetChatMessagesQuery,
   useGetUserByIdQuery,
-  useGetPicturesFileQuery,
+  useGetPicturesQuery,
+  useDeletePictureMutation,
+  useUploadPictureMutation,
   useSetLikeMutation,
   useRemoveLikeMutation,
   useGetUsersQuery,

@@ -7,12 +7,6 @@ using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-public class PictureResponse
-{
-    public IFormFile ProfilePicture { get; set; }
-    public List<IFormFile> AdditionalPictures { get; set; }
-}
-
 [Authorize]
 [ApiController]
 [Route("[controller]")]
@@ -182,11 +176,26 @@ public class AccountsController : BaseController
         return Created($"accounts/dislike/{id}", null);
     }
 
-    [HttpGet("pictures/{id:Guid}")]
-    public ActionResult<PictureResponse> GetPictures(Guid id)
+    [HttpGet("pictures")]
+    public ActionResult<PictureResponse> GetCurrentUserPictures()
     {
-        var res = _accountService.GetPicturesByUserId(id);
+        var res = _accountService.GetCurrentUserPictures(Account);
         return Ok(res);
+    }
+
+    [HttpPatch("pictures")]
+    public ActionResult UploadNewPictures([FromForm] CreateNewPictureRequest formData)
+    {
+        var pictureUrl = _accountService.CreateNewPicture(Account, formData.Picture);
+        return Ok(new {pictureUrl});
+    }
+
+    // picture's name with extension
+    [HttpDelete("pictures/{pictureId}")]
+    public ActionResult DeletePictureById(string pictureId)
+    {
+        _accountService.DeletePictureById(Account, pictureId);
+        return Ok();
     }
 
     // accounts which I viewed

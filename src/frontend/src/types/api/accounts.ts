@@ -120,8 +120,8 @@ export interface AccountResponse {
 }
 
 export interface Pictures {
-  profilePictureUrl: File | null;
-  additionalPicturesUrl: (File | null)[] | null;
+  profilePictureUrl: string;
+  additionalPicturesUrl: (string | null)[] | null;
 }
 
 export function convertProfileBodyToFormData(body: ProfileBody) {

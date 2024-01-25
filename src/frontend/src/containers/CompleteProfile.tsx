@@ -14,7 +14,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import { CompleteProfileBody } from "../types/api/accounts";
+import { CompleteProfileBody, Location } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -121,28 +121,28 @@ function CompleteProfile() {
       preferedGender = 0;
     }
 
-    const res: CompleteProfileBody = {
-      profileBody: {
-        profilePicture: profilePicture,
-        additionalPictures: pictures.filter(
-          (val) => val !== null
-        ),
-        gender: gender,
-        genderPreferences: preferedGender,
-        tags: tags,
-        description: description,
-        location: {
-          latitude: addressData.latitude,
-          longitude: addressData.longitude,
-          postcode: addressData.postcode,
-          country: addressData.country,
-          town: addressData.town,
-        },
-      },
-      birthday: birthday.toDate(),
-    };
+    // const res: CompleteProfileBody = {
+    //   profileBody: {
+    //     profilePicture: profilePicture,
+    //     additionalPictures: pictures.filter(
+    //       (val) => val !== null
+    //     ),
+    //     gender: gender,
+    //     genderPreferences: preferedGender,
+    //     tags: tags,
+    //     description: description,
+    //     location: {
+    //       latitude: addressData.latitude,
+    //       longitude: addressData.longitude,
+    //       postcode: addressData.postcode,
+    //       country: addressData.country,
+    //       town: addressData.town,
+    //     },
+    //   },
+    //   birthday: birthday.toDate(),
+    // };
 
-    completeProfile(res);
+    // completeProfile(res);
   };
 
   return (

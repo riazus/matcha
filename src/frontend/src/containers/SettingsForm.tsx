@@ -15,34 +15,25 @@ import {
   FormLabel,
   InputAdornment,
 } from "@mui/material";
-import { useEffect, useState, useMemo, useRef, ReactElement } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { ProfileBody, Location } from "../types/api/accounts";
 import { toast } from "react-toastify";
 import { useChangeProfileMutation } from "../app/api/api";
-import { useGetUserByIdQuery, useGetPicturesFileQuery } from "../app/api/api";
-import { AccountResponse } from "../types/api/accounts";
-import { useCompleteProfileMutation } from "../app/api/api";
-import { useGetUserByIdQuery } from "../app/api/api";
 import { useAppSelector } from "../app/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HobbiesModal from "../components/HobbiesModal";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
-import { url } from "inspector";
-
-const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
+import ChangePicturesSettings from "./ChangePicturesSettings";
 
 function SettingsForm() {
   const [changeProfile, { isLoading, isError, isSuccess, error }] =
     useChangeProfileMutation();
 
   const { user } = useAppSelector((root) => root.user);
-  const { data: userInfo } = useGetUserByIdQuery(user!.id) || null;
-  const { data: picturesFile} = useGetPicturesFileQuery(user!.id) || null;
+
   const [tags, setTags] = useState<string[] | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
+
   const [pictures, setPictures] = useState<(File | null)[] | null>(null);
   const memoPictures = useMemo(() => pictures, [pictures]);
   const [state, setState] = useState({
@@ -63,6 +54,12 @@ function SettingsForm() {
     country: "",
   });
 
+  useEffect(() => {
+    if (user?.id) {
+      setTags(user.tags);
+    }
+  }, [user]);
+
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
       toast.error("You cannot exceed 300 characters for your bio");
@@ -77,39 +74,6 @@ function SettingsForm() {
       gender: { ...state.gender, [event.target.name]: event.target.checked },
     });
   };
-
-  const handlePictureUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    // if (e.target.files) {
-    //   var nPictures = [...pictures];
-    //   nPictures[index] = e.target.files[0];
-    //   if (nPictures.every((el) => el === null))
-    //     setProfilePicture(e.target.files[0]);
-    //   setPictures(nPictures);
-    // }
-  };
-
-  const suppressPictureUploaded = (index: number) => {
-    // var nPictures = [...pictures];
-    // nPictures[index] = null;
-    // for (let i = 0; i < pictures.length - 2; i++) {
-    //   if (nPictures[i] === null && nPictures[i + 1] !== null) {
-    //     nPictures[i] = nPictures[i + 1];
-    //     nPictures[i + 1] = null;
-    //   }
-    // }
-    // setPictures(nPictures);
-    // setProfilePicture(nPictures[0]);
-  };
-
-  useEffect(() => {
-    if (!isLoading && !isError && userInfo) {
-      setTags(userInfo.tags);
-      setDescription(userInfo.description);
-    }
-  }, [isLoading, isError, userInfo]);
 
   const submitChanges = () => {
     let gender: number;
@@ -139,7 +103,8 @@ function SettingsForm() {
 
     const res: ProfileBody = {
       profilePicture: profilePicture,
-      additionalPictures: pictures !== null ? pictures.filter(file => file !== null) : null,
+      additionalPictures:
+        pictures !== null ? pictures.filter((file) => file !== null) : null,
       gender: gender,
       genderPreferences: preferedGender,
       tags: tags as string[],
@@ -158,15 +123,23 @@ function SettingsForm() {
 
   return (
     <Box sx={styles.settingsBox}>
-
       <Avatar
         src={profilePicture ? URL.createObjectURL(profilePicture as File) : ""}
         sx={{ width: 150, height: 150 }}
       />
 
       <Typography variant="h2" sx={styles.nameText}>
-        {userInfo?.firstName} {userInfo?.lastName}
+        {user?.firstName} {user?.lastName}
       </Typography>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          Change profile pictures
+        </AccordionSummary>
+        <AccordionDetails>
+          <ChangePicturesSettings />
+        </AccordionDetails>
+      </Accordion>
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -174,38 +147,10 @@ function SettingsForm() {
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={styles.profileBox}>
-            <Box sx={styles.picturesBox}>
-              {pictures && pictures.map((picture, index) => (
-                <div
-                  key={index}
-                  style={{
-                    ...styles.onePictureBox,
-                    backgroundImage: `url(${URL.createObjectURL(profilePicture as File)})`,
-                  }}
-                >
-                  {!pictures[index] &&
-                  (index === 0 || pictures[index - 1]) ? (
-                    <Button component="label">
-                      <AddCircleOutlineIcon fontSize="large" />
-                      <VisuallyHiddenInput
-                        type="file"
-                        accept={ACCEPTED_IMAGE_TYPES}
-                        onChange={(e) => handlePictureUpload(e, index)}
-                      />
-                    </Button>
-                  ) : pictures[index] ? (
-                    <Button onClick={() => suppressPictureUploaded(index)}>
-                      <RemoveCircleOutlineIcon fontSize="large" />
-                    </Button>
-                  ) : null}
-                </div>
-              ))}
-            </Box>
-
             <Box>
               <Typography>Hobbies :</Typography>
               <Box>
-                {userInfo &&
+                {user &&
                   tags &&
                   tags.map((tag) => <Button key={tag}>{tag}</Button>)}
               </Box>
