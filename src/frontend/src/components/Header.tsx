@@ -6,7 +6,7 @@ import {
   useGetNotificationsCountQuery,
   useLogoutMutation,
 } from "../app/api/api";
-import { setColors } from "../styles/colors";
+import { matchaColors } from "../styles/colors";
 import { useEffect } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 
@@ -39,7 +39,7 @@ function Header() {
           <Typography
             variant="h5"
             onClick={() => navigate(user ? "/home" : "/")}
-            sx={{ cursor: "pointer", color: "#222", fontWeight: 700 }}
+            sx={styles.matchaText}
           >
             Matcha
           </Typography>
@@ -98,9 +98,15 @@ function Header() {
 
 const styles = {
   appBar: {
-    backgroundColor: setColors("lightGray"),
+    backgroundColor: matchaColors.background,
     maxWidth: "100%",
     height: "4rem",
+    color: matchaColors.text,
+  },
+  matchaText: {
+    cursor: "pointer", 
+    color: matchaColors.yellow, 
+    fontWeight: 700
   },
   container: {},
 };

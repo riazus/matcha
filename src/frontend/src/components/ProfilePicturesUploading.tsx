@@ -3,6 +3,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import { memo, useMemo } from "react";
 import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
+import { fontFamily } from "@mui/system";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -45,7 +46,7 @@ function ProfilePicturesUploading({
 
   return (
     <div>
-      <FormLabel>Please select a profile picture :</FormLabel>
+      <FormLabel sx={styles.labelText}>Please select a profile picture :</FormLabel>
       <Box sx={styles.picturesBox}>
           <div
             style={{
@@ -67,7 +68,7 @@ function ProfilePicturesUploading({
           </div>
       </Box>
 
-      <FormLabel>You can select additionnal pictures :</FormLabel>
+      <FormLabel sx={styles.labelText}>You can select additionnal pictures :</FormLabel>
       <Box sx={styles.picturesBox}>
         {pictures.map((picture, index) => (
           <div
@@ -110,7 +111,7 @@ const styles = {
     gap: "10px",
   },
   onePictureBox: {
-    backgroundColor: "rgb(150, 150, 150, 0.3)",
+    backgroundColor: "rgb(255, 255, 255, 0.3)",
     height: "25vh",
     width: "15%",
     borderRadius: "10px",
@@ -118,6 +119,10 @@ const styles = {
     alignItems: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+  },
+  labelText: {
+    fontWeight: 900,
+    fontFamily: "Roboto, Arial, Helvetica, sans-serif",
   },
 };
 

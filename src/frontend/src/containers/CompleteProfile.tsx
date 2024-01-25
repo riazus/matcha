@@ -1,6 +1,7 @@
-import { Box, Container } from "@mui/system";
+import { Box, Container, color } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { alpha, styled } from '@mui/material/styles';
 import {
   Checkbox,
   FormGroup,
@@ -18,13 +19,14 @@ import { CompleteProfileBody } from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
+import { matchaColors } from "../styles/colors";
 
 export interface AddressData {
   latitude: number;
@@ -34,6 +36,50 @@ export interface AddressData {
   country: string;
 }
 
+interface RadioButtonProps {
+  value: string;
+  label: string;
+  name: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const ITextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: matchaColors.yellow,
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#B2BAC2',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#E0E3E7',
+    },
+    '&:hover fieldset': {
+      borderColor: '#B2BAC2',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: matchaColors.yellow,
+    },
+  },
+});
+
+const RadioButton: React.FC<RadioButtonProps> = ({
+  value,
+  label,
+  name,
+  onChange,
+}) => {
+  return (
+    <FormControlLabel
+      value={value}
+      control={
+        <Radio sx={styles.radioButton} name={name} onChange={onChange} />
+      }
+      label={label}
+    />
+  );
+};
+
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
     useCompleteProfileMutation();
@@ -41,6 +87,7 @@ function CompleteProfile() {
     gender: {
       iAmMan: true,
       iAmWoman: false,
+      iAmNonBinary: false,
       iSearchMen: true,
       iSearchWomen: false,
       iSearchBoth: false,
@@ -176,27 +223,27 @@ function CompleteProfile() {
       </Box>
 
       <FormGroup>
+        <div style={styles.radioGroup}>
         <div style={styles.selection}>
           <div style={styles.selectionContent}>
-            <FormLabel>Which gender are you ?</FormLabel>
+            <FormLabel sx={styles.label}>Which gender are you ?</FormLabel>
             <RadioGroup defaultValue="man">
-              <FormControlLabel
+              <RadioButton
                 value="man"
-                control={<Radio name="iAmMan" onChange={handleChangeGender} />}
+                name="iAmMan"
+                onChange={handleChangeGender}
                 label="Man"
               />
-              <FormControlLabel
+              <RadioButton
                 value="woman"
-                control={
-                  <Radio name="iAmWoman" onChange={handleChangeGender} />
-                }
+                name="iAmWoman"
+                onChange={handleChangeGender}
                 label="Woman"
               />
-              <FormControlLabel
+              <RadioButton
                 value="nonBinary"
-                control={
-                  <Radio name="iAmNonBinary" onChange={handleChangeGender} />
-                }
+                name="iAmNonBinary"
+                onChange={handleChangeGender}
                 label="Non Binary"
               />
             </RadioGroup>
@@ -205,36 +252,34 @@ function CompleteProfile() {
 
         <div style={styles.selection}>
           <div style={styles.selectionContentSearch}>
-            <FormLabel>I am searching for :</FormLabel>
+            <FormLabel sx={styles.label}>I am searching for :</FormLabel>
             <RadioGroup defaultValue="iSearchMen">
-              <FormControlLabel
+              <RadioButton
                 value="iSearchMen"
-                control={
-                  <Radio name="iSearchMen" onChange={handleChangeGender} />
-                }
+                name="iSearchMen"
+                onChange={handleChangeGender}
                 label="Men"
               />
-              <FormControlLabel
+              <RadioButton
                 value="iSearchWomen"
-                control={
-                  <Radio name="iSearchWomen" onChange={handleChangeGender} />
-                }
+                name="iSearchWomen"
+                onChange={handleChangeGender}
                 label="Women"
               />
-              <FormControlLabel
+              <RadioButton
                 value="iSearchBoth"
-                control={
-                  <Radio name="iSearchBoth" onChange={handleChangeGender} />
-                }
+                name="iSearchBoth"
+                onChange={handleChangeGender}
                 label="Both"
               />
             </RadioGroup>
           </div>
         </div>
+        </div>
       </FormGroup>
 
-      <TextField
-        sx={{ marginBottom: "1%", width: "60%" }}
+      <ITextField
+        sx={styles.textfield}
         label="Please enter a bio"
         multiline
         rows={6}
@@ -294,7 +339,9 @@ function CompleteProfile() {
       </Box>
 
       <Box sx={styles.locationBox}>
-        <FormLabel>Click on the map to select your location :</FormLabel>
+        <FormLabel sx={styles.label}>
+          Click on the map to select your location :
+        </FormLabel>
         <Box sx={styles.location}>
           <OpenStreetMap setAddressData={setAddressData} />
         </Box>
@@ -344,7 +391,6 @@ const styles = {
     fontWeight: "600",
   },
   locationBox: {
-    backgroundColor: "rgb(253, 255, 252)",
     padding: "1%",
   },
   location: {
@@ -360,9 +406,9 @@ const styles = {
     marginBottom: "1%",
     marginLeft: "3%",
     color: "black",
-    backgroundColor: "rgb(150, 50, 150)",
+    backgroundColor: matchaColors.yellow,
     ":hover": {
-      backgroundColor: "rgb(100, 0, 100)",
+      backgroundColor: matchaColors.yellowlight,
     },
   },
   modal: {},
@@ -395,18 +441,24 @@ const styles = {
     marginBottom: "2%",
   },
   interrestsFinishedButton: {
-    marginTop: "3%",
+    backgroundColor: matchaColors.light,
+    color: matchaColors.text,
+    marginLeft: "3%",
+    borderRadius: "10px",
+
   },
   selection: {
-    backgroundColor: "rgb(253, 255, 252)",
+    backgroundColor: matchaColors.light,
     padding: "1%",
   },
-  selectionContent: {},
+  selectionContent: {
+    color: matchaColors.text,
+  },
   selectionContentSearch: {
+    color: matchaColors.text,
     margin: 0,
   },
   interrestsBox: {
-    backgroundColor: "rgb(253, 255, 252)",
     display: "flex",
     alignItems: "baseline",
     flexDirection: "column",
@@ -428,7 +480,25 @@ const styles = {
     marginLeft: "1%",
   },
   savingButton: {
-    backgroundColor: "rgb(150, 50, 150)",
+    backgroundColor: matchaColors.yellow,
+  },
+  radioGroup: {
+    display: "flex",
+  },
+  radioButton: {
+    color: matchaColors.yellow,
+    "&.Mui-checked": {
+      color: matchaColors.yellowlight,
+    },
+  },
+  label: {
+    fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+    fontWeight: 900,
+  },
+  textfield: {
+    marginBottom: "1%",
+    width: "60%",
+    color: matchaColors.yellow
   },
 };
 

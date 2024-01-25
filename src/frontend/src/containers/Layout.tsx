@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Container from "@mui/system/Container";
+import { matchaColors } from "../styles/colors";
 
 interface Styles {
   webContainer: React.CSSProperties;
@@ -25,15 +26,16 @@ const styles: Styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    backgroundColor: matchaColors.background,
   },
   layoutContainer: {
-    minHeight: "82vh",
+    minHeight: "83vh",
     minWidth: "4rem",
     height: "auto",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#055222d5",
+    backgroundColor: matchaColors.light,
     borderColor: "black",
     marginTop: "1rem",
     marginBottom: "1rem",

@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { styled } from "@mui/material/styles";
 import { Filter as IFilter } from "../types/slices/currentUser";
 import { applyFilter } from "../app/slices/currentUserSlice";
+import { matchaColors } from "../styles/colors";
 
 const StyledSlider = styled(Slider)(() => ({
   marginTop: 25,
@@ -24,7 +25,7 @@ const StyledSlider = styled(Slider)(() => ({
     fontSize: 12,
     fontWeight: "normal",
     top: -6,
-    backgroundColor: "yellow",
+    backgroundColor: matchaColors.yellow,
     color: "black",
     "&::before": {
       display: "none",
@@ -145,6 +146,7 @@ function Filter() {
           <Box
             sx={{
               minWidth: 120,
+              paddingBottom: "10px",
             }}
           >
             <InputLabel>Order by</InputLabel>
@@ -194,9 +196,9 @@ const styles = {
   },
   applyButton: {
     color: "black",
-    backgroundColor: "rgb(55, 78, 168)",
+    backgroundColor: matchaColors.yellow,
     ":hover": {
-      backgroundColor: "rgb(60, 64, 113)",
+      backgroundColor: matchaColors.yellowlight,
     },
   },
 };

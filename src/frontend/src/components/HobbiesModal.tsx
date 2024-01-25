@@ -1,6 +1,7 @@
 import { Box, Grid, Button, Typography } from "@mui/material";
 import { toast } from "react-toastify";
 import React, { forwardRef, ForwardedRef } from "react";
+import { matchaColors } from "../styles/colors";
 
 const tagsData = [
   "food",
@@ -169,12 +170,12 @@ const styles = {
   interrestsButton: {
     margin: "1%",
     borderRadius: "20px",
-    backgroundColor: "rgb(150, 50, 150)",
+    backgroundColor: matchaColors.yellow,
     color: "white",
     borderColor: "black",
     cursor: "default",
     ":hover": {
-      backgroundColor: "rgb(150, 50, 150)",
+      backgroundColor: matchaColors.yellowlight,
       borderColor: "black",
     },
   },

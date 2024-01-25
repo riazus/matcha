@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { setColors } from "../styles/colors";
+import { matchaColors } from "../styles/colors";
 
 const Footer = () => {
   return (
@@ -11,7 +11,8 @@ const Footer = () => {
 
 const styles = {
   box: {
-    backgroundColor: setColors("lightGray"),
+    backgroundColor: matchaColors.background,
+    color: matchaColors.text,
     height: "4rem",
     boxShadow: 15,
     display: "flex",
