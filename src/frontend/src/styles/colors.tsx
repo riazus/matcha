@@ -4,8 +4,8 @@ const matchaColors = {
   "red": "#c1121f",
   "yellow": "#edc531",
   "yellowlight": "#e9c46a",
-  "light": "#778da9",
-  "background": "#1b263b",    
+  "backgroundlight": "#80ed99",
+  "background": "#1b263b",
 }
 
 export {matchaColors}

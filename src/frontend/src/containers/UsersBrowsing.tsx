@@ -6,6 +6,7 @@ import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import Filter from "../components/Filter";
+import { matchaColors } from "../styles/colors";
 import {
   Box,
   Button,
@@ -59,9 +60,8 @@ function UsersBrowsing() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "80%" }}>
-      <Filter />
       <Grid container>
-        <Grid item xs={12} md={6} justifyContent="center">
+        <Grid item xs={12} md={5} justifyContent="center">
           <Typography
             sx={{ mt: 4, mb: 2, display: "flex", justifyContent: "center" }}
             variant="h6"
@@ -70,10 +70,7 @@ function UsersBrowsing() {
           </Typography>
           {data && data[0] ? (
             <Box sx={styles.chooseProfileBox}>
-              <Button
-                onClick={handleUnmatchClick}
-                sx={{ background: "#ab140cbb", color: "black" }}
-              >
+              <Button onClick={handleUnmatchClick} sx={styles.dislikeButton}>
                 <CloseIcon />
               </Button>
               {/* <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -82,8 +79,8 @@ function UsersBrowsing() {
                   onClick={() => navigate(`/users/${data[0].id}`)}
                 >
                   <Avatar src={data[0].profilePictureUrl}></Avatar>
-                </Link>
-                <Typography variant="h3">{data[0].username}</Typography>
+                  </Link>
+                  <Typography variant="h3">{data[0].username}</Typography>
               </Box> */}
               <Card>
                 <CardActionArea>
@@ -98,15 +95,17 @@ function UsersBrowsing() {
                       {data[0].username}
                     </Typography>
                     <Typography variant="body2">
+                      {new Date().getFullYear() -
+                        new Date(data[0].birthday).getFullYear()}{" "}
+                      years old
+                    </Typography>
+                    <Typography variant="body2">
                       {data[0].town}, {data[0].country}
                     </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
-              <Button
-                onClick={handleMatchClick}
-                sx={{ background: "#234699d3", color: "#a22e28ba" }}
-              >
+              <Button onClick={handleMatchClick} sx={styles.likeButton}>
                 <Favorite />
               </Button>
             </Box>
@@ -117,6 +116,9 @@ function UsersBrowsing() {
           )}
         </Grid>
       </Grid>
+      <div style={{display: "flex", justifyContent: "center", marginTop: "10%"}}>
+      <Filter />
+      </div>
     </Box>
   );
 }
@@ -126,6 +128,16 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  likeButton: {
+    background: matchaColors.yellow,
+    color: matchaColors.red,
+    borderRadius: "20px",
+  },
+  dislikeButton: {
+    borderRadius: "20px",
+    background: matchaColors.red,
+    color: "black",
   },
 };
 

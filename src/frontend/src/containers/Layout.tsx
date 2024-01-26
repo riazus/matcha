@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Container from "@mui/system/Container";
 import { matchaColors } from "../styles/colors";
+import backgroundImage from '../assets/matcha_background.jpg';
 
 interface Styles {
   webContainer: React.CSSProperties;
@@ -35,7 +36,10 @@ const styles: Styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: matchaColors.light,
+    backgroundColor: matchaColors.backgroundlight,
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     borderColor: "black",
     marginTop: "1rem",
     marginBottom: "1rem",

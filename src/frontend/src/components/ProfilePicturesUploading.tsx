@@ -84,7 +84,7 @@ function ProfilePicturesUploading({
             {!pictures[index] &&
             (index === 0 || pictures[index - 1]) ? (
               <Button component="label">
-                <AddCircleOutlineIcon fontSize="large" />
+                <AddCircleOutlineIcon fontSize="large"/>
                 <VisuallyHiddenInput
                   type="file"
                   accept={ACCEPTED_IMAGE_TYPES}

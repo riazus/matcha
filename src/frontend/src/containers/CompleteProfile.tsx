@@ -441,14 +441,14 @@ const styles = {
     marginBottom: "2%",
   },
   interrestsFinishedButton: {
-    backgroundColor: matchaColors.light,
+    backgroundColor: matchaColors.backgroundlight,
     color: matchaColors.text,
     marginLeft: "3%",
     borderRadius: "10px",
 
   },
   selection: {
-    backgroundColor: matchaColors.light,
+    backgroundColor: matchaColors.backgroundlight,
     padding: "1%",
   },
   selectionContent: {
