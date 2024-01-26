@@ -41,7 +41,6 @@ import { MessageRequest, MessageDataResponse } from "../../types/api/message";
 import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
-import { PaginationData } from "../../types/list/userLists";
 import { Filter } from "../../types/slices/currentUser";
 
 const baseQuery = fetchBaseQuery({
