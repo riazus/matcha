@@ -120,31 +120,53 @@ export interface AccountResponse {
 }
 
 export interface Pictures {
-  profilePictureUrl: string;
   additionalPicturesUrl: (string | null)[] | null;
+}
+
+export interface SettingsDataResponse {
+  profilePictureUrl: string;
+  description: string;
+  gender: number;
+  genderPreferences: number;
+  hasPassword: boolean;
+}
+
+export interface UpdateProfileSettings {
+  description: string;
+  gender: number;
+  genderPreferences: number;
+  tags: string[];
+}
+
+export enum Orientation {
+  Male = 0,
+  Female = 1,
+  Bisexual = 2,
 }
 
 export function convertProfileBodyToFormData(body: ProfileBody) {
   const formData = new FormData();
-  
+
   formData.append("profilePicture", body.profilePicture as File);
   formData.append("tags", JSON.stringify(body.tags));
   formData.append("gender", body.gender.toString());
   formData.append("genderPreferences", body.genderPreferences.toString());
   formData.append("description", body.description);
-  
+
   body.additionalPictures?.forEach((picture) => {
-    if (picture)
-      formData.append("additionalPictures", picture as File);
+    if (picture) formData.append("additionalPictures", picture as File);
   });
-  
-  if (body.location.latitude) formData.append("latitude", body.location.latitude.toString());
-  if (body.location.longitude) formData.append("longitude", body.location.longitude.toString());
+
+  if (body.location.latitude)
+    formData.append("latitude", body.location.latitude.toString());
+  if (body.location.longitude)
+    formData.append("longitude", body.location.longitude.toString());
   if (body.location.town) formData.append("town", body.location.town);
   if (body.location.country) formData.append("country", body.location.country);
-  if (body.location.postcode) formData.append("postcode", body.location.postcode);
-  
-  return formData; 
+  if (body.location.postcode)
+    formData.append("postcode", body.location.postcode);
+
+  return formData;
 }
 
 export function convertCompleteProfileBodyToFormData(

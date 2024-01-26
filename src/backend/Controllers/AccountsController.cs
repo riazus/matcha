@@ -214,6 +214,20 @@ public class AccountsController : BaseController
         return Ok(res);
     }
 
+    [HttpGet("settings-data")]
+    public ActionResult<SettingsDataResponse> GetSettingsData()
+    {
+        var res = _accountService.GetSettingsData(Account);
+        return Ok(res);
+    }
+
+    [HttpPut("update-profile")]
+    public ActionResult UpdateProfileSettings(UpdateProfileSettingsRequest req)
+    {
+        _accountService.UpdateProfileSettings(Account, req);
+        return Ok();
+    }
+
     #region Helpers
     private string ipAddress()
     {

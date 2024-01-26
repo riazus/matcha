@@ -29,6 +29,8 @@ import {
   AccountResponse,
   CompleteProfileResponse,
   Pictures,
+  SettingsDataResponse,
+  UpdateProfileSettings,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -403,6 +405,16 @@ export const api = createApi({
         return currentArg.page !== previousArg.page;
       },
     }),
+    getSettingsData: builder.query<SettingsDataResponse, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.SETTINGS_DATA }),
+    }),
+    updateProfileSettings: builder.mutation<void, UpdateProfileSettings>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_PROFILE,
+        body,
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
@@ -431,4 +443,6 @@ export const {
   useGetFavoriteProfilesQuery,
   useGetUsersWithFiltersQuery,
   useGetBrowsingUsersWithFiltersQuery,
+  useGetSettingsDataQuery,
+  useUpdateProfileSettingsMutation,
 } = api;

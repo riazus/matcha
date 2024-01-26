@@ -39,6 +39,8 @@ public interface IAccountService
     string CreateNewPicture(Account currUser, IFormFile newPicture);
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
+    SettingsDataResponse GetSettingsData(Account currUser);
+    void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req);
 }
 
 public class AccountService : IAccountService
@@ -534,6 +536,28 @@ public class AccountService : IAccountService
     {
         var accs = _accountRepository.GetProfilesMeViewed(currUser.Id);
         return _mapper.Map<Account, AccountsResponse>(accs, new List<AccountsResponse>());
+    }
+
+    public SettingsDataResponse GetSettingsData(Account currUser)
+    {
+        return new()
+        {
+            Description = currUser.Description,
+            Gender = (int)currUser.Gender,
+            GenderPreferences = (int)currUser.GenderPreferences,
+            ProfilePictureUrl = currUser.ProfilePictureUrl,
+            HasPassword = currUser.PasswordHash != null
+        };
+    }
+
+    public void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req)
+    {
+        currUser.Tags = (List<string>)req.Tags;
+        currUser.Gender = (Orientation)req.Gender;
+        currUser.GenderPreferences = (Orientation)req.GenderPreferences;
+        currUser.Description = req.Description;
+
+        _accountRepository.Update(currUser);
     }
 
     #region Helper methods

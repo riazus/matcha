@@ -29,7 +29,9 @@ export const ACCOUNT_ROUTES = {
   MY_VIEWS: "/accounts/my-views",
   VIEWED_ME: "/accounts/viewed-me",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
-  USERS: `/accounts`,
+  USERS: "/accounts",
+  SETTINGS_DATA: "/accounts/settings-data",
+  UPDATE_PROFILE: "/accounts/update-profile",
   WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
     filter.minAge +
