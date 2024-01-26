@@ -138,6 +138,12 @@ export interface UpdateProfileSettings {
   tags: string[];
 }
 
+export interface UpdatePasswordBody {
+  oldPassword: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export enum Orientation {
   Male = 0,
   Female = 1,

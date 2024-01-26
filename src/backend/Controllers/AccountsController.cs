@@ -228,6 +228,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    [HttpPut("update-password")]
+    public ActionResult UpdatePasswordSettings(UpdatePasswordSettingsRequest req)
+    {
+        _accountService.UpdatePasswordSettings(Account, req);
+        return Ok();
+    }
+
     #region Helpers
     private string ipAddress()
     {

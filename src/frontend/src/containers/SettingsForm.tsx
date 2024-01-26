@@ -12,6 +12,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChangePicturesSettings from "./ChangePicturesSettings";
 import ChangeProfileSettings from "./ChangeProfileSettings";
 import FullScreenLoader from "../components/FullScreenLoader";
+import ChangeIdentificationSettings from "../components/ChangeIdentificationSettings";
 
 function SettingsForm() {
   const { user } = useAppSelector((root) => root.user);
@@ -58,7 +59,9 @@ function SettingsForm() {
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               Change identification settings
             </AccordionSummary>
-            <AccordionDetails></AccordionDetails>
+            <AccordionDetails>
+              <ChangeIdentificationSettings />
+            </AccordionDetails>
           </Accordion>
         )}
       </Box>

@@ -31,6 +31,7 @@ import {
   Pictures,
   SettingsDataResponse,
   UpdateProfileSettings,
+  UpdatePasswordBody,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -415,6 +416,13 @@ export const api = createApi({
         method: "PUT",
       }),
     }),
+    updatePasswordSettings: builder.mutation<void, UpdatePasswordBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_PASSWORD,
+        body,
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
@@ -445,4 +453,5 @@ export const {
   useGetBrowsingUsersWithFiltersQuery,
   useGetSettingsDataQuery,
   useUpdateProfileSettingsMutation,
+  useUpdatePasswordSettingsMutation,
 } = api;

@@ -4,7 +4,7 @@ using Backend.Helpers.Validators;
 
 public class UpdateProfileSettingsRequest
 {
-    [Required]
+    [RequiredString]
     public string Description { get; set; }
     [Required]
     public int Gender { get; set; }

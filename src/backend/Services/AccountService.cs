@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 
 namespace Backend.Services;
@@ -41,6 +42,7 @@ public interface IAccountService
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
     SettingsDataResponse GetSettingsData(Account currUser);
     void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req);
+    void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
 }
 
 public class AccountService : IAccountService
@@ -556,6 +558,27 @@ public class AccountService : IAccountService
         currUser.Gender = (Orientation)req.Gender;
         currUser.GenderPreferences = (Orientation)req.GenderPreferences;
         currUser.Description = req.Description;
+
+        _accountRepository.Update(currUser);
+    }
+
+    public void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req)
+    {
+        if (currUser.PasswordHash.IsNullOrEmpty())
+        {
+            throw new AppException($"Your account registered with {currUser.Provider}, " +
+                $"please login with the same provider or create new one");
+        }
+        else if (!_passwordHasher.Verify(currUser.PasswordHash, req.OldPassword))
+        {
+            throw new AppException("Old password isn't correct");
+        }
+        else if (req.Password != req.ConfirmPassword)
+        {
+            throw new AppException("Passwords must be the same");
+        }
+
+        currUser.PasswordHash = _passwordHasher.Hash(req.Password);
 
         _accountRepository.Update(currUser);
     }
