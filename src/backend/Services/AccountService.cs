@@ -43,6 +43,7 @@ public interface IAccountService
     SettingsDataResponse GetSettingsData(Account currUser);
     void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req);
     void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
+    string UpdateProfilePicture(Account currUser, IFormFile newPicture);
 }
 
 public class AccountService : IAccountService
@@ -581,6 +582,36 @@ public class AccountService : IAccountService
         currUser.PasswordHash = _passwordHasher.Hash(req.Password);
 
         _accountRepository.Update(currUser);
+    }
+
+    public string UpdateProfilePicture(Account currUser, IFormFile newPicture)
+    {
+        string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
+        string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
+
+        var profilePictureId = Guid.NewGuid().ToString();
+        string profilePictureUrl = Path.Combine(userImagesDirectory,
+            $"{profilePictureId}{Path.GetExtension(newPicture.FileName)}");
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
+            $"{profilePictureId}{Path.GetExtension(newPicture.FileName)}");
+
+        using var profileStream = new FileStream(profilePictureUrl, FileMode.Create);
+        newPicture.CopyTo(profileStream);
+
+        if (File.Exists(currUser.RelativeProfilePictureUrl))
+        {
+            File.Delete(currUser.RelativeProfilePictureUrl);
+        }
+        else
+        {
+            throw new AppException("Error occured while deleting old profile picture");
+        }
+
+        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl.Replace("\\", "/");
+
+        _accountRepository.Update(currUser);
+
+        return currUser.ProfilePictureUrl;
     }
 
     #region Helper methods

@@ -1,29 +1,77 @@
 import {
-  Avatar,
   Box,
   Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import { useGetSettingsDataQuery } from "../app/api/api";
-import { useAppSelector } from "../app/hooks";
+import {
+  api,
+  useChangeProfilePictureMutation,
+  useGetSettingsDataQuery,
+} from "../app/api/api";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChangePicturesSettings from "./ChangePicturesSettings";
 import ChangeProfileSettings from "./ChangeProfileSettings";
 import FullScreenLoader from "../components/FullScreenLoader";
 import ChangeIdentificationSettings from "../components/ChangeIdentificationSettings";
+import { useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
+import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+
+const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
 function SettingsForm() {
   const { user } = useAppSelector((root) => root.user);
+  const dispatch = useAppDispatch();
   const { data, isLoading, isSuccess } = useGetSettingsDataQuery();
+  const [
+    updateProfilePicture,
+    {
+      data: updatePictureResponse,
+      isLoading: isUpdatePictureLoading,
+      isSuccess: isUpdatePictureSuccess,
+    },
+  ] = useChangeProfilePictureMutation();
+
+  useEffect(() => {
+    if (!isUpdatePictureLoading && isUpdatePictureSuccess) {
+      dispatch(
+        api.util.updateQueryData("getSettingsData", undefined, (draft) => {
+          draft.profilePictureUrl = updatePictureResponse!.profilePictureUrl;
+        })
+      );
+    }
+  }, [isUpdatePictureLoading, isUpdatePictureSuccess]);
+
+  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      updateProfilePicture(e.target.files[0]);
+    }
+  };
 
   if (isLoading) {
     return <FullScreenLoader />;
   } else if (isSuccess) {
     return (
       <Box sx={styles.settingsBox}>
-        <Avatar src={data.profilePictureUrl} sx={{ width: 150, height: 150 }} />
+        <div
+          style={{
+            ...styles.onePictureBox,
+            backgroundImage: `url(${data.profilePictureUrl})`,
+          }}
+        >
+          <LoadingButton loading={isUpdatePictureLoading} component="label">
+            <DriveFileRenameOutlineIcon />
+            <VisuallyHiddenInput
+              type="file"
+              accept={ACCEPTED_IMAGE_TYPES}
+              onChange={(e) => handlePictureUpload(e)}
+            />
+          </LoadingButton>
+        </div>
 
         <Typography variant="h2" sx={styles.nameText}>
           {user?.firstName} {user?.lastName}
@@ -77,6 +125,16 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     minWidth: "75%",
+  },
+  onePictureBox: {
+    backgroundColor: "rgb(150, 150, 150, 0.3)",
+    height: "25vh",
+    width: "15%",
+    borderRadius: "10px",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
   },
   nameText: {},
 };

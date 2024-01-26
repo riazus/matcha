@@ -235,6 +235,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    [HttpPatch("update-profile-picture")]
+    public ActionResult<UpdateProfilePictureResponse> UpdateProfilePicture([FromForm] UpdateProfilePictureRequest formData)
+    {
+        var profilePictureUrl = _accountService.UpdateProfilePicture(Account, formData.Picture);
+        return Ok(new {profilePictureUrl});
+    }
+
     #region Helpers
     private string ipAddress()
     {

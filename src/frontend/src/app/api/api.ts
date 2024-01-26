@@ -32,6 +32,7 @@ import {
   SettingsDataResponse,
   UpdateProfileSettings,
   UpdatePasswordBody,
+  ChangeProfilePictureResponse,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -115,6 +116,10 @@ export const api = createApi({
     }),
     logout: builder.mutation<void, void>({
       query: () => ({ url: ACCOUNT_ROUTES.LOGOUT, method: "POST" }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        setTimeout(() => dispatch(api.util.resetApiState()), 1000);
+      },
     }),
     refreshToken: builder.query<RefreshTokenResponse, void>({
       query: () => ({ url: ACCOUNT_ROUTES.REFRESH, method: "POST" }),
@@ -423,6 +428,19 @@ export const api = createApi({
         method: "PUT",
       }),
     }),
+    changeProfilePicture: builder.mutation<ChangeProfilePictureResponse, File>({
+      query(file) {
+        const formData = new FormData();
+        formData.append("picture", file as File);
+
+        return {
+          url: ACCOUNT_ROUTES.PROFILE_PICTURE,
+          method: "PATCH",
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
   }),
 });
 
@@ -454,4 +472,5 @@ export const {
   useGetSettingsDataQuery,
   useUpdateProfileSettingsMutation,
   useUpdatePasswordSettingsMutation,
+  useChangeProfilePictureMutation,
 } = api;

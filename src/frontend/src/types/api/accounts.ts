@@ -144,6 +144,10 @@ export interface UpdatePasswordBody {
   confirmPassword: string;
 }
 
+export interface ChangeProfilePictureResponse {
+  profilePictureUrl: string;
+}
+
 export enum Orientation {
   Male = 0,
   Female = 1,
