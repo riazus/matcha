@@ -148,13 +148,6 @@ public class AccountsController : BaseController
         return Ok(res);
     }
 
-    // [HttpPatch("change-profile")]
-    // public ActionResult ChangeProfile([FromForm] ChangeProfileRequest formData)
-    // {
-    //     _accountService.ChangeProfile(formData, Account);
-    //     return Ok();
-    // }
-
     [HttpGet("favorites")]
     public ActionResult<IEnumerable<AccountsResponse>> Favorites()
     {
@@ -240,6 +233,13 @@ public class AccountsController : BaseController
     {
         var profilePictureUrl = _accountService.UpdateProfilePicture(Account, formData.Picture);
         return Ok(new {profilePictureUrl});
+    }
+
+    [HttpPatch("update-location")]
+    public ActionResult<AccountLocation> UpdateProfileLocation(AccountLocation req)
+    {
+        var newLocation = _accountService.UpdateProfileLocation(Account, req);
+        return Ok(newLocation);
     }
 
     #region Helpers

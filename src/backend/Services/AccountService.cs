@@ -44,6 +44,7 @@ public interface IAccountService
     void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req);
     void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
     string UpdateProfilePicture(Account currUser, IFormFile newPicture);
+    AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
 }
 
 public class AccountService : IAccountService
@@ -612,6 +613,19 @@ public class AccountService : IAccountService
         _accountRepository.Update(currUser);
 
         return currUser.ProfilePictureUrl;
+    }
+
+    public AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req)
+    {
+        currUser.Country = req.Country;
+        currUser.Town = req.Town;
+        currUser.Postcode = req.Postcode;
+        currUser.Longitude = req.Longitude;
+        currUser.Latitude = req.Latitude;
+
+        _accountRepository.Update(currUser);
+
+        return req;
     }
 
     #region Helper methods

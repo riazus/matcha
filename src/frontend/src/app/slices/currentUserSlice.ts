@@ -171,6 +171,15 @@ export const currentUserSlice = createSlice({
         state.hasMoreSearchingPage = payload.length !== 0;
       }
     );
+    builder.addMatcher(
+      api.endpoints.changeLocation.matchFulfilled,
+      (state, { payload }) => {
+        if (state.user) {
+          state.user.latitude = payload.latitude;
+          state.user.longitude = payload.longitude;
+        }
+      }
+    );
   },
 });
 

@@ -56,18 +56,13 @@ export interface Location {
   country: string;
 }
 
-export interface ProfileBody {
-  profilePicture: File | null;
-  additionalPictures: (File | null)[] | null;
-  tags: string[];
-  gender: number;
-  genderPreferences: number;
-  description: string;
-  location: Location;
-}
-
 export interface CompleteProfileBody {
-  profileBody: ProfileBody;
+  profilePicture: File;
+  additionalPictures: File[] | null;
+  tags: string[];
+  gender: Orientation;
+  genderPreferences: Orientation;
+  description: string;
   birthday: Date;
   latitude: number | undefined;
   longitude: number | undefined;
@@ -154,7 +149,7 @@ export enum Orientation {
   Bisexual = 2,
 }
 
-export function convertProfileBodyToFormData(body: ProfileBody) {
+export function convertProfileBodyToFormData(body: CompleteProfileBody) {
   const formData = new FormData();
 
   formData.append("profilePicture", body.profilePicture as File);
@@ -167,14 +162,11 @@ export function convertProfileBodyToFormData(body: ProfileBody) {
     if (picture) formData.append("additionalPictures", picture as File);
   });
 
-  if (body.location.latitude)
-    formData.append("latitude", body.location.latitude.toString());
-  if (body.location.longitude)
-    formData.append("longitude", body.location.longitude.toString());
-  if (body.location.town) formData.append("town", body.location.town);
-  if (body.location.country) formData.append("country", body.location.country);
-  if (body.location.postcode)
-    formData.append("postcode", body.location.postcode);
+  if (body.latitude) formData.append("latitude", body.latitude.toString());
+  if (body.longitude) formData.append("longitude", body.longitude.toString());
+  if (body.town) formData.append("town", body.town);
+  if (body.country) formData.append("country", body.country);
+  if (body.postcode) formData.append("postcode", body.postcode);
 
   return formData;
 }
@@ -182,7 +174,7 @@ export function convertProfileBodyToFormData(body: ProfileBody) {
 export function convertCompleteProfileBodyToFormData(
   body: CompleteProfileBody
 ): FormData {
-  const formData = convertProfileBodyToFormData(body.profileBody);
+  const formData = convertProfileBodyToFormData(body);
 
   formData.append("birthday", body.birthday.toISOString());
 

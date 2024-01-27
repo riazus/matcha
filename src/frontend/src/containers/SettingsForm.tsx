@@ -20,6 +20,7 @@ import { useEffect } from "react";
 import { LoadingButton } from "@mui/lab";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import ChangeLocationSettings from "./ChangeLocationSettings";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -79,7 +80,7 @@ function SettingsForm() {
 
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Change profile pictures
+            📷 Additional pictures
           </AccordionSummary>
           <AccordionDetails>
             <ChangePicturesSettings />
@@ -88,7 +89,7 @@ function SettingsForm() {
 
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            Change profile settings
+            👤 Profile settings
           </AccordionSummary>
           <AccordionDetails>
             <ChangeProfileSettings
@@ -102,10 +103,19 @@ function SettingsForm() {
           </AccordionDetails>
         </Accordion>
 
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            🏠 Location settings
+          </AccordionSummary>
+          <AccordionDetails>
+            <ChangeLocationSettings />
+          </AccordionDetails>
+        </Accordion>
+
         {data.hasPassword && (
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              Change identification settings
+              🔑 Identification settings
             </AccordionSummary>
             <AccordionDetails>
               <ChangeIdentificationSettings />

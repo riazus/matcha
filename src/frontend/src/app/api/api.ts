@@ -22,9 +22,7 @@ import {
   ResetPasswordBody,
   VerifyEmailBody,
   CompleteProfileBody,
-  ProfileBody,
   convertCompleteProfileBodyToFormData,
-  convertProfileBodyToFormData,
   AccountsResponse,
   AccountResponse,
   CompleteProfileResponse,
@@ -33,6 +31,7 @@ import {
   UpdateProfileSettings,
   UpdatePasswordBody,
   ChangeProfilePictureResponse,
+  Location,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -153,17 +152,6 @@ export const api = createApi({
 
         return {
           url: ACCOUNT_ROUTES.COMPLETE_PROFILE,
-          method: "PATCH",
-          body: bodyFormData,
-          formData: true,
-        };
-      },
-    }),
-    changeProfile: builder.mutation<GenericResponse, ProfileBody>({
-      query(body) {
-        const bodyFormData = convertProfileBodyToFormData(body);
-        return {
-          url: ACCOUNT_ROUTES.CHANGE_PROFILE,
           method: "PATCH",
           body: bodyFormData,
           formData: true,
@@ -440,6 +428,13 @@ export const api = createApi({
         };
       },
     }),
+    changeLocation: builder.mutation<Location, Location>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_LOCATION,
+        body,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -450,7 +445,6 @@ export const {
   useRefreshTokenQuery,
   useLogoutMutation,
   useCompleteProfileMutation,
-  useChangeProfileMutation,
   useResetPasswordMutation,
   useVerifyEmailQuery,
   useGetChatMessagesQuery,
@@ -472,4 +466,5 @@ export const {
   useUpdateProfileSettingsMutation,
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,
+  useChangeLocationMutation,
 } = api;

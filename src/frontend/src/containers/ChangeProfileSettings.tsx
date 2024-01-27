@@ -16,6 +16,7 @@ import { Orientation } from "../types/api/accounts";
 import { LoadingButton } from "@mui/lab";
 import { useUpdateProfileSettingsMutation } from "../app/api/api";
 import { toast } from "react-toastify";
+import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 
 interface IProfileSettingsData {
   gender: number;
@@ -109,91 +110,16 @@ function ChangeProfileSettings({
         </Modal>
       </Box>
 
-      <div style={styles.selection}>
-        <div style={styles.selectionContent}>
-          <FormLabel>Did you change gender ?</FormLabel>
-          <RadioGroup>
-            <FormControlLabel
-              value="man"
-              control={
-                <Radio
-                  name="iAmMan"
-                  onChange={() => handleChangeGender(Orientation.Male, false)}
-                />
-              }
-              label="Man"
-              checked={profileData.gender === Orientation.Male}
-            />
-            <FormControlLabel
-              value="woman"
-              control={
-                <Radio
-                  name="iAmWoman"
-                  onChange={() => handleChangeGender(Orientation.Female, false)}
-                />
-              }
-              label="Woman"
-              checked={profileData.gender === Orientation.Female}
-            />
-            <FormControlLabel
-              value="nonBinary"
-              control={
-                <Radio
-                  name="iAmNonBinary"
-                  onChange={() =>
-                    handleChangeGender(Orientation.Bisexual, false)
-                  }
-                />
-              }
-              label="Non Binary"
-              checked={profileData.gender === Orientation.Bisexual}
-            />
-          </RadioGroup>
-        </div>
-      </div>
-
-      <div style={styles.selection}>
-        <div style={styles.selectionContentSearch}>
-          <FormLabel>I am searching for :</FormLabel>
-          <RadioGroup>
-            <FormControlLabel
-              value="man"
-              control={
-                <Radio
-                  name="iAmMan"
-                  onChange={() => handleChangeGender(Orientation.Male, true)}
-                />
-              }
-              label="Man"
-              checked={profileData.genderPreferences === Orientation.Male}
-            />
-            <FormControlLabel
-              value="woman"
-              control={
-                <Radio
-                  name="iAmWoman"
-                  onChange={() => handleChangeGender(Orientation.Female, true)}
-                />
-              }
-              label="Woman"
-              checked={profileData.genderPreferences === Orientation.Female}
-            />
-            <FormControlLabel
-              value="nonBinary"
-              control={
-                <Radio
-                  name="iAmNonBinary"
-                  onChange={() =>
-                    handleChangeGender(Orientation.Bisexual, true)
-                  }
-                />
-              }
-              label="Non Binary"
-              checked={profileData.genderPreferences === Orientation.Bisexual}
-            />
-          </RadioGroup>
-        </div>
-      </div>
+      <SelectGendersRadioButtons
+        gender={profileData.gender}
+        genderPreferences={profileData.genderPreferences}
+        genderLabel="Did you change gender?"
+        genderPreferencesLabel="New gender preferences"
+        setGender={(orientation) => handleChangeGender(orientation, false)}
+        setGenderPreferences={(orientation) =>
+          handleChangeGender(orientation, true)
+        }
+      />
 
       <TextField
         sx={{ marginBottom: "1%", width: "60%" }}
@@ -232,20 +158,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-  selection: {
-    backgroundColor: "rgb(253, 255, 252)",
-    padding: "1%",
-  },
   saveButton: {
     width: "20%",
-  },
-  selectionContentSearch: {
-    margin: 0,
   },
   tickbox: {
     marginLeft: "1%",
   },
-  selectionContent: {},
   modal: {},
 };
 
