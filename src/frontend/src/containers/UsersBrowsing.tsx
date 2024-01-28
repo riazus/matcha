@@ -10,6 +10,8 @@ import { Box, Button, Link } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
+import { NotificationEvent } from "../config";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -38,6 +40,7 @@ function UsersBrowsing() {
   };
 
   const handleMatchClick = () => {
+    emitNotificationConnectionEvent(NotificationEvent.LikeProfile, data![0].id);
     handleBrowsingClick();
   };
 

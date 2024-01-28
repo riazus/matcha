@@ -229,7 +229,8 @@ public class AccountRepository : IAccountRepository
 
         if (filter.IsForBrowsing)
         {
-            query.Append($" AND acc1.GenderDB = {currUser.GenderPreferencesDB} AND acc1.GenderPreferencesDB = {currUser.GenderDB}");
+            query.Append($" AND acc1.GenderDB = {currUser.GenderPreferencesDB} AND acc1.GenderPreferencesDB = {currUser.GenderDB}" +
+                $" AND acc1.Id NOT IN (SELECT fp.FavoriteAccountId FROM FavoriteProfile fp WHERE fp.LikedById = \'{currUser.Id}\')");
         }
 
         query.Append(" ORDER BY");
