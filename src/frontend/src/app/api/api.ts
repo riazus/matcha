@@ -26,6 +26,12 @@ import {
   AccountsResponse,
   AccountResponse,
   CompleteProfileResponse,
+  Pictures,
+  SettingsDataResponse,
+  UpdateProfileSettings,
+  UpdatePasswordBody,
+  ChangeProfilePictureResponse,
+  Location,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -34,7 +40,6 @@ import { MessageRequest, MessageDataResponse } from "../../types/api/message";
 import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
-import { PaginationData } from "../../types/list/userLists";
 import { Filter } from "../../types/slices/currentUser";
 
 const baseQuery = fetchBaseQuery({
@@ -109,6 +114,10 @@ export const api = createApi({
     }),
     logout: builder.mutation<void, void>({
       query: () => ({ url: ACCOUNT_ROUTES.LOGOUT, method: "POST" }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        setTimeout(() => dispatch(api.util.resetApiState()), 1000);
+      },
     }),
     refreshToken: builder.query<RefreshTokenResponse, void>({
       query: () => ({ url: ACCOUNT_ROUTES.REFRESH, method: "POST" }),
@@ -140,6 +149,7 @@ export const api = createApi({
     >({
       query(body) {
         const bodyFormData = convertCompleteProfileBodyToFormData(body);
+
         return {
           url: ACCOUNT_ROUTES.COMPLETE_PROFILE,
           method: "PATCH",
@@ -246,6 +256,28 @@ export const api = createApi({
           console.error(err);
         }
       },
+    }),
+    getPictures: builder.query<Pictures, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.PICTURES }),
+    }),
+    uploadPicture: builder.mutation<{ pictureUrl: string }, File>({
+      query(file) {
+        const formData = new FormData();
+        formData.append("picture", file as File);
+
+        return {
+          url: ACCOUNT_ROUTES.PICTURES,
+          method: "PATCH",
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
+    deletePicture: builder.mutation<void, string>({
+      query: (id) => ({
+        url: ACCOUNT_ROUTES.DELETE_PICTURE(id),
+        method: "DELETE",
+      }),
     }),
     getUsers: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.USERS }),
@@ -366,6 +398,43 @@ export const api = createApi({
         return currentArg.page !== previousArg.page;
       },
     }),
+    getSettingsData: builder.query<SettingsDataResponse, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.SETTINGS_DATA }),
+    }),
+    updateProfileSettings: builder.mutation<void, UpdateProfileSettings>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_PROFILE,
+        body,
+        method: "PUT",
+      }),
+    }),
+    updatePasswordSettings: builder.mutation<void, UpdatePasswordBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_PASSWORD,
+        body,
+        method: "PUT",
+      }),
+    }),
+    changeProfilePicture: builder.mutation<ChangeProfilePictureResponse, File>({
+      query(file) {
+        const formData = new FormData();
+        formData.append("picture", file as File);
+
+        return {
+          url: ACCOUNT_ROUTES.PROFILE_PICTURE,
+          method: "PATCH",
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
+    changeLocation: builder.mutation<void, Location>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_LOCATION,
+        body,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -380,6 +449,9 @@ export const {
   useVerifyEmailQuery,
   useGetChatMessagesQuery,
   useGetUserByIdQuery,
+  useGetPicturesQuery,
+  useDeletePictureMutation,
+  useUploadPictureMutation,
   useSetLikeMutation,
   useRemoveLikeMutation,
   useGetUsersQuery,
@@ -390,4 +462,9 @@ export const {
   useGetFavoriteProfilesQuery,
   useGetUsersWithFiltersQuery,
   useGetBrowsingUsersWithFiltersQuery,
+  useGetSettingsDataQuery,
+  useUpdateProfileSettingsMutation,
+  useUpdatePasswordSettingsMutation,
+  useChangeProfilePictureMutation,
+  useChangeLocationMutation,
 } = api;

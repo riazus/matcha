@@ -7,42 +7,51 @@ import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
 interface ProfilePictureUploadingProps {
+  profilePicture: File | null;
   setProfilePicture: React.Dispatch<React.SetStateAction<File | null>>;
   pictures: (File | null)[];
   setPictures: React.Dispatch<React.SetStateAction<(File | null)[]>>;
 }
 
 function ProfilePicturesUploading({
+  profilePicture,
   setProfilePicture,
   pictures,
   setPictures,
 }: ProfilePictureUploadingProps) {
-  const memoPictures = useMemo(() => pictures, [pictures]);
+  const memoPictures = useMemo(
+    () => [profilePicture, ...pictures],
+    [profilePicture, pictures]
+  );
 
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     if (e.target.files) {
-      var nPictures = [...pictures];
+      var nPictures = [...memoPictures];
       nPictures[index] = e.target.files[0];
-      if (pictures.every((el) => el === null))
+      if (memoPictures.every((el) => el === null)) {
         setProfilePicture(e.target.files[0]);
-      setPictures(nPictures);
+      } else {
+        setPictures(nPictures.filter((_, i) => i !== 0));
+      }
     }
   };
 
   const suppressPictureUploaded = (index: number) => {
-    var nPictures = [...pictures];
+    var nPictures = [...memoPictures];
     nPictures[index] = null;
-    for (let i = 0; i < nPictures.length - 2; i++) {
+
+    for (let i = 0; i < nPictures.length - 1; i++) {
       if (nPictures[i] === null && nPictures[i + 1] !== null) {
         nPictures[i] = nPictures[i + 1];
         nPictures[i + 1] = null;
       }
     }
-    setPictures(nPictures);
+
     setProfilePicture(nPictures[0]);
+    setPictures(nPictures.filter((_, i) => i !== 0));
   };
 
   return (

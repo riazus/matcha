@@ -2,19 +2,18 @@ import { Box, Container } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
   TextField,
   Button,
-  Radio,
-  RadioGroup,
   FormLabel,
   Modal,
   InputAdornment,
 } from "@mui/material";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import { CompleteProfileBody } from "../types/api/accounts";
+import {
+  CompleteProfileBody,
+  Location,
+  Orientation,
+} from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,6 +24,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
+import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 
 export interface AddressData {
   latitude: number;
@@ -37,21 +37,17 @@ export interface AddressData {
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
     useCompleteProfileMutation();
-  const [state, setState] = useState({
-    gender: {
-      iAmMan: true,
-      iAmWoman: false,
-      iSearchMan: false,
-      iSearchWomen: false,
-    },
-  });
   const navigate = useNavigate();
+  const [gender, setGender] = useState<Orientation>(Orientation.Male);
+  const [genderPreferences, setGenderPreferences] = useState<Orientation>(
+    Orientation.Male
+  );
   const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
-  const [addressData, setAddressData] = useState<AddressData>({
+  const [addressData, setAddressData] = useState<Location>({
     latitude: 0,
     longitude: 0,
-    postCode: "",
+    postcode: "",
     town: "",
     country: "",
   });
@@ -60,15 +56,8 @@ function CompleteProfile() {
   const [openModal, setOpenModal] = useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [pictures, setPictures] = useState<(File | null)[]>(
-    Array.from({ length: 5 }, () => null)
+    Array.from({ length: 4 }, () => null)
   );
-
-  const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      gender: { ...state.gender, [event.target.name]: event.target.checked },
-    });
-  };
 
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
@@ -93,9 +82,6 @@ function CompleteProfile() {
     } else if (!birthday) {
       toast.error("Birthday cannot be empty!");
       return;
-    } else if (!state.gender.iAmMan && !state.gender.iAmWoman) {
-      toast.error("Gender cannot be empty!");
-      return;
     } else if (!tags || tags?.length < 1) {
       toast.error("You need provide at least one hobbie!");
       return;
@@ -107,33 +93,19 @@ function CompleteProfile() {
       return;
     }
 
-    const gender: number = state.gender.iAmMan ? 0 : 1;
-    let preferedGender: number;
-
-    if (state.gender.iSearchMan && state.gender.iSearchWomen) {
-      preferedGender = 2;
-    } else if (state.gender.iSearchMan) {
-      preferedGender = 0;
-    } else if (state.gender.iSearchWomen) {
-      preferedGender = 1;
-    } else {
-      toast.error("Prefered gender cannot be empty!");
-      return;
-    }
-
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter(
-        (val, i) => val !== null && i !== 0
-      ) as File[] | null,
+      additionalPictures: pictures.filter((val) => val !== null) as
+        | File[]
+        | null,
       gender: gender,
-      genderPreferences: preferedGender,
+      genderPreferences: genderPreferences,
       tags: tags,
       description: description,
       latitude: addressData.latitude,
       longitude: addressData.longitude,
-      postcode: addressData.postCode,
+      postcode: addressData.postcode,
       country: addressData.country,
       town: addressData.town,
     };
@@ -144,6 +116,7 @@ function CompleteProfile() {
   return (
     <Container sx={styles.mainBox}>
       <ProfilePicturesUploading
+        profilePicture={profilePicture}
         pictures={pictures}
         setPictures={setPictures}
         setProfilePicture={setProfilePicture}
@@ -173,67 +146,16 @@ function CompleteProfile() {
         </LocalizationProvider>
       </Box>
 
-      <FormGroup>
-        <div style={styles.selection}>
-          <div style={styles.selectionContent}>
-            <FormLabel>Which gender are you ?</FormLabel>
-            <RadioGroup defaultValue="man">
-              <FormControlLabel
-                value="man"
-                control={<Radio name="iAmMan" onChange={handleChangeGender} />}
-                label="Man"
-              />
-              <FormControlLabel
-                value="woman"
-                control={
-                  <Radio name="iAmWoman" onChange={handleChangeGender} />
-                }
-                label="Woman"
-              />
-              <FormControlLabel
-                value="nonBinary"
-                control={
-                  <Radio name="iAmNonBinary" onChange={handleChangeGender} />
-                }
-                label="Non Binary"
-              />
-              <FormControlLabel
-                value="other"
-                control={<Radio name="other" onChange={handleChangeGender} />}
-                label="Not represented !"
-              />
-            </RadioGroup>
-          </div>
-        </div>
-
-        <div style={styles.selection}>
-          <div style={styles.selectionContentSearch}>
-            <FormLabel>I am searching for :</FormLabel>
-            <div style={styles.tickbox}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={state.gender.iSearchMan}
-                    name="iSearchMan"
-                    onChange={handleChangeGender}
-                  />
-                }
-                label="Men"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={state.gender.iSearchWomen}
-                    name="iSearchWomen"
-                    onChange={handleChangeGender}
-                  />
-                }
-                label="Women"
-              />
-            </div>
-          </div>
-        </div>
-      </FormGroup>
+      <SelectGendersRadioButtons
+        gender={gender}
+        genderPreferences={genderPreferences}
+        genderLabel="Select your gender"
+        genderPreferencesLabel="Select preferred gender"
+        setGender={(orientation) => setGender(orientation)}
+        setGenderPreferences={(orientation) =>
+          setGenderPreferences(orientation)
+        }
+      />
 
       <TextField
         sx={{ marginBottom: "1%", width: "60%" }}

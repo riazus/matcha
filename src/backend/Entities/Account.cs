@@ -1,5 +1,6 @@
 namespace Backend.Entities;
 
+using Backend.Helpers;
 using MiniORM;
 using Newtonsoft.Json;
 
@@ -107,7 +108,7 @@ public class Account
         // TODO !!!
         /*var uri = new Uri(Path.Combine("localhost:5000", path));
         return uri.AbsoluteUri.ToString();*/
-        return Path.Combine("http://localhost:5000", path);
+        return UrlCombine.Combine("http://localhost:5000", path);
     }
 
     #endregion

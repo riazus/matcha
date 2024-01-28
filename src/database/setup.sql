@@ -35,7 +35,7 @@ CREATE TABLE Account (
     [Provider] NVARCHAR(255) NULL,
     IsProfileCompleted BIT NOT NULL,
 	RelativeProfilePictureUrl NVARCHAR(255) NULL,
-	RelativeAdditionalPicturesUrlDB NVARCHAR(255) NULL,
+	RelativeAdditionalPicturesUrlDB NVARCHAR(MAX) NULL,
 	GenderDB INT NULL,
 	GenderPreferencesDB INT NULL,
 	Birthday DATETIME NULL,
