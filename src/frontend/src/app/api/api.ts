@@ -428,7 +428,7 @@ export const api = createApi({
         };
       },
     }),
-    changeLocation: builder.mutation<Location, Location>({
+    changeLocation: builder.mutation<void, Location>({
       query: (body) => ({
         url: ACCOUNT_ROUTES.UPDATE_LOCATION,
         body,

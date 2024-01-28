@@ -41,7 +41,7 @@ public interface IAccountService
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
     SettingsDataResponse GetSettingsData(Account currUser);
-    void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req);
+    UpdateProfileSettings UpdateProfileSettings(Account currUser, UpdateProfileSettings req);
     void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
     string UpdateProfilePicture(Account currUser, IFormFile newPicture);
     AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
@@ -554,7 +554,7 @@ public class AccountService : IAccountService
         };
     }
 
-    public void UpdateProfileSettings(Account currUser, UpdateProfileSettingsRequest req)
+    public UpdateProfileSettings UpdateProfileSettings(Account currUser, UpdateProfileSettings req)
     {
         currUser.Tags = (List<string>)req.Tags;
         currUser.Gender = (Orientation)req.Gender;
@@ -562,6 +562,8 @@ public class AccountService : IAccountService
         currUser.Description = req.Description;
 
         _accountRepository.Update(currUser);
+
+        return req;
     }
 
     public void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req)

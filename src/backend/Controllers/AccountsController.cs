@@ -215,7 +215,7 @@ public class AccountsController : BaseController
     }
 
     [HttpPut("update-profile")]
-    public ActionResult UpdateProfileSettings(UpdateProfileSettingsRequest req)
+    public ActionResult UpdateProfileSettings(UpdateProfileSettings req)
     {
         _accountService.UpdateProfileSettings(Account, req);
         return Ok();
@@ -236,10 +236,10 @@ public class AccountsController : BaseController
     }
 
     [HttpPatch("update-location")]
-    public ActionResult<AccountLocation> UpdateProfileLocation(AccountLocation req)
+    public ActionResult UpdateProfileLocation(AccountLocation req)
     {
-        var newLocation = _accountService.UpdateProfileLocation(Account, req);
-        return Ok(newLocation);
+        _accountService.UpdateProfileLocation(Account, req);
+        return Ok();
     }
 
     #region Helpers

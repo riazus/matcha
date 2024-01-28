@@ -1,4 +1,4 @@
-import { FormControlLabel, FormLabel, Radio, RadioGroup } from "@mui/material";
+import { FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 import { Orientation } from "../types/api/accounts";
 
 interface SelectGendersRadioButtonsProps {
@@ -18,45 +18,28 @@ function SelectGendersRadioButtons({
   setGenderPreferences,
   genderPreferencesLabel,
 }: SelectGendersRadioButtonsProps) {
-  const handleChangeGender = (orientation: Orientation) => {
-    setGender(orientation);
+  const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGender(Number.parseInt(event.target.value));
   };
 
-  const handleChangeGenderPreferences = (orientation: Orientation) => {
-    setGenderPreferences(orientation);
+  const handleChangeGenderPreferences = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setGenderPreferences(Number.parseInt(event.target.value));
   };
 
   return (
     <>
       <div style={styles.selection}>
         <div style={styles.selectionContent}>
-          <FormLabel>{genderLabel}</FormLabel>
-          <RadioGroup>
+          <Typography>{genderLabel}</Typography>
+          <RadioGroup value={gender} onChange={handleChangeGender}>
+            <FormControlLabel value={0} control={<Radio />} label="Male" />
+            <FormControlLabel value={1} control={<Radio />} label="Female" />
             <FormControlLabel
-              control={
-                <Radio onChange={() => handleChangeGender(Orientation.Male)} />
-              }
-              label="Man"
-              checked={gender === Orientation.Male}
-            />
-            <FormControlLabel
-              value="woman"
-              control={
-                <Radio
-                  onChange={() => handleChangeGender(Orientation.Female)}
-                />
-              }
-              label="Woman"
-              checked={gender === Orientation.Female}
-            />
-            <FormControlLabel
-              control={
-                <Radio
-                  onChange={() => handleChangeGender(Orientation.Bisexual)}
-                />
-              }
+              value={2}
+              control={<Radio />}
               label="Non Binary"
-              checked={gender === Orientation.Bisexual}
             />
           </RadioGroup>
         </div>
@@ -64,40 +47,17 @@ function SelectGendersRadioButtons({
 
       <div style={styles.selection}>
         <div style={styles.selectionContentSearch}>
-          <FormLabel>{genderPreferencesLabel}</FormLabel>
-          <RadioGroup>
+          <Typography>{genderPreferencesLabel}</Typography>
+          <RadioGroup
+            value={genderPreferences}
+            onChange={handleChangeGenderPreferences}
+          >
+            <FormControlLabel value={0} control={<Radio />} label="Male" />
+            <FormControlLabel value={1} control={<Radio />} label="Female" />
             <FormControlLabel
-              control={
-                <Radio
-                  onChange={() =>
-                    handleChangeGenderPreferences(Orientation.Male)
-                  }
-                />
-              }
-              label="Man"
-              checked={genderPreferences === Orientation.Male}
-            />
-            <FormControlLabel
-              control={
-                <Radio
-                  onChange={() =>
-                    handleChangeGenderPreferences(Orientation.Female)
-                  }
-                />
-              }
-              label="Woman"
-              checked={genderPreferences === Orientation.Female}
-            />
-            <FormControlLabel
-              control={
-                <Radio
-                  onChange={() =>
-                    handleChangeGenderPreferences(Orientation.Bisexual)
-                  }
-                />
-              }
+              value={2}
+              control={<Radio />}
               label="Non Binary"
-              checked={genderPreferences === Orientation.Bisexual}
             />
           </RadioGroup>
         </div>

@@ -1,23 +1,33 @@
-import { Box, FormLabel } from "@mui/material";
+import { Box, FormLabel, Typography } from "@mui/material";
 import OpenStreetMap from "./OpenStreetMap";
 import { Location } from "../types/api/accounts";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useChangeLocationMutation } from "../app/api/api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { setLocation } from "../app/slices/currentUserSlice";
 
 function ChangeLocationSettings() {
   const { user } = useAppSelector((root) => root.user);
-  const [changeLocation, { data, isLoading, isSuccess }] =
+  const dispatch = useAppDispatch();
+  const [changeLocation, { isLoading, isSuccess }] =
     useChangeLocationMutation();
+  const [newLocation, setNewLocation] = useState<Location>();
 
   useEffect(() => {
-    if (!isLoading && isSuccess) {
+    if (!isLoading && isSuccess && newLocation) {
+      dispatch(
+        setLocation({
+          latitude: newLocation.latitude,
+          longitude: newLocation.longitude,
+        })
+      );
+
       toast.success(
-        `Location successfully changed to ${data?.town}, ${data?.country}`
+        `Location successfully changed to ${newLocation.town}, ${newLocation.country}`
       );
     }
-  }, [isLoading, isSuccess, data]);
+  }, [isLoading, isSuccess, newLocation]);
 
   const handleChangeLocation = (location: Location) => {
     if (
@@ -27,12 +37,13 @@ function ChangeLocationSettings() {
       return;
     }
 
+    setNewLocation(location);
     changeLocation(location);
   };
 
   return (
     <Box sx={styles.locationBox}>
-      <FormLabel>Click on the map to change your location :</FormLabel>
+      <Typography>Click on the map to change your location :</Typography>
       <Box sx={styles.location}>
         <OpenStreetMap setAddressData={handleChangeLocation} />
       </Box>

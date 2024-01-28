@@ -121,6 +121,17 @@ export const currentUserSlice = createSlice({
     setHasMoreSearchingPage: (state, { payload }) => {
       state.hasMoreSearchingPage = payload;
     },
+    setLocation: (state, { payload }) => {
+      if (state.user) {
+        state.user.latitude = payload.latitude;
+        state.user.longitude = payload.longitude;
+      }
+    },
+    setTags: (state, { payload }) => {
+      if (state.user) {
+        state.user.tags = payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -171,15 +182,6 @@ export const currentUserSlice = createSlice({
         state.hasMoreSearchingPage = payload.length !== 0;
       }
     );
-    builder.addMatcher(
-      api.endpoints.changeLocation.matchFulfilled,
-      (state, { payload }) => {
-        if (state.user) {
-          state.user.latitude = payload.latitude;
-          state.user.longitude = payload.longitude;
-        }
-      }
-    );
   },
 });
 
@@ -193,4 +195,6 @@ export const {
   applyFilter,
   increaseBrowsingPage,
   increaseSearchingPage,
+  setLocation,
+  setTags,
 } = currentUserSlice.actions;

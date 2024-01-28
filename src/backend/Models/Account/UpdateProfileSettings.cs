@@ -2,7 +2,7 @@
 
 using Backend.Helpers.Validators;
 
-public class UpdateProfileSettingsRequest
+public class UpdateProfileSettings
 {
     [RequiredString]
     public string Description { get; set; }
