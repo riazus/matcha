@@ -24,7 +24,10 @@ function ChangeLocationSettings() {
       );
 
       toast.success(
-        `Location successfully changed to ${newLocation.town}, ${newLocation.country}`
+        `Location successfully changed` +
+          (newLocation.town &&
+            newLocation.country &&
+            ` to ${newLocation.town}, ${newLocation.country}`)
       );
     }
   }, [isLoading, isSuccess, newLocation]);
