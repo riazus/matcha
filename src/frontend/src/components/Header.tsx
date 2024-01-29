@@ -1,4 +1,17 @@
-import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
+import {
+  ListItemText,
+  AppBar,
+  Box,
+  Container,
+  Toolbar,
+  Typography,
+  Button,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItem,
+  ListItemIcon,
+} from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
@@ -7,8 +20,12 @@ import {
   useLogoutMutation,
 } from "../app/api/api";
 import { matchaColors } from "../styles/colors";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import VerticalSplitIcon from "@mui/icons-material/VerticalSplit";
+import { Link } from "react-router-dom";
 
 function Header() {
   const { user } = useAppSelector((root) => root.user);
@@ -21,6 +38,12 @@ function Header() {
   const { data: notificationCount } = useGetNotificationsCountQuery(
     user?.id ? undefined : skipToken
   );
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const isMobile = windowSize.width <= 425;
 
   useEffect(() => {
     if (isLogoutSuccess) {
@@ -32,10 +55,41 @@ function Header() {
     logoutUser();
   };
 
+  const list = () => (
+    <Box
+      role="presentation"
+      onClick={() => setDrawerOpen(false)}
+      onKeyDown={() => setDrawerOpen(false)}
+    >
+      <List>
+        {["Home", "Users", "Notifications", "Favorites", "History", "Settings"].map(
+          (text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
+                {/* <ListItemIcon></ListItemIcon> */}
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          )
+        )}
+      </List>
+    </Box>
+  );
+
   return (
     <AppBar position="static" style={styles.appBar}>
       <Container style={styles.container}>
         <Toolbar>
+          {user?.id && user?.isProfileCompleted && isMobile && (
+            <>
+              <Button onClick={() => setDrawerOpen(true)}>
+                <VerticalSplitIcon />
+              </Button>
+              <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+                {list()}
+              </Drawer>
+            </>
+          )}
           <Typography
             variant="h5"
             onClick={() => navigate(user ? "/home" : "/")}
@@ -43,7 +97,7 @@ function Header() {
           >
             Matcha
           </Typography>
-          {user?.id && user?.isProfileCompleted && (
+          {user?.id && user?.isProfileCompleted && !isMobile && (
             <>
               <Box display="flex" sx={{ ml: "auto" }}>
                 <LoadingButton onClick={() => navigate("/users")}>
@@ -55,7 +109,9 @@ function Header() {
                 >
                   Notifications
                 </LoadingButton>
-                <Box sx={{ color: "black" }}>{notificationCount}</Box>
+                <Box sx={{ color: matchaColors.yellow }}>
+                  {notificationCount}
+                </Box>
                 <LoadingButton onClick={() => navigate("/favorites")}>
                   Favorites
                 </LoadingButton>
@@ -99,14 +155,15 @@ function Header() {
 const styles = {
   appBar: {
     backgroundColor: matchaColors.background,
-    maxWidth: "100%",
-    height: "4rem",
+    height: "8vh",
     color: matchaColors.text,
+    display: "flex",
+    justifyContent: "space-between",
   },
   matchaText: {
-    cursor: "pointer", 
-    color: matchaColors.yellow, 
-    fontWeight: 700
+    cursor: "pointer",
+    color: matchaColors.yellow,
+    fontWeight: 700,
   },
   container: {},
 };

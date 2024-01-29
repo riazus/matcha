@@ -18,6 +18,7 @@ import { increaseSearchingPage } from "../app/slices/currentUserSlice";
 import { fontSize } from "@mui/system";
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import { useEffect, useState } from "react";
+import title from "../styles/title";
 
 const Demo = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.background.paper,
@@ -69,7 +70,7 @@ function UsersList() {
 
   return (
     <Box sx={styles.usersListContent}>
-      <Typography sx={styles.title} variant="h6" component="div">
+      <Typography sx={title} variant="h6" component="div">
         List of users
       </Typography>
       <Box sx={styles.filterAndUserlistBox}>
@@ -134,15 +135,6 @@ function UsersList() {
 
 const styles = {
   list: {},
-  title: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "2%",
-    fontWeight: 900,
-    fontSize: "32px",
-    fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-    color: "rgb(255, 183, 3)",
-  },
   usersListContent: {
     display: "flex",
     flexDirection: "column",

@@ -24,13 +24,14 @@ const Layout: React.FC = () => {
 
 const styles: Styles = {
   webContainer: {
+    minWidth: "320px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     backgroundColor: matchaColors.background,
   },
   layoutContainer: {
-    minHeight: "83vh",
+    minHeight: "82vh",
     minWidth: "4rem",
     height: "auto",
     display: "flex",
@@ -41,8 +42,8 @@ const styles: Styles = {
     backgroundSize: "cover",
     backgroundPosition: "center",
     borderColor: "black",
-    marginTop: "1rem",
-    marginBottom: "1rem",
+    marginTop: "2vh",
+    marginBottom: "2vh",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
   },
 };

@@ -13,7 +13,7 @@ const styles = {
   box: {
     backgroundColor: matchaColors.background,
     color: matchaColors.text,
-    height: "4rem",
+    height: "6vh",
     boxShadow: 15,
     display: "flex",
     justifyContent: "center",

@@ -15,10 +15,13 @@ import {
   CardContent,
   CardMedia,
   Link,
+  Tooltip,
 } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import InfoIcon from "@mui/icons-material/Info";
+import title from "../styles/title";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -60,64 +63,62 @@ function UsersBrowsing() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "80%" }}>
-      <Grid container>
-        <Grid item xs={12} md={5} justifyContent="center">
-          <Typography
-            sx={{ mt: 4, mb: 2, display: "flex", justifyContent: "center" }}
-            variant="h6"
-          >
-            Browsing Users {data?.length}
-          </Typography>
-          {data && data[0] ? (
-            <Box sx={styles.chooseProfileBox}>
-              <Button onClick={handleUnmatchClick} sx={styles.dislikeButton}>
-                <CloseIcon />
-              </Button>
-              {/* <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Link
-                  component="button"
-                  onClick={() => navigate(`/users/${data[0].id}`)}
-                >
-                  <Avatar src={data[0].profilePictureUrl}></Avatar>
-                  </Link>
-                  <Typography variant="h3">{data[0].username}</Typography>
-              </Box> */}
-              <Card>
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    image={data[0].profilePictureUrl}
-                    height="200"
-                    width="150"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {data[0].username}
-                    </Typography>
-                    <Typography variant="body2">
-                      {new Date().getFullYear() -
-                        new Date(data[0].birthday).getFullYear()}{" "}
-                      years old
-                    </Typography>
-                    <Typography variant="body2">
-                      {data[0].town}, {data[0].country}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-              <Button onClick={handleMatchClick} sx={styles.likeButton}>
-                <Favorite />
-              </Button>
-            </Box>
-          ) : isFetching ? (
-            <Typography>Loading...</Typography>
-          ) : (
-            <Typography>This is end of the List</Typography>
-          )}
-        </Grid>
-      </Grid>
-      <div style={{display: "flex", justifyContent: "center", marginTop: "10%"}}>
-      <Filter />
+      <Typography sx={title} variant="h6">
+        Browsing page
+      </Typography>
+      <Typography
+        sx={{ mt: 4, mb: 2, display: "flex", justifyContent: "center" }}
+        variant="h6"
+      >
+        Number of Users left : {data?.length}
+      </Typography>
+      {data && data[0] ? (
+        <Box sx={styles.chooseProfileBox}>
+          <Button onClick={handleUnmatchClick} sx={styles.dislikeButton}>
+            <CloseIcon />
+          </Button>
+          <Card>
+            <CardActionArea>
+              <div onClick={() => navigate(`/users/${data[0].id}`)}>
+                <CardMedia
+                  component="img"
+                  image={data[0].profilePictureUrl}
+                  height="200"
+                  width="150"
+                  sx={styles.cardMedia}
+                />
+              </div>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {data[0].username}
+                </Typography>
+                <Typography variant="body2">
+                  {new Date().getFullYear() -
+                    new Date(data[0].birthday).getFullYear()}{" "}
+                  years old
+                </Typography>
+                <Typography variant="body2">
+                  {data[0].town}, {data[0].country}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+            <Tooltip title={data[0].description} arrow>
+              <InfoIcon />
+            </Tooltip>
+          </Card>
+          <Button onClick={handleMatchClick} sx={styles.likeButton}>
+            <Favorite />
+          </Button>
+        </Box>
+      ) : isFetching ? (
+        <Typography>Loading...</Typography>
+      ) : (
+        <Typography>This is end of the List</Typography>
+      )}
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "10%" }}
+      >
+        <Filter />
       </div>
     </Box>
   );
@@ -138,6 +139,9 @@ const styles = {
     borderRadius: "20px",
     background: matchaColors.red,
     color: "black",
+  },
+  cardMedia: {
+    borderRadius: "30px",
   },
 };
 
