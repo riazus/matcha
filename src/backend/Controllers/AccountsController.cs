@@ -129,7 +129,7 @@ public class AccountsController : BaseController
     {
         TokenResponse tokens = await _accountService.GoogleOAuth(code, ipAddress());
         setTokenCookie(tokens.RefreshToken);
-        Response.Redirect($"{_appSettings.FrontendHost}/complete-profile");
+        Response.Redirect($"{_appSettings.FrontendHost}/home");
     }
 
     [AllowAnonymous]
@@ -138,7 +138,7 @@ public class AccountsController : BaseController
     {
         TokenResponse tokens = await _accountService.GithubOAuth(code, ipAddress());
         setBothTokens(tokens);
-        Response.Redirect($"{_appSettings.FrontendHost}/complete-profile");
+        Response.Redirect($"{_appSettings.FrontendHost}/home");
     }
 
     [HttpPatch("complete-profile")]
