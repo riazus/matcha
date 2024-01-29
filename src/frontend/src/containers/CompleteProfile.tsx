@@ -3,19 +3,20 @@ import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { alpha, styled } from '@mui/material/styles';
 import {
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
   TextField,
   Button,
-  Radio,
-  RadioGroup,
   FormLabel,
   Modal,
   InputAdornment,
+  Radio,
+  FormControlLabel
 } from "@mui/material";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import { CompleteProfileBody } from "../types/api/accounts";
+import {
+  CompleteProfileBody,
+  Location,
+  Orientation,
+} from "../types/api/accounts";
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -27,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
 import { matchaColors } from "../styles/colors";
+import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 
 export interface AddressData {
   latitude: number;
@@ -83,23 +85,17 @@ const RadioButton: React.FC<RadioButtonProps> = ({
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
     useCompleteProfileMutation();
-  const [state, setState] = useState({
-    gender: {
-      iAmMan: true,
-      iAmWoman: false,
-      iAmNonBinary: false,
-      iSearchMen: true,
-      iSearchWomen: false,
-      iSearchBoth: false,
-    },
-  });
   const navigate = useNavigate();
+  const [gender, setGender] = useState<Orientation>(Orientation.Male);
+  const [genderPreferences, setGenderPreferences] = useState<Orientation>(
+    Orientation.Male
+  );
   const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
-  const [addressData, setAddressData] = useState<AddressData>({
+  const [addressData, setAddressData] = useState<Location>({
     latitude: 0,
     longitude: 0,
-    postCode: "",
+    postcode: "",
     town: "",
     country: "",
   });
@@ -111,16 +107,8 @@ function CompleteProfile() {
     Array.from({ length: 4 }, () => null)
   );
 
-  const handleChangeGender = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      gender: { ...state.gender, [event.target.name]: event.target.checked },
-    });
-  };
-
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
-      toast.error("You cannot exceed 300 characters for your bio");
       return;
     }
     setDescription(e.target.value);
@@ -141,9 +129,6 @@ function CompleteProfile() {
     } else if (!birthday) {
       toast.error("Birthday cannot be empty!");
       return;
-    } else if (!state.gender.iAmMan && !state.gender.iAmWoman) {
-      toast.error("Gender cannot be empty!");
-      return;
     } else if (!tags || tags?.length < 1) {
       toast.error("You need provide at least one hobbie!");
       return;
@@ -155,33 +140,19 @@ function CompleteProfile() {
       return;
     }
 
-    const gender: number = state.gender.iAmMan ? 0 : 1;
-    let preferedGender: number;
-
-    if (state.gender.iSearchBoth) {
-      preferedGender = 2;
-    } else if (state.gender.iSearchMen) {
-      preferedGender = 0;
-    } else if (state.gender.iSearchWomen) {
-      preferedGender = 1;
-    } else {
-      toast.error("Prefered gender cannot be empty!");
-      return;
-    }
-
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter(
-        (val, i) => val !== null && i !== 0
-      ) as File[] | null,
+      additionalPictures: pictures.filter((val) => val !== null) as
+        | File[]
+        | null,
       gender: gender,
-      genderPreferences: preferedGender,
+      genderPreferences: genderPreferences,
       tags: tags,
       description: description,
       latitude: addressData.latitude,
       longitude: addressData.longitude,
-      postcode: addressData.postCode,
+      postcode: addressData.postcode,
       country: addressData.country,
       town: addressData.town,
     };
@@ -222,61 +193,16 @@ function CompleteProfile() {
         </LocalizationProvider>
       </Box>
 
-      <FormGroup>
-        <div style={styles.radioGroup}>
-        <div style={styles.selection}>
-          <div style={styles.selectionContent}>
-            <FormLabel sx={styles.label}>Which gender are you ?</FormLabel>
-            <RadioGroup defaultValue="man">
-              <RadioButton
-                value="man"
-                name="iAmMan"
-                onChange={handleChangeGender}
-                label="Man"
-              />
-              <RadioButton
-                value="woman"
-                name="iAmWoman"
-                onChange={handleChangeGender}
-                label="Woman"
-              />
-              <RadioButton
-                value="nonBinary"
-                name="iAmNonBinary"
-                onChange={handleChangeGender}
-                label="Non Binary"
-              />
-            </RadioGroup>
-          </div>
-        </div>
-
-        <div style={styles.selection}>
-          <div style={styles.selectionContentSearch}>
-            <FormLabel sx={styles.label}>I am searching for :</FormLabel>
-            <RadioGroup defaultValue="iSearchMen">
-              <RadioButton
-                value="iSearchMen"
-                name="iSearchMen"
-                onChange={handleChangeGender}
-                label="Men"
-              />
-              <RadioButton
-                value="iSearchWomen"
-                name="iSearchWomen"
-                onChange={handleChangeGender}
-                label="Women"
-              />
-              <RadioButton
-                value="iSearchBoth"
-                name="iSearchBoth"
-                onChange={handleChangeGender}
-                label="Both"
-              />
-            </RadioGroup>
-          </div>
-        </div>
-        </div>
-      </FormGroup>
+      <SelectGendersRadioButtons
+        gender={gender}
+        genderPreferences={genderPreferences}
+        genderLabel="Select your gender"
+        genderPreferencesLabel="Select preferred gender"
+        setGender={(orientation) => setGender(orientation)}
+        setGenderPreferences={(orientation) =>
+          setGenderPreferences(orientation)
+        }
+      />
 
       <ITextField
         sx={styles.textfield}

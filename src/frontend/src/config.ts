@@ -20,13 +20,21 @@ export const ACCOUNT_ROUTES = {
   FORGOT_PASSWORD: "/accounts/forgot-password",
   RESET_PASSWORD: "/accounts/reset-password",
   COMPLETE_PROFILE: "/accounts/complete-profile",
+  CHANGE_PROFILE: "/accounts/change-profile",
   FAVORITES: "/accounts/favorites",
   LIKE: (id: string) => `/accounts/like/${id}`,
   DISLIKE: (id: string) => `/accounts/dislike/${id}`,
+  PICTURES: "/accounts/pictures",
+  DELETE_PICTURE: (id: string) => `accounts/pictures/${id}`,
   MY_VIEWS: "/accounts/my-views",
   VIEWED_ME: "/accounts/viewed-me",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
-  USERS: `/accounts`,
+  USERS: "/accounts",
+  SETTINGS_DATA: "/accounts/settings-data",
+  UPDATE_PROFILE: "/accounts/update-profile",
+  UPDATE_PASSWORD: "accounts/update-password",
+  PROFILE_PICTURE: "/accounts/update-profile-picture",
+  UPDATE_LOCATION: "/accounts/update-location",
   WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
     filter.minAge +

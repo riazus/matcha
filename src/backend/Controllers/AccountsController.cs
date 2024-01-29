@@ -129,7 +129,7 @@ public class AccountsController : BaseController
     {
         TokenResponse tokens = await _accountService.GoogleOAuth(code, ipAddress());
         setTokenCookie(tokens.RefreshToken);
-        Response.Redirect($"{_appSettings.FrontendHost}/complete-profile");
+        Response.Redirect($"{_appSettings.FrontendHost}/home");
     }
 
     [AllowAnonymous]
@@ -138,7 +138,7 @@ public class AccountsController : BaseController
     {
         TokenResponse tokens = await _accountService.GithubOAuth(code, ipAddress());
         setBothTokens(tokens);
-        Response.Redirect($"{_appSettings.FrontendHost}/complete-profile");
+        Response.Redirect($"{_appSettings.FrontendHost}/home");
     }
 
     [HttpPatch("complete-profile")]
@@ -169,6 +169,28 @@ public class AccountsController : BaseController
         return Created($"accounts/dislike/{id}", null);
     }
 
+    [HttpGet("pictures")]
+    public ActionResult<PictureResponse> GetCurrentUserPictures()
+    {
+        var res = _accountService.GetCurrentUserPictures(Account);
+        return Ok(res);
+    }
+
+    [HttpPatch("pictures")]
+    public ActionResult UploadNewPictures([FromForm] CreateNewPictureRequest formData)
+    {
+        var pictureUrl = _accountService.CreateNewPicture(Account, formData.Picture);
+        return Ok(new {pictureUrl});
+    }
+
+    // picture's name with extension
+    [HttpDelete("pictures/{pictureId}")]
+    public ActionResult DeletePictureById(string pictureId)
+    {
+        _accountService.DeletePictureById(Account, pictureId);
+        return Ok();
+    }
+
     // accounts which I viewed
     [HttpGet("my-views")]
     public ActionResult<AccountsResponse> MyProfileViews()
@@ -183,6 +205,41 @@ public class AccountsController : BaseController
     {
         var res = _accountService.GetProfilesMeViewed(Account);
         return Ok(res);
+    }
+
+    [HttpGet("settings-data")]
+    public ActionResult<SettingsDataResponse> GetSettingsData()
+    {
+        var res = _accountService.GetSettingsData(Account);
+        return Ok(res);
+    }
+
+    [HttpPut("update-profile")]
+    public ActionResult UpdateProfileSettings(UpdateProfileSettings req)
+    {
+        _accountService.UpdateProfileSettings(Account, req);
+        return Ok();
+    }
+
+    [HttpPut("update-password")]
+    public ActionResult UpdatePasswordSettings(UpdatePasswordSettingsRequest req)
+    {
+        _accountService.UpdatePasswordSettings(Account, req);
+        return Ok();
+    }
+
+    [HttpPatch("update-profile-picture")]
+    public ActionResult<UpdateProfilePictureResponse> UpdateProfilePicture([FromForm] UpdateProfilePictureRequest formData)
+    {
+        var profilePictureUrl = _accountService.UpdateProfilePicture(Account, formData.Picture);
+        return Ok(new {profilePictureUrl});
+    }
+
+    [HttpPatch("update-location")]
+    public ActionResult UpdateProfileLocation(AccountLocation req)
+    {
+        _accountService.UpdateProfileLocation(Account, req);
+        return Ok();
     }
 
     #region Helpers

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 
 namespace Backend.Services;
@@ -34,8 +35,16 @@ public interface IAccountService
     void LikeAccount(Guid currUserId, Guid id);
     void DislikeAccount(Guid currUserId, Guid id);
     void AddProfileView(Guid currUserId, Guid id);
+    PictureResponse GetCurrentUserPictures(Account currUser);
+    void DeletePictureById(Account currUser, string pictureId);
+    string CreateNewPicture(Account currUser, IFormFile newPicture);
     IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser);
     IEnumerable<AccountsResponse> GetProfilesMeViewed(Account currUser);
+    SettingsDataResponse GetSettingsData(Account currUser);
+    UpdateProfileSettings UpdateProfileSettings(Account currUser, UpdateProfileSettings req);
+    void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
+    string UpdateProfilePicture(Account currUser, IFormFile newPicture);
+    AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
 }
 
 public class AccountService : IAccountService
@@ -51,9 +60,9 @@ public class AccountService : IAccountService
     private readonly IMatchedProfilesService _matchedProfilesService;
 
     public AccountService(
-        IAccountRepository accountRepository, 
-        IPasswordHasher passwordHasher, 
-        IJwtUtils jwtUtils, 
+        IAccountRepository accountRepository,
+        IPasswordHasher passwordHasher,
+        IJwtUtils jwtUtils,
         IOptions<AppSettings> appSettings,
         IMapper mapper,
         IEmailService emailService,
@@ -337,9 +346,9 @@ public class AccountService : IAccountService
         }
 
         var profilePictureId = Guid.NewGuid().ToString();
-        string profilePictureUrl = Path.Combine(userImagesDirectory, 
+        string profilePictureUrl = Path.Combine(userImagesDirectory,
             $"{profilePictureId}{Path.GetExtension(profileData.ProfilePicture.FileName)}");
-        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory, 
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
             $"{profilePictureId}{Path.GetExtension(profileData.ProfilePicture.FileName)}");
 
         using var profileStream = new FileStream(profilePictureUrl, FileMode.Create);
@@ -353,16 +362,17 @@ public class AccountService : IAccountService
             {
                 var additionalPictureId = Guid.NewGuid().ToString();
                 string additionalPictureUrl = Path.Combine(userImagesDirectory, $"{additionalPictureId}{Path.GetExtension(picture.FileName)}");
-                string relativeAdditionalPictureUrl = Path.Combine(relativeUserImageDirectory, 
+                string relativeAdditionalPictureUrl = Path.Combine(relativeUserImageDirectory,
                     $"{additionalPictureId}{Path.GetExtension(picture.FileName)}");
                 using var additionalStream = new FileStream(additionalPictureUrl, FileMode.Create);
                 picture.CopyTo(additionalStream);
-                additionalPicturesUrls.Add(relativeAdditionalPictureUrl);
+                additionalPicturesUrls.Add(relativeAdditionalPictureUrl.Replace("\\", "/"));
             }
+
             currUser.RelativeAdditionalPicturesUrl = additionalPicturesUrls;
         }
 
-        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl;
+        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl.Replace("\\", "/");
         currUser.Birthday = profileData.Birthday;
         currUser.Description = profileData.Description;
         currUser.Gender = (Orientation)profileData.Gender;
@@ -421,7 +431,7 @@ public class AccountService : IAccountService
 
         if (profiles != null && profiles.Any())
         {
-            var alreadyLiked = profiles.SingleOrDefault(p => p.FavoriteAccountId == id) != null; 
+            var alreadyLiked = profiles.SingleOrDefault(p => p.FavoriteAccountId == id) != null;
             if (!alreadyLiked)
             {
                 throw new AppException("Account must first like this profile");
@@ -447,6 +457,79 @@ public class AccountService : IAccountService
         _accountRepository.AddProfileView(view);
     }
 
+    public PictureResponse GetCurrentUserPictures(Account currUser)
+    {
+        var additionalPicturesUrl = new string[4];
+
+        int i = 0;
+        currUser.AdditionalPicturesUrl?.ForEach((picture) =>
+        {
+            additionalPicturesUrl[i] = picture;
+            i++;
+        });
+
+        return new PictureResponse()
+        {
+            ProfilePictureUrl = currUser.ProfilePictureUrl,
+            AdditionalPicturesUrl = additionalPicturesUrl,
+        };
+    }
+
+    public void DeletePictureById(Account currUser, string pictureId)
+    {
+        var imagePath = Path.Combine("Images", currUser.Id.ToString(), pictureId);
+
+        if (Path.Exists(imagePath))
+        {
+            try
+            {
+                var ind = currUser.RelativeAdditionalPicturesUrl.FindIndex((url) =>
+                {
+                    return url.Contains(pictureId);
+                });
+                
+                var tmpList = currUser.RelativeAdditionalPicturesUrl;
+                tmpList.RemoveAt(ind);
+                currUser.RelativeAdditionalPicturesUrl = tmpList;
+
+                File.Delete(imagePath);
+
+                _accountRepository.Update(currUser);
+            }
+            catch (Exception ex)
+            {
+                throw new AppException($"Error occured while deleting the file: {ex.Message}");
+            }
+        }
+        else 
+        { 
+            throw new AppException("Image with following id doesn't exists");
+        }
+    }
+
+    public string CreateNewPicture(Account currUser, IFormFile newPicture)
+    {
+        string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
+        string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
+
+        var additionalPictureId = Guid.NewGuid().ToString();
+        string addtionalPictureUrl = Path.Combine(userImagesDirectory,
+            $"{additionalPictureId}{Path.GetExtension(newPicture.FileName)}");
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
+            $"{additionalPictureId}{Path.GetExtension(newPicture.FileName)}");
+
+        using var profileStream = new FileStream(addtionalPictureUrl, FileMode.Create);
+        newPicture.CopyTo(profileStream);
+
+        var tmpList = currUser.RelativeAdditionalPicturesUrl ?? new List<string>();
+        tmpList.Add(relativeProfilePictureUrl.Replace("\\", "/"));
+        currUser.RelativeAdditionalPicturesUrl = tmpList;
+
+        _accountRepository.Update(currUser);
+
+        return currUser.AdditionalPicturesUrl[^1];
+    }
+
     public IEnumerable<AccountsResponse> GetMyProfileViews(Account currUser)
     {
         var accs = _accountRepository.GetProfileViewsByAccount(currUser.Id);
@@ -457,6 +540,94 @@ public class AccountService : IAccountService
     {
         var accs = _accountRepository.GetProfilesMeViewed(currUser.Id);
         return _mapper.Map<Account, AccountsResponse>(accs, new List<AccountsResponse>());
+    }
+
+    public SettingsDataResponse GetSettingsData(Account currUser)
+    {
+        return new()
+        {
+            Description = currUser.Description,
+            Gender = (int)currUser.Gender,
+            GenderPreferences = (int)currUser.GenderPreferences,
+            ProfilePictureUrl = currUser.ProfilePictureUrl,
+            HasPassword = currUser.PasswordHash != null
+        };
+    }
+
+    public UpdateProfileSettings UpdateProfileSettings(Account currUser, UpdateProfileSettings req)
+    {
+        currUser.Tags = (List<string>)req.Tags;
+        currUser.Gender = (Orientation)req.Gender;
+        currUser.GenderPreferences = (Orientation)req.GenderPreferences;
+        currUser.Description = req.Description;
+
+        _accountRepository.Update(currUser);
+
+        return req;
+    }
+
+    public void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req)
+    {
+        if (currUser.PasswordHash.IsNullOrEmpty())
+        {
+            throw new AppException($"Your account registered with {currUser.Provider}, " +
+                $"please login with the same provider or create new one");
+        }
+        else if (!_passwordHasher.Verify(currUser.PasswordHash, req.OldPassword))
+        {
+            throw new AppException("Old password isn't correct");
+        }
+        else if (req.Password != req.ConfirmPassword)
+        {
+            throw new AppException("Passwords must be the same");
+        }
+
+        currUser.PasswordHash = _passwordHasher.Hash(req.Password);
+
+        _accountRepository.Update(currUser);
+    }
+
+    public string UpdateProfilePicture(Account currUser, IFormFile newPicture)
+    {
+        string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
+        string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
+
+        var profilePictureId = Guid.NewGuid().ToString();
+        string profilePictureUrl = Path.Combine(userImagesDirectory,
+            $"{profilePictureId}{Path.GetExtension(newPicture.FileName)}");
+        string relativeProfilePictureUrl = Path.Combine(relativeUserImageDirectory,
+            $"{profilePictureId}{Path.GetExtension(newPicture.FileName)}");
+
+        using var profileStream = new FileStream(profilePictureUrl, FileMode.Create);
+        newPicture.CopyTo(profileStream);
+
+        if (File.Exists(currUser.RelativeProfilePictureUrl))
+        {
+            File.Delete(currUser.RelativeProfilePictureUrl);
+        }
+        else
+        {
+            throw new AppException("Error occured while deleting old profile picture");
+        }
+
+        currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl.Replace("\\", "/");
+
+        _accountRepository.Update(currUser);
+
+        return currUser.ProfilePictureUrl;
+    }
+
+    public AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req)
+    {
+        currUser.Country = req.Country;
+        currUser.Town = req.Town;
+        currUser.Postcode = req.Postcode;
+        currUser.Longitude = req.Longitude;
+        currUser.Latitude = req.Latitude;
+
+        _accountRepository.Update(currUser);
+
+        return req;
     }
 
     #region Helper methods
@@ -533,9 +704,9 @@ public class AccountService : IAccountService
         try
         {
             var res = await httpClient.SendAsync(request);
-            
+
             var json = await res.Content.ReadFromJsonAsync<GoogleOauthTokensResponse>() ?? throw new Exception();
-            
+
             return json;
         }
         catch (Exception)
@@ -681,7 +852,7 @@ public class AccountService : IAccountService
         {
             var res = await httpClient.SendAsync(request);
             var json = await res.Content.ReadFromJsonAsync<GithubOauthUser>() ?? throw new Exception();
-            
+
             if (json.Email == null) // one more request for retreive email
             {
                 var requestEmail = new HttpRequestMessage()

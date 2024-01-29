@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Filter, UserState } from "../../types/slices/currentUser";
 import { api } from "../api/api";
 import { RefreshTokenResponse } from "../../types/api/accounts";
+import { disconnectNotificationConnection } from "../../sockets/notificationConnection";
+import { disconnectChatConnection } from "../../sockets/chatConnection";
 
 export interface CurrentUserState {
   user: UserState | null;
@@ -103,6 +105,8 @@ export const currentUserSlice = createSlice({
     },
     loggedOut: () => {
       window.location.href = "/";
+      disconnectNotificationConnection();
+      disconnectChatConnection();
       return initialState;
     },
     applyFilter: (state, action: PayloadAction<Filter>) => {
@@ -120,6 +124,17 @@ export const currentUserSlice = createSlice({
     },
     setHasMoreSearchingPage: (state, { payload }) => {
       state.hasMoreSearchingPage = payload;
+    },
+    setLocation: (state, { payload }) => {
+      if (state.user) {
+        state.user.latitude = payload.latitude;
+        state.user.longitude = payload.longitude;
+      }
+    },
+    setTags: (state, { payload }) => {
+      if (state.user) {
+        state.user.tags = payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -142,6 +157,8 @@ export const currentUserSlice = createSlice({
       }
     );
     builder.addMatcher(api.endpoints.logout.matchFulfilled, () => {
+      disconnectNotificationConnection();
+      disconnectChatConnection();
       return initialState;
     });
     builder.addMatcher(
@@ -184,4 +201,6 @@ export const {
   applyFilter,
   increaseBrowsingPage,
   increaseSearchingPage,
+  setLocation,
+  setTags,
 } = currentUserSlice.actions;

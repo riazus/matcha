@@ -44,7 +44,7 @@ export const disconnectNotificationConnection = () => {
     notificationConnection
       .stop()
       .then(() => {
-        console.info("SignalR Connection closed");
+        console.info("SignalR Notification Connection closed");
       })
       .catch((err) => console.error("Can't close SignalR Connection: ", err));
   }

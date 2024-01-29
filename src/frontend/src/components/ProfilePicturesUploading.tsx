@@ -20,20 +20,28 @@ function ProfilePicturesUploading({
   pictures,
   setPictures,
 }: ProfilePictureUploadingProps) {
+  const memoPictures = useMemo(
+    () => [profilePicture, ...pictures],
+    [profilePicture, pictures]
+  );
 
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     if (e.target.files) {
-      var nPictures = [...pictures];
+      var nPictures = [...memoPictures];
       nPictures[index] = e.target.files[0];
-      setPictures(nPictures);
+      if (memoPictures.every((el) => el === null)) {
+        setProfilePicture(e.target.files[0]);
+      } else {
+        setPictures(nPictures.filter((_, i) => i !== 0));
+      }
     }
   };
 
   const suppressPictureUploaded = (index: number) => {
-    var nPictures = [...pictures];
+    var nPictures = [...memoPictures];
     nPictures[index] = null;
     for (let i = 0; i < nPictures.length - 1; i++) {
       if (nPictures[i] === null && nPictures[i + 1] !== null) {
@@ -41,7 +49,9 @@ function ProfilePicturesUploading({
         nPictures[i + 1] = null;
       }
     }
-    setPictures(nPictures);
+
+    setProfilePicture(nPictures[0]);
+    setPictures(nPictures.filter((_, i) => i !== 0));
   };
 
   return (
