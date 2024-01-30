@@ -108,7 +108,7 @@ function SettingsForm() {
             🏠 Location settings
           </AccordionSummary>
           <AccordionDetails>
-            <ChangeLocationSettings />
+            <ChangeLocationSettings user={user}/>
           </AccordionDetails>
         </Accordion>
 
@@ -135,6 +135,8 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     minWidth: "75%",
+    marginTop: "10px",
+    marginBottom: "10px",
   },
   onePictureBox: {
     backgroundColor: "rgb(150, 150, 150, 0.3)",

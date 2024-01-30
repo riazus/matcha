@@ -7,6 +7,8 @@ export interface UserState {
   isProfileCompleted: boolean;
   latitude: number | undefined;
   longitude: number | undefined;
+  town: string;
+  country: string;
   tags: string[];
 }
 

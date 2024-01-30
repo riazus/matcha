@@ -12,6 +12,7 @@ import { useChangeLocationMutation } from "../app/api/api";
 import { useEffect, useState, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 import { setLocation } from "../app/slices/currentUserSlice";
+import { UserState } from "../types/slices/currentUser";
 
 interface LocationSwitchProps {
   checked: boolean;
@@ -36,8 +37,7 @@ const LocationSwitch: React.FC<LocationSwitchProps> = ({
   );
 };
 
-function ChangeLocationSettings() {
-  const { user } = useAppSelector((root) => root.user);
+function ChangeLocationSettings({ user }: { user: UserState | null }) {
   const nullAddress = {
     latitude: 0,
     longitude: 0,
@@ -69,6 +69,8 @@ function ChangeLocationSettings() {
         setLocation({
           latitude: newLocation.latitude,
           longitude: newLocation.longitude,
+          town: newLocation.town,
+          country: newLocation.country,
         })
       );
 
@@ -76,7 +78,7 @@ function ChangeLocationSettings() {
         toast.success(`Localisation has been disabled`);
       else
         toast.success(
-          `Location successfully changed to ${newLocation.town}, ${newLocation.country}`
+          `Location successfully changed to ${newLocation.town ? newLocation.town : ""} ${newLocation.country}`
         );
     }
   }, [isLoading, isSuccess, newLocation]);
@@ -99,18 +101,19 @@ function ChangeLocationSettings() {
       setNewLocation(nullAddress);
       changeLocation(nullAddress);
     } else {
-      console.log("change location called :");
+      console.log("fetch called")
       fetch(`https://ipapi.co/${ip}/json`)
         .then((res) => res.json())
         .then((res) => {
-          setNewLocation({
+          const data = {
             latitude: res.latitude,
             longitude: res.longitude,
             postcode: res.postal,
             town: res.city,
             country: res.country_name,
-          });
-          changeLocation(newLocation as Location);
+          }
+          setNewLocation(data);
+          changeLocation(data);
         })
         .catch((err) => {
           console.log("Request failed:", err);
@@ -131,7 +134,11 @@ function ChangeLocationSettings() {
           <Box sx={styles.location}>
             <OpenStreetMap setAddressData={handleChangeLocation} />
           </Box>
-          <Typography>{`You are located in ${newLocation?.town}, ${newLocation?.country}, `}</Typography>
+          {newLocation ? (
+            <Typography>{`You are located in ${newLocation.town !== undefined ? newLocation.town : ""} ${newLocation.country}`}</Typography>
+          ) : (
+            <Typography>{`You are located in ${user?.town !== undefined ? user?.town : ""} ${user?.country}`}</Typography>
+          )}
         </>
       )}
     </Box>

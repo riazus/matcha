@@ -49,12 +49,14 @@ export interface RefreshTokenResponse {
   isProfileCompleted: boolean;
   latitude: number | undefined;
   longitude: number | undefined;
+  town: string;
+  country: string;
   tags: string[];
 }
 
 export interface Location {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   postcode: string;
   town: string;
   country: string;
@@ -68,8 +70,8 @@ export interface CompleteProfileBody {
   genderPreferences: Orientation;
   description: string;
   birthday: Date;
-  latitude: number | undefined;
-  longitude: number | undefined;
+  latitude: number | null | undefined;
+  longitude: number | null | undefined;
   town: string | null;
   country: string | null;
   postcode: string | null;
