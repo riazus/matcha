@@ -111,7 +111,6 @@ function ChangeLocationSettings() {
             country: res.country_name,
           });
           changeLocation(newLocation as Location);
-          console.log("change location called :", newLocation);
         })
         .catch((err) => {
           console.log("Request failed:", err);
@@ -132,7 +131,7 @@ function ChangeLocationSettings() {
           <Box sx={styles.location}>
             <OpenStreetMap setAddressData={handleChangeLocation} />
           </Box>
-          <Typography>{`You are located in ${newLocation?.country}, ${newLocation?.town}`}</Typography>
+          <Typography>{`You are located in ${newLocation?.town}, ${newLocation?.country}, `}</Typography>
         </>
       )}
     </Box>

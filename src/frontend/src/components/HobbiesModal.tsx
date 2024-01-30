@@ -91,7 +91,7 @@ const HobbiesModal = forwardRef(
     };
 
     return (
-      <Box ref={ref} sx={styles.boxModal}>
+      <Box ref={ref} sx={styles.boxModal} tabIndex={-1}>
         <Typography variant="h1" sx={styles.interrestsText}>
           Interrests :
         </Typography>
