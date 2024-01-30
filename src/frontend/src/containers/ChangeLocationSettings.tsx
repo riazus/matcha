@@ -1,4 +1,4 @@
-import { Box, FormLabel, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import OpenStreetMap from "./OpenStreetMap";
 import { Location } from "../types/api/accounts";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";

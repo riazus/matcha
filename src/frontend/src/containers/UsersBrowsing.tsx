@@ -1,6 +1,4 @@
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
 import { api, useGetBrowsingUsersWithFiltersQuery } from "../app/api/api";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +12,6 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
-  Link,
   Tooltip,
 } from "@mui/material";
 import { Favorite } from "@mui/icons-material";

@@ -10,9 +10,8 @@ import {
   List,
   ListItemButton,
   ListItem,
-  ListItemIcon,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
+import { useAppSelector } from "../app/hooks/hooks";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -22,8 +21,6 @@ import {
 import { matchaColors } from "../styles/colors";
 import { useEffect, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import VerticalSplitIcon from "@mui/icons-material/VerticalSplit";
 import { Link } from "react-router-dom";
 
@@ -39,7 +36,7 @@ function Header() {
     user?.id ? undefined : skipToken
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [windowSize, setWindowSize] = useState({
+  const [windowSize, _] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
@@ -69,7 +66,7 @@ function Header() {
           "Favorites",
           "History",
           "Settings",
-        ].map((text, index) => (
+        ].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               {/* <ListItemIcon></ListItemIcon> */}
