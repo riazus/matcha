@@ -3,6 +3,10 @@ export interface GenericResponse {
   message: string;
 }
 
+export interface IpAddressResponse {
+  ipAddress: string;
+}
+
 export interface RegisterBody {
   username: string;
   firstName: string;

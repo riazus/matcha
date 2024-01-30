@@ -14,7 +14,9 @@ import {
   Location,
   Orientation,
 } from "../types/api/accounts";
-import { useCompleteProfileMutation } from "../app/api/api";
+import {
+  useCompleteProfileMutation,
+} from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useEffect, useState, useRef } from "react";
@@ -42,6 +44,7 @@ function CompleteProfile() {
   const [genderPreferences, setGenderPreferences] = useState<Orientation>(
     Orientation.Male
   );
+
   const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
   const [addressData, setAddressData] = useState<Location>({
@@ -61,7 +64,6 @@ function CompleteProfile() {
 
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
-      toast.error("You cannot exceed 300 characters for your bio");
       return;
     }
     setDescription(e.target.value);

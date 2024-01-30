@@ -32,6 +32,7 @@ import {
   UpdatePasswordBody,
   ChangeProfilePictureResponse,
   Location,
+  IpAddressResponse,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -211,6 +212,9 @@ export const api = createApi({
     }),
     getProfileMeViewed: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.VIEWED_ME }),
+    }),
+    getIpAddress: builder.query<IpAddressResponse, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.IP_ADRRESS }),
     }),
     getUserById: builder.query<AccountResponse, string>({
       query: (id) => ({ url: ACCOUNT_ROUTES.USER_BY_ID(id) }),
@@ -463,6 +467,7 @@ export const {
   useGetUsersWithFiltersQuery,
   useGetBrowsingUsersWithFiltersQuery,
   useGetSettingsDataQuery,
+  useGetIpAddressQuery,
   useUpdateProfileSettingsMutation,
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,

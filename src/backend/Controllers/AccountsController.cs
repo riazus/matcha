@@ -5,6 +5,7 @@ using Backend.Helpers;
 using Backend.Models.Account;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 [Authorize]
@@ -212,6 +213,13 @@ public class AccountsController : BaseController
     {
         var res = _accountService.GetSettingsData(Account);
         return Ok(res);
+    }
+
+    [HttpGet("ip-address")]
+    public ActionResult GetIpAddress()
+    {
+        string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        return Ok(new { IpAddress = ipAddress });
     }
 
     [HttpPut("update-profile")]

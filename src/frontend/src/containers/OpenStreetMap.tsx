@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DivIcon, LatLngExpression } from "leaflet";
 import {
   Marker,
@@ -14,33 +14,68 @@ import { Location } from "../types/api/accounts";
 const markerIcon = new DivIcon({
   iconUrl: "leaflet/dist/images/marker-icon.png",
 });
+const IP_API_URL = "https://ipapi.co/json/";
+const NOMINATIM_API_URL =
+  "https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=en-US";
+
 
 function LocationMarker(props: OpenStreetMapProps) {
   const [position, setPosition] = useState<LatLngExpression | null>(null);
+  const [ip, setIp] = useState();
+
+  const getIp = async () => {
+    const response = await fetch(IP_API_URL);
+    const data = await response.json();
+    setIp(data.ip);
+  };
+
+  useEffect(() => {
+    getIp();
+  }, []);
+
   const map = useMapEvents({
     click() {
       map.locate();
     },
     locationfound(e) {
-      fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&accept-language=en-US&lat=${e.latlng.lat}&lon=${e.latlng.lng}`,
-        {
-          method: "GET",
-        }
-      )
-        .then((body) => body.json())
-        .then((res) =>
-          props.setAddressData({
-            latitude: e.latlng.lat,
-            longitude: e.latlng.lng,
-            country: res.address.country,
-            postcode: res.address.postcode,
-            town: res.address.town,
-          })
+      if ("geolocation" in navigator) {
+        fetch(
+          `${NOMINATIM_API_URL}&lat=${e.latlng.lat}&lon=${e.latlng.lng}`,
+          {
+            method: "GET",
+          }
         )
-        .catch((err) => toast(`Error occured when fetched location: ${err}`));
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, 13);
+          .then((body) => body.json())
+          .then((res) =>
+            props.setAddressData({
+              latitude: e.latlng.lat,
+              longitude: e.latlng.lng,
+              country: res.address.country,
+              postcode: res.address.postcode,
+              town: res.address.town,
+            })
+          )
+          .catch((err) => toast(`Error occured when fetched location: ${err}`));
+        setPosition(e.latlng);
+        map.flyTo(e.latlng, 13);
+      } else {
+        fetch(`https://ipapi.co/${ip}/json`)
+        .then((res) => res.json())
+        .then((res) => {
+          props.setAddressData({
+            latitude: res.latitude,
+            longitude: res.longitude,
+            postcode: res.postal,
+            town: res.city,
+            country: res.country_name,
+          });
+          setPosition([res.latitude, res.longitude]);
+          map.flyTo([res.latitude, res.longitude], 13);
+          })
+          .catch((err) => {
+            console.log("Request failed:", err);
+          });
+      }
     },
   });
 
