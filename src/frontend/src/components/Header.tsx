@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemIcon,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -62,16 +62,21 @@ function Header() {
       onKeyDown={() => setDrawerOpen(false)}
     >
       <List>
-        {["Home", "Users", "Notifications", "Favorites", "History", "Settings"].map(
-          (text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
-                {/* <ListItemIcon></ListItemIcon> */}
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          )
-        )}
+        {[
+          "Home",
+          "Users",
+          "Notifications",
+          "Favorites",
+          "History",
+          "Settings",
+        ].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
+              {/* <ListItemIcon></ListItemIcon> */}
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
     </Box>
   );

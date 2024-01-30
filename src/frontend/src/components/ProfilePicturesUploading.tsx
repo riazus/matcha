@@ -1,9 +1,9 @@
 import { Box, Button, FormLabel } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { memo, useMemo } from "react";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import { memo } from "react";
 import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
-import { fontFamily } from "@mui/system";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -20,65 +20,66 @@ function ProfilePicturesUploading({
   pictures,
   setPictures,
 }: ProfilePictureUploadingProps) {
-  const memoPictures = useMemo(
-    () => [profilePicture, ...pictures],
-    [profilePicture, pictures]
-  );
-
   const handlePictureUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    if (e.target.files) {
-      var nPictures = [...memoPictures];
-      nPictures[index] = e.target.files[0];
-      if (memoPictures.every((el) => el === null)) {
-        setProfilePicture(e.target.files[0]);
-      } else {
-        setPictures(nPictures.filter((_, i) => i !== 0));
+    setPictures((prev) => {
+      if (e.target.files) {
+        const nPictures = [...prev];
+        nPictures[index] = e.target.files[0];
+        return nPictures;
       }
-    }
+      return prev;
+    });
   };
 
   const suppressPictureUploaded = (index: number) => {
-    var nPictures = [...memoPictures];
-    nPictures[index] = null;
-    for (let i = 0; i < nPictures.length - 1; i++) {
-      if (nPictures[i] === null && nPictures[i + 1] !== null) {
-        nPictures[i] = nPictures[i + 1];
-        nPictures[i + 1] = null;
-      }
-    }
+    setPictures((prev) => {
+      var nPictures = [...prev];
+      nPictures[index] = null;
 
-    setProfilePicture(nPictures[0]);
-    setPictures(nPictures.filter((_, i) => i !== 0));
+      for (let i = 0; i < nPictures.length - 1; i++) {
+        if (nPictures[i] === null && nPictures[i + 1] !== null) {
+          nPictures[i] = nPictures[i + 1];
+          nPictures[i + 1] = null;
+        }
+      }
+
+      return nPictures;
+    });
   };
 
   return (
     <div>
-      <FormLabel sx={styles.labelText}>Please select a profile picture :</FormLabel>
+      <FormLabel sx={styles.labelText}>
+        Please select a profile picture :
+      </FormLabel>
       <Box sx={styles.picturesBox}>
-          <div
-            style={{
-              ...styles.onePictureBox,
-              backgroundImage:
-                profilePicture
-                  ? `url(${URL.createObjectURL(profilePicture)})`
-                  : "none",
-            }}
-          >
+        <div
+          style={{
+            ...styles.onePictureBox,
+            backgroundImage: profilePicture
+              ? `url(${URL.createObjectURL(profilePicture)})`
+              : "none",
+          }}
+        >
           <Button component="label">
-            <AddCircleOutlineIcon fontSize="large" />
+            <DriveFileRenameOutlineIcon fontSize="large" />
             <VisuallyHiddenInput
               type="file"
               accept={ACCEPTED_IMAGE_TYPES}
-              onChange={(e) => setProfilePicture(e.target.files ? e.target.files[0] : null)}
+              onChange={(e) =>
+                setProfilePicture(e.target.files ? e.target.files[0] : null)
+              }
             />
           </Button>
-          </div>
+        </div>
       </Box>
 
-      <FormLabel sx={styles.labelText}>You can select additionnal pictures :</FormLabel>
+      <FormLabel sx={styles.labelText}>
+        You can select additionnal pictures :
+      </FormLabel>
       <Box sx={styles.picturesBox}>
         {pictures.map((picture, index) => (
           <div
@@ -91,10 +92,9 @@ function ProfilePicturesUploading({
                   : "none",
             }}
           >
-            {!pictures[index] &&
-            (index === 0 || pictures[index - 1]) ? (
+            {!pictures[index] && (index === 0 || pictures[index - 1]) ? (
               <Button component="label">
-                <AddCircleOutlineIcon fontSize="large"/>
+                <AddCircleOutlineIcon fontSize="large" />
                 <VisuallyHiddenInput
                   type="file"
                   accept={ACCEPTED_IMAGE_TYPES}

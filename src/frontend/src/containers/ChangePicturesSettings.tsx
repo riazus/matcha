@@ -1,5 +1,5 @@
 import { useGetPicturesQuery } from "../app/api/api";
-import { Box, FormLabel, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useEffect, useState } from "react";
 import { Pictures } from "../types/api/accounts";

@@ -1,28 +1,20 @@
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
-import { styled } from "@mui/material/styles";
 import { useGetUsersWithFiltersQuery } from "../app/api/api";
-import { matchaColors } from "../styles/colors";
 import { Box, Button } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import Filter from "../components/Filter";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { increaseSearchingPage } from "../app/slices/currentUserSlice";
-import { fontSize } from "@mui/system";
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
 import title from "../styles/title";
-
-const Demo = styled("div")(({ theme }) => ({
-  // backgroundColor: theme.palette.background.paper,
-}));
 
 function UsersList() {
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(
@@ -47,7 +39,6 @@ function UsersList() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 1) {
@@ -56,14 +47,14 @@ function UsersList() {
         setShowButton(false);
       }
     };
-    
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  
+
   if (isLoading) {
     return <FullScreenLoader />;
   }
@@ -79,7 +70,7 @@ function UsersList() {
         </Typography>
         <Filter />
       </Box>
-      <Demo sx={{ marginLeft: "10%" }}>
+      <div style={{ marginLeft: "10%" }}>
         <List dense={false} sx={styles.list}>
           <InfiniteScroll
             dataLength={data?.length ?? 0}
@@ -92,13 +83,7 @@ function UsersList() {
                 <ListItemButton
                   key={ind}
                   onClick={() => navigate(`/users/${user.id}`)}
-                  sx={{
-                    marginBottom: "1%",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
-                    background: "rgb(142, 202, 230, 0.6)",
-                    borderRadius: "20px",
-                    marginRight: "10%",
-                  }}
+                  sx={styles.listItemButton}
                 >
                   <ListItemAvatar>
                     <Avatar src={user.profilePictureUrl}></Avatar>
@@ -112,23 +97,15 @@ function UsersList() {
             })}
           </InfiniteScroll>
         </List>
-      </Demo>
-      {showButton &&  <Button
-        onClick={scrollToTop}
-        style={{
-          padding: "10px",
-          backgroundColor: "#007BFF",
-          color: "#fff",
-          border: "none",
-          borderRadius: "20px",
-          cursor: "pointer",
-          position: "fixed",
-          top: "90%",
-          left: "90%",
-        }}
-      >
-        <KeyboardDoubleArrowUpIcon />
-      </Button>}
+      </div>
+      {showButton && (
+        <Button
+          onClick={scrollToTop}
+          style={{ ...styles.scrollButton, position: "fixed" }}
+        >
+          <KeyboardDoubleArrowUpIcon />
+        </Button>
+      )}
     </Box>
   );
 }
@@ -149,6 +126,23 @@ const styles = {
     justifyContent: "space-between",
     marginLeft: "10%",
     marginRight: "10%",
+  },
+  listItemButton: {
+    marginBottom: "1%",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
+    background: "rgb(142, 202, 230, 0.6)",
+    borderRadius: "20px",
+    marginRight: "10%",
+  },
+  scrollButton: {
+    padding: "10px",
+    backgroundColor: "#007BFF",
+    color: "#fff",
+    border: "none",
+    borderRadius: "20px",
+    cursor: "pointer",
+    top: "90%",
+    left: "90%",
   },
 };
 

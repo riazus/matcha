@@ -1,15 +1,13 @@
-import { Box, Container, color } from "@mui/system";
+import { Box, Container } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { alpha, styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import {
   TextField,
   Button,
   FormLabel,
   Modal,
   InputAdornment,
-  Radio,
-  FormControlLabel
 } from "@mui/material";
 import { LoadingButton } from "../components/LoadingButtonForm";
 import {
@@ -20,7 +18,7 @@ import {
 import { useCompleteProfileMutation } from "../app/api/api";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useEffect, useState, useRef, ChangeEvent } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dayjs } from "dayjs";
 import OpenStreetMap from "./OpenStreetMap";
 import { toast } from "react-toastify";
@@ -38,49 +36,25 @@ export interface AddressData {
   country: string;
 }
 
-interface RadioButtonProps {
-  value: string;
-  label: string;
-  name: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}
-
 const ITextField = styled(TextField)({
-  '& label.Mui-focused': {
+  "& label.Mui-focused": {
     color: matchaColors.yellow,
   },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: '#B2BAC2',
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "#B2BAC2",
   },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: '#E0E3E7',
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#E0E3E7",
     },
-    '&:hover fieldset': {
-      borderColor: '#B2BAC2',
+    "&:hover fieldset": {
+      borderColor: "#B2BAC2",
     },
-    '&.Mui-focused fieldset': {
+    "&.Mui-focused fieldset": {
       borderColor: matchaColors.yellow,
     },
   },
 });
-
-const RadioButton: React.FC<RadioButtonProps> = ({
-  value,
-  label,
-  name,
-  onChange,
-}) => {
-  return (
-    <FormControlLabel
-      value={value}
-      control={
-        <Radio sx={styles.radioButton} name={name} onChange={onChange} />
-      }
-      label={label}
-    />
-  );
-};
 
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
@@ -116,7 +90,7 @@ function CompleteProfile() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/home");
+      navigate("/home", { replace: true });
     }
   }, [isLoading]);
 
@@ -143,9 +117,9 @@ function CompleteProfile() {
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter((val) => val !== null) as
-        | File[]
-        | null,
+      additionalPictures: pictures.filter(
+        (val) => val !== null
+      ) as unknown as File[],
       gender: gender,
       genderPreferences: genderPreferences,
       tags: tags,
@@ -371,7 +345,6 @@ const styles = {
     color: matchaColors.text,
     marginLeft: "3%",
     borderRadius: "10px",
-
   },
   selection: {
     backgroundColor: matchaColors.backgroundlight,
@@ -424,7 +397,7 @@ const styles = {
   textfield: {
     marginBottom: "1%",
     width: "60%",
-    color: matchaColors.yellow
+    color: matchaColors.yellow,
   },
 };
 

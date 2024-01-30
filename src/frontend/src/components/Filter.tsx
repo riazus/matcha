@@ -13,7 +13,7 @@ import {
 import NorthIcon from "@mui/icons-material/North";
 import SouthIcon from "@mui/icons-material/South";
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import { styled } from "@mui/material/styles";
 import { Filter as IFilter } from "../types/slices/currentUser";
 import { applyFilter } from "../app/slices/currentUserSlice";

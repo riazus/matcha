@@ -4,7 +4,7 @@ import Avatar from "@mui/material/Avatar";
 import { api, useGetBrowsingUsersWithFiltersQuery } from "../app/api/api";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import Filter from "../components/Filter";
 import { matchaColors } from "../styles/colors";
 import {
