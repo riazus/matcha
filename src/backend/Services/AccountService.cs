@@ -511,6 +511,8 @@ public class AccountService : IAccountService
 
     public string CreateNewPicture(Account currUser, IFormFile newPicture)
     {
+        validateFileExtension(newPicture.FileName);
+
         string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
         string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
 
@@ -591,6 +593,8 @@ public class AccountService : IAccountService
 
     public string UpdateProfilePicture(Account currUser, IFormFile newPicture)
     {
+        validateFileExtension(newPicture.FileName);
+        
         string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
         string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
 
