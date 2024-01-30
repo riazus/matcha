@@ -337,6 +337,8 @@ public class AccountService : IAccountService
 
     public CompleteProfileResponse CompleteProfile(CompleteProfileRequest profileData, Account currUser)
     {
+        validateRequest(profileData);
+
         string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
         string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
 
@@ -631,6 +633,30 @@ public class AccountService : IAccountService
     }
 
     #region Helper methods
+    private void validateRequest(CompleteProfileRequest req)
+    {
+        validateFileExtension(req.ProfilePicture.FileName);
+
+        if (req.AdditionalPictures != null)
+        {
+            foreach (var picture in req.AdditionalPictures)
+            {
+                validateFileExtension(picture.FileName);
+            }
+        }
+    }
+
+    private void validateFileExtension(string fileName)
+    {
+        var allowedExtensions = new[] { ".png", ".jpeg", ".jpg", ".webp" };
+        var fileExtension = Path.GetExtension(fileName);
+
+        if (!allowedExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new AppException($"Provided invalid file {fileName}");
+        }
+    }
+
     private void removeOldRefreshTokens(Account account)
     {
         _accountRepository.RemoveOldRefreshTokens(_appSettings.RefreshTokenTTL);
