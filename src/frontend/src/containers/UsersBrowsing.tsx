@@ -17,6 +17,8 @@ import {
 import { Favorite } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
+import { NotificationEvent } from "../config";
 import InfoIcon from "@mui/icons-material/Info";
 import title from "../styles/title";
 
@@ -47,10 +49,15 @@ function UsersBrowsing() {
   };
 
   const handleMatchClick = () => {
+    emitNotificationConnectionEvent(NotificationEvent.LikeProfile, data![0].id);
     handleBrowsingClick();
   };
 
   const handleUnmatchClick = () => {
+    emitNotificationConnectionEvent(
+      NotificationEvent.UnfavoriteProfile,
+      data![0].id
+    );
     handleBrowsingClick();
   };
 

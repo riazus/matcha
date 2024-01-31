@@ -29,6 +29,7 @@ public interface IAccountRepository
     void Add(Account account);
     void AddRefreshToken(RefreshToken refreshToken);
     void AddFavoriteProfile(FavoriteProfile profile);
+    void AddUnfavoriteProfile(UnfavoriteProfile profile);
     void RemoveOldRefreshTokens(int refreshTokenTTL);
     bool OwnsToken(Guid accountId, string token);
     void RemoveLike(Guid currUserId, Guid id);
@@ -59,6 +60,11 @@ public class AccountRepository : IAccountRepository
     }
 
     public void AddFavoriteProfile(FavoriteProfile profile)
+    {
+        _context.Insert(profile);
+    }
+
+    public void AddUnfavoriteProfile(UnfavoriteProfile profile)
     {
         _context.Insert(profile);
     }
@@ -229,7 +235,9 @@ public class AccountRepository : IAccountRepository
 
         if (filter.IsForBrowsing)
         {
-            query.Append($" AND acc1.GenderDB = {currUser.GenderPreferencesDB} AND acc1.GenderPreferencesDB = {currUser.GenderDB}");
+            query.Append($" AND acc1.GenderDB = {currUser.GenderPreferencesDB} AND acc1.GenderPreferencesDB = {currUser.GenderDB}" +
+                $" AND acc1.Id NOT IN (SELECT fp.FavoriteAccountId FROM FavoriteProfile fp WHERE fp.LikedById = \'{currUser.Id}\')" +
+                $" AND acc1.Id NOT IN (SELECT up.UnfavoriteAccountId FROM UnfavoriteProfile up WHERE up.DislikedById = \'{currUser.Id}\')");
         }
 
         query.Append(" ORDER BY");
