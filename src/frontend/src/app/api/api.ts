@@ -210,19 +210,22 @@ export const api = createApi({
       query: () => ({ url: ACCOUNT_ROUTES.MY_VIEWS }),
       async onCacheEntryAdded(
         _,
-        { cacheDataLoaded, cacheEntryRemoved, updateCachedData}
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
       ) {
         try {
           await cacheDataLoaded;
 
           // TODO: this is wrong!!! Need to replace this query in the another file
           const connection = getNotificationConnection();
-          
-          connection?.on(NotificationEvent.AddViewedProfile, (acc: AccountsResponse) => {
-            updateCachedData((draft) => {
-              draft.push(acc);
-            });
-          });
+
+          connection?.on(
+            NotificationEvent.AddViewedProfile,
+            (acc: AccountsResponse) => {
+              updateCachedData((draft) => {
+                draft.push(acc);
+              });
+            }
+          );
 
           await cacheEntryRemoved;
 
@@ -230,25 +233,28 @@ export const api = createApi({
         } catch (err) {
           console.error(err);
         }
-      }
+      },
     }),
     getProfileMeViewed: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.VIEWED_ME }),
       async onCacheEntryAdded(
         _,
-        { cacheDataLoaded, cacheEntryRemoved, updateCachedData}
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
       ) {
         try {
           await cacheDataLoaded;
 
           // TODO: this is wrong!!! Need to replace this query in the another file
           const connection = getNotificationConnection();
-          
-          connection?.on(NotificationEvent.AddProfileMeViewed, (acc: AccountsResponse) => {
-            updateCachedData((draft) => {
-              draft.push(acc);
-            });
-          });
+
+          connection?.on(
+            NotificationEvent.AddProfileMeViewed,
+            (acc: AccountsResponse) => {
+              updateCachedData((draft) => {
+                draft.push(acc);
+              });
+            }
+          );
 
           await cacheEntryRemoved;
 
@@ -256,7 +262,7 @@ export const api = createApi({
         } catch (err) {
           console.error(err);
         }
-      }
+      },
     }),
     getUserById: builder.query<AccountResponse, string>({
       query: (id) => ({ url: ACCOUNT_ROUTES.USER_BY_ID(id) }),
