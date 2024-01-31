@@ -26,15 +26,18 @@ import { Link } from "react-router-dom";
 
 function Header() {
   const { user } = useAppSelector((root) => root.user);
+  const { isNotificationHubConnected } = useAppSelector((root) => root.socket);
   const navigate = useNavigate();
   const [
     logoutUser,
     { isLoading: isLogoutLoading, isSuccess: isLogoutSuccess },
   ] = useLogoutMutation();
 
+  // get notification count only if notification connection established
   const { data: notificationCount } = useGetNotificationsCountQuery(
-    user?.id ? undefined : skipToken
+    isNotificationHubConnected ? undefined : skipToken
   );
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [windowSize, _] = useState({
     width: window.innerWidth,
@@ -69,7 +72,6 @@ function Header() {
         ].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
-              {/* <ListItemIcon></ListItemIcon> */}
               <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>
