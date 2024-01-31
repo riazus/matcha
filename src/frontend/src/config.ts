@@ -83,6 +83,7 @@ export enum NotificationEvent {
   ProfileView = "ProfileView",
   LikeProfile = "LikeProfile",
   DislikeProfile = "DislikeProfile",
+  UnfavoriteProfile = "UnfavoriteProfile",
   ProfilesMatched = "ProfilesMatched",
   ProfilesUnmatched = "ProfilesUnmatched",
   NotifyMessageReceived = "NotifyMessageReceived",

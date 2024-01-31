@@ -45,6 +45,10 @@ function UsersBrowsing() {
   };
 
   const handleUnmatchClick = () => {
+    emitNotificationConnectionEvent(
+      NotificationEvent.UnfavoriteProfile,
+      data![0].id
+    );
     handleBrowsingClick();
   };
 

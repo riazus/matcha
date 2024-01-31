@@ -115,6 +115,20 @@ public class NotificationHub : ApplicationHub
         }
     }
 
+    public void UnfavoriteProfile(string unfavoriteProfileId)
+    {
+        if (!Guid.TryParse(unfavoriteProfileId, out var parsedUnfavoriteProfileId))
+        {
+            throw new AppException("Provided invalid id");
+        }
+
+        _accountRepository.AddUnfavoriteProfile(new UnfavoriteProfile() 
+        { 
+            DislikedById = CurrentAccountId, 
+            UnfavoriteAccountId = parsedUnfavoriteProfileId
+        });
+    }
+
     public async Task ProfileView(string viewedProfileId)
     {
         if (!Guid.TryParse(viewedProfileId, out var parsedViewedProfileId))
