@@ -1,13 +1,12 @@
 import {
   Box,
-  FormLabel,
   Typography,
   Switch,
   FormControlLabel,
 } from "@mui/material";
 import OpenStreetMap from "./OpenStreetMap";
 import { Location } from "../types/api/accounts";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch } from "../app/hooks/hooks";
 import { useChangeLocationMutation } from "../app/api/api";
 import { useEffect, useState, ChangeEvent } from "react";
 import { toast } from "react-toastify";

@@ -46,16 +46,18 @@ function LocationMarker(props: OpenStreetMapProps) {
   const map = useMapEvents({
     click(e) {
       map.locate();
-      navigator.permissions.query({name: 'geolocation'})
-      .then((permission) => {
-        if (permission.state !== "granted") {
-        fetchLocation(e);
-        setPosition(e.latlng);
-        map.flyTo(e.latlng, 13);}
-      })
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((permission) => {
+          if (permission.state !== "granted") {
+            fetchLocation(e);
+            setPosition(e.latlng);
+            map.flyTo(e.latlng, 13);
+          }
+        });
     },
     locationfound(e) {
-      if ('geolocation' in navigator) {
+      if ("geolocation" in navigator) {
         fetchLocation(e);
         setPosition(e.latlng);
         map.flyTo(e.latlng, 13);

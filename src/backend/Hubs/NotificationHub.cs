@@ -2,12 +2,14 @@
 using Backend.Helpers;
 using Backend.Repositories;
 using Backend.Services;
+using Backend.Models.Account;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Backend.Hubs;
 
 public class NotificationHub : ApplicationHub
 {
+    private readonly IMapper _mapper;
     private readonly IAccountService _accountService;
     private readonly IMessageService _messageService;
     private readonly IAccountRepository _accountRepository;
@@ -15,12 +17,14 @@ public class NotificationHub : ApplicationHub
     private readonly IMatchedProfilesService _matchedProfilesService;
 
     public NotificationHub(
+        IMapper mapper,
         IAccountService accountService,
         IAccountRepository accountRepository,
         INotificationService notificationService,
         IMatchedProfilesService matchedProfilesService,
-        IMessageService messageService)
-    {
+        IMessageService messageService
+    ) {
+        _mapper = mapper;
         _accountService = accountService;
         _accountRepository = accountRepository;
         _notificationService = notificationService;
@@ -127,8 +131,14 @@ public class NotificationHub : ApplicationHub
 
         var acc = _accountRepository.Get(currUserId);
         _accountService.AddProfileView(currUserId, parsedViewedProfileId);
+        var viewedAcc = _accountRepository.Get(parsedViewedProfileId);
 
         var newNotify = _notificationService.AddProfileViewed(acc.Username, parsedViewedProfileId);
+
+        await updateProfileViewsCache(
+            _mapper.Map(acc, new AccountsResponse()),
+            _mapper.Map(viewedAcc, new AccountsResponse())
+        );
 
         await sendAddNotification(parsedViewedProfileId, newNotify);
     }
@@ -153,6 +163,27 @@ public class NotificationHub : ApplicationHub
         _notificationService.DeleteNotification(parsedNotificationId);
 
         await sendDeleteNotification(CurrentAccountId, parsedNotificationId);
+    }
+
+    private async Task updateProfileViewsCache(AccountsResponse acc, AccountsResponse viewedAcc)
+    {
+        // update current user cache 
+        if (_connectedNotificationClients.TryGetValue(acc.Id, out var currUserIds))
+        {
+            foreach (var connectionId in currUserIds)
+            {
+                await Clients.Client(connectionId).SendAsync("AddViewedProfile", viewedAcc);
+            }
+        }
+
+        // update viewed profile's cache 
+        if (_connectedNotificationClients.TryGetValue(viewedAcc.Id, out var viewedProfileIds))
+        {
+            foreach (var connectionId in viewedProfileIds)
+            {
+                await Clients.Client(connectionId).SendAsync("AddProfileMeViewed", acc);
+            }
+        }
     }
 
     private async Task sendLikeProfileEvent(Guid toUserId)

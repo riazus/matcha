@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Demo, Profile } from "./HistoryList";
+import { useEffect } from "react";
+import { Demo } from "./HistoryList";
 import { useGetProfileMeViewedQuery } from "../app/api/api";
 import { List, ListItem, ListItemText } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
@@ -9,13 +9,11 @@ interface ProfilesMeViewedListProps {
 }
 
 function ProfilesMeViewedList(props: ProfilesMeViewedListProps) {
-  const { data, isSuccess, isLoading } = useGetProfileMeViewedQuery();
-  const [profilesMeViewed, setProfilesMeViewed] = useState<Profile[]>([]);
+  const { data: profilesMeViewed, isSuccess, isLoading } = useGetProfileMeViewedQuery();
 
   useEffect(() => {
     if (isSuccess) {
-      props.setProfilesMeViewedCount(data.length);
-      setProfilesMeViewed(data.map((el) => ({ username: el.username })));
+      props.setProfilesMeViewedCount(profilesMeViewed.length);
     }
   }, [isLoading]);
 

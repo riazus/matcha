@@ -1,6 +1,7 @@
 import { Box, Container } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { styled } from "@mui/material/styles";
 import {
   TextField,
   Button,
@@ -26,6 +27,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import HobbiesModal from "../components/HobbiesModal";
 import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
+import { matchaColors } from "../styles/colors";
 import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 
 export interface AddressData {
@@ -35,6 +37,26 @@ export interface AddressData {
   town: string;
   country: string;
 }
+
+const ITextField = styled(TextField)({
+  "& label.Mui-focused": {
+    color: matchaColors.yellow,
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "#B2BAC2",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#E0E3E7",
+    },
+    "&:hover fieldset": {
+      borderColor: "#B2BAC2",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: matchaColors.yellow,
+    },
+  },
+});
 
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
@@ -71,7 +93,7 @@ function CompleteProfile() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/home");
+      navigate("/home", { replace: true });
     }
   }, [isLoading]);
 
@@ -98,9 +120,9 @@ function CompleteProfile() {
     const res: CompleteProfileBody = {
       profilePicture: profilePicture,
       birthday: birthday.toDate(),
-      additionalPictures: pictures.filter((val) => val !== null) as
-        | File[]
-        | null,
+      additionalPictures: pictures.filter(
+        (val) => val !== null
+      ) as unknown as File[],
       gender: gender,
       genderPreferences: genderPreferences,
       tags: tags,
@@ -159,8 +181,8 @@ function CompleteProfile() {
         }
       />
 
-      <TextField
-        sx={{ marginBottom: "1%", width: "60%" }}
+      <ITextField
+        sx={styles.textfield}
         label="Please enter a bio"
         multiline
         rows={6}
@@ -220,7 +242,9 @@ function CompleteProfile() {
       </Box>
 
       <Box sx={styles.locationBox}>
-        <FormLabel>Click on the map to select your location :</FormLabel>
+        <FormLabel sx={styles.label}>
+          Click on the map to select your location :
+        </FormLabel>
         <Box sx={styles.location}>
           <OpenStreetMap setAddressData={setAddressData} />
         </Box>
@@ -270,7 +294,6 @@ const styles = {
     fontWeight: "600",
   },
   locationBox: {
-    backgroundColor: "rgb(253, 255, 252)",
     padding: "1%",
   },
   location: {
@@ -286,9 +309,9 @@ const styles = {
     marginBottom: "1%",
     marginLeft: "3%",
     color: "black",
-    backgroundColor: "rgb(150, 50, 150)",
+    backgroundColor: matchaColors.yellow,
     ":hover": {
-      backgroundColor: "rgb(100, 0, 100)",
+      backgroundColor: matchaColors.yellowlight,
     },
   },
   modal: {},
@@ -321,18 +344,23 @@ const styles = {
     marginBottom: "2%",
   },
   interrestsFinishedButton: {
-    marginTop: "3%",
+    backgroundColor: matchaColors.backgroundlight,
+    color: matchaColors.text,
+    marginLeft: "3%",
+    borderRadius: "10px",
   },
   selection: {
-    backgroundColor: "rgb(253, 255, 252)",
+    backgroundColor: matchaColors.backgroundlight,
     padding: "1%",
   },
-  selectionContent: {},
+  selectionContent: {
+    color: matchaColors.text,
+  },
   selectionContentSearch: {
+    color: matchaColors.text,
     margin: 0,
   },
   interrestsBox: {
-    backgroundColor: "rgb(253, 255, 252)",
     display: "flex",
     alignItems: "baseline",
     flexDirection: "column",
@@ -354,7 +382,25 @@ const styles = {
     marginLeft: "1%",
   },
   savingButton: {
-    backgroundColor: "rgb(150, 50, 150)",
+    backgroundColor: matchaColors.yellow,
+  },
+  radioGroup: {
+    display: "flex",
+  },
+  radioButton: {
+    color: matchaColors.yellow,
+    "&.Mui-checked": {
+      color: matchaColors.yellowlight,
+    },
+  },
+  label: {
+    fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+    fontWeight: 900,
+  },
+  textfield: {
+    marginBottom: "1%",
+    width: "60%",
+    color: matchaColors.yellow,
   },
 };
 

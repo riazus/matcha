@@ -5,6 +5,8 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { API_NOTIFICATION_HUB_URL } from "../config";
+import { store } from "../app/store";
+import { setNotificationHubConnected } from "../app/slices/socketSlice";
 
 let notificationConnection: HubConnection | undefined;
 
@@ -30,6 +32,7 @@ export const connectNotificationConnection = () => {
     notificationConnection
       .start()
       .then(() => {
+        store.dispatch(setNotificationHubConnected(true));
         console.info("SignalR NotificationHub Connected");
       })
       .catch((err) => console.error("SignalR Connection Error: ", err));
@@ -44,6 +47,7 @@ export const disconnectNotificationConnection = () => {
     notificationConnection
       .stop()
       .then(() => {
+        store.dispatch(setNotificationHubConnected(false));
         console.info("SignalR Notification Connection closed");
       })
       .catch((err) => console.error("Can't close SignalR Connection: ", err));

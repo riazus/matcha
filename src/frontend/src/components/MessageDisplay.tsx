@@ -7,7 +7,7 @@ import {
   disconnectChatConnection,
   initializeChatConnection,
 } from "../sockets/chatConnection";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../app/hooks/hooks";
 import {
   chatConnectionListeners,
   removeChatListeners,

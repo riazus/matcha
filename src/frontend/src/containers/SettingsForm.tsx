@@ -10,7 +10,7 @@ import {
   useChangeProfilePictureMutation,
   useGetSettingsDataQuery,
 } from "../app/api/api";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChangePicturesSettings from "./ChangePicturesSettings";
 import ChangeProfileSettings from "./ChangeProfileSettings";
@@ -108,7 +108,7 @@ function SettingsForm() {
             🏠 Location settings
           </AccordionSummary>
           <AccordionDetails>
-            <ChangeLocationSettings user={user}/>
+            <ChangeLocationSettings user={user} />
           </AccordionDetails>
         </Accordion>
 
@@ -135,8 +135,6 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     minWidth: "75%",
-    marginTop: "10px",
-    marginBottom: "10px",
   },
   onePictureBox: {
     backgroundColor: "rgb(150, 150, 150, 0.3)",
