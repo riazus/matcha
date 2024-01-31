@@ -23,7 +23,6 @@ public class NotificationHub : ApplicationHub
         INotificationService notificationService,
         IMatchedProfilesService matchedProfilesService,
         IMessageService messageService
-        
     ) {
         _mapper = mapper;
         _accountService = accountService;
