@@ -41,18 +41,25 @@ function LocationMarker(props: OpenStreetMapProps) {
         console.log("set address data", res.address.town);
       })
       .catch((err) => toast(`Error occured when fetched location: ${err}`));
-    setPosition(e.latlng);
-    map.flyTo(e.latlng, 13);
   };
 
   const map = useMapEvents({
     click(e) {
       map.locate();
-      fetchLocation(e);
-      console.log("map.locate : ", map.locate())
+      navigator.permissions.query({name: 'geolocation'})
+      .then((permission) => {
+        if (permission.state !== "granted") {
+        fetchLocation(e);
+        setPosition(e.latlng);
+        map.flyTo(e.latlng, 13);}
+      })
     },
     locationfound(e) {
-      if (navigator.geolocation) fetchLocation(e);
+      if ('geolocation' in navigator) {
+        fetchLocation(e);
+        setPosition(e.latlng);
+        map.flyTo(e.latlng, 13);
+      }
     },
   });
 

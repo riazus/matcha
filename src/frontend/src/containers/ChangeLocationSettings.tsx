@@ -101,7 +101,6 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
       setNewLocation(nullAddress);
       changeLocation(nullAddress);
     } else {
-      console.log("fetch called")
       fetch(`https://ipapi.co/${ip}/json`)
         .then((res) => res.json())
         .then((res) => {
@@ -135,10 +134,11 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
             <OpenStreetMap setAddressData={handleChangeLocation} />
           </Box>
           {newLocation ? (
-            <Typography>{`You are located in ${newLocation.town !== undefined ? newLocation.town : ""} ${newLocation.country}`}</Typography>
-          ) : (
-            <Typography>{`You are located in ${user?.town !== undefined ? user?.town : ""} ${user?.country}`}</Typography>
-          )}
+            <Typography>{`You are located in ${newLocation.town || ""} ${newLocation.country}`}</Typography>
+          ) : user?.country ? (
+            <Typography>{`You are located in ${user?.town || ""} ${user?.country}`}</Typography>)
+            : null
+          }
         </>
       )}
     </Box>
