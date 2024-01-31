@@ -208,9 +208,55 @@ export const api = createApi({
     }),
     getViewedProfiles: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.MY_VIEWS }),
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData}
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          // TODO: this is wrong!!! Need to replace this query in the another file
+          const connection = getNotificationConnection();
+          
+          connection?.on(NotificationEvent.AddViewedProfile, (acc: AccountsResponse) => {
+            updateCachedData((draft) => {
+              draft.push(acc);
+            });
+          });
+
+          await cacheEntryRemoved;
+
+          connection?.off(NotificationEvent.AddViewedProfile);
+        } catch (err) {
+          console.error(err);
+        }
+      }
     }),
     getProfileMeViewed: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.VIEWED_ME }),
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData}
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          // TODO: this is wrong!!! Need to replace this query in the another file
+          const connection = getNotificationConnection();
+          
+          connection?.on(NotificationEvent.AddProfileMeViewed, (acc: AccountsResponse) => {
+            updateCachedData((draft) => {
+              draft.push(acc);
+            });
+          });
+
+          await cacheEntryRemoved;
+
+          connection?.off(NotificationEvent.AddProfileMeViewed);
+        } catch (err) {
+          console.error(err);
+        }
+      }
     }),
     getUserById: builder.query<AccountResponse, string>({
       query: (id) => ({ url: ACCOUNT_ROUTES.USER_BY_ID(id) }),

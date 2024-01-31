@@ -11,6 +11,7 @@ public class AccountsResponse
     public Orientation Gender { get; set; }
     public Orientation GenderPreferences { get; set; }
     public DateTime? Birthday { get; set; }
+    public string Description { get; set; }
     public string Country { get; set; }
     public string Town { get; set; }
     public double? Latitude { get; set; }
