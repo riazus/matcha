@@ -1,7 +1,7 @@
-import { Box, FormLabel, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import OpenStreetMap from "./OpenStreetMap";
 import { Location } from "../types/api/accounts";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import { useChangeLocationMutation } from "../app/api/api";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

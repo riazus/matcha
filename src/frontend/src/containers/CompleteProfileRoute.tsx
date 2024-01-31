@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../app/hooks/hooks";
 
 function CompleteProfileRoute() {
   const { user } = useAppSelector((root) => root.user);

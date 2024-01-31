@@ -3,7 +3,7 @@ import Modal from "@mui/material/Modal";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Typography } from "@mui/material";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../app/hooks/hooks";
 import MessageDisplay from "../components/MessageDisplay";
 import { emitChatConnectionEvent } from "../sockets/chatConnection";
 import { ChatEvent } from "../config";

@@ -6,7 +6,7 @@ import {
   connectNotificationConnection,
   initializeNotificationConnection,
 } from "../sockets/notificationConnection";
-import { useAppSelector } from "../app/hooks";
+import { useAppSelector } from "../app/hooks/hooks";
 
 function ProtectedRoute() {
   const { user } = useAppSelector((root) => root.user);

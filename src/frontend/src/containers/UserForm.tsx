@@ -1,6 +1,6 @@
 import { IconButton, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch } from "../app/hooks/hooks";
 import { Button } from "@mui/base";
 import { useEffect, useState } from "react";
 import ChatModal from "./ChatModal";

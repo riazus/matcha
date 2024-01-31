@@ -28,4 +28,5 @@ export const removeChatListeners = () => {
   if (!connection) return;
 
   connection.off(ChatEvent.MessageNotValid);
+  connection.off(ChatEvent.NotifyInterlocutor);
 };

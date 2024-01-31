@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  FormLabel,
   InputAdornment,
   Modal,
   TextField,
@@ -14,7 +13,7 @@ import { LoadingButton } from "@mui/lab";
 import { api, useUpdateProfileSettingsMutation } from "../app/api/api";
 import { toast } from "react-toastify";
 import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch } from "../app/hooks/hooks";
 import { setTags as setUserStateTags } from "../app/slices/currentUserSlice";
 
 interface IProfileSettingsData {

@@ -81,6 +81,8 @@ export enum NotificationEvent {
   IncreaseNotificationsCount = "IncreaseNotificationsCount",
   ReduceNotificationsCount = "ReduceNotificationsCount",
   ProfileView = "ProfileView",
+  AddViewedProfile = "AddViewedProfile",
+  AddProfileMeViewed = "AddProfileMeViewed",
   LikeProfile = "LikeProfile",
   DislikeProfile = "DislikeProfile",
   UnfavoriteProfile = "UnfavoriteProfile",

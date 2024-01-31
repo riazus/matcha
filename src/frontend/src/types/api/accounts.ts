@@ -85,6 +85,7 @@ export interface AccountsResponse {
   gender: number;
   genderPreferences: number;
   birthday: Date;
+  description: string;
   country: string;
   town: string;
   latitude: number;
