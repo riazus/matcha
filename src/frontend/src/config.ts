@@ -89,6 +89,10 @@ export enum NotificationEvent {
   ProfilesMatched = "ProfilesMatched",
   ProfilesUnmatched = "ProfilesUnmatched",
   NotifyMessageReceived = "NotifyMessageReceived",
+  BlockProfile = "BlockProfile",
+  UnblockProfile = "UnblockProfile",
+  ProfileBlocked = "ProfileBlocked",
+  MyProfileWasBlocked = "MyProfileWasBlocked",
 }
 
 export enum ChatEvent {
