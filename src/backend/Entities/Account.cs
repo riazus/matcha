@@ -73,7 +73,6 @@ public class Account
     public string Postcode { get; set; }
     public string Country { get; set; }
     public string Town { get; set; }
-
     public int FameRating { get; set; } = 0;
 
     [Ignore]

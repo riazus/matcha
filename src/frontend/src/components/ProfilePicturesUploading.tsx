@@ -1,9 +1,10 @@
-import { Box, Button, FormLabel } from "@mui/material";
+import { Box, Button, FormLabel, Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import { memo } from "react";
 import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
+import InfoIcon from "@mui/icons-material/Info";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -79,6 +80,14 @@ function ProfilePicturesUploading({
 
       <FormLabel sx={styles.labelText}>
         You can select additionnal pictures :
+        <Tooltip
+          title={
+            "Each additional picture adds one point to your Fame Rating!"
+          }
+          arrow
+        >
+          <InfoIcon />
+        </Tooltip>
       </FormLabel>
       <Box sx={styles.picturesBox}>
         {pictures.map((picture, index) => (
