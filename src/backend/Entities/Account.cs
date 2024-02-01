@@ -74,6 +74,8 @@ public class Account
     public string Country { get; set; }
     public string Town { get; set; }
 
+    public int FameRating { get; set; } = 0;
+
     [Ignore]
     public List<RefreshToken> RefreshTokens { get; set; }
     [Ignore]

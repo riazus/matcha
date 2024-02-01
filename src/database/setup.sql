@@ -46,6 +46,7 @@ CREATE TABLE Account (
     Postcode NVARCHAR(10) NULL,
     Country NVARCHAR(128) NULL,
     Town NVARCHAR(128) NULL,
+    FameRating INT NOT NULL,
     CONSTRAINT Unique_Username UNIQUE (Username),
     CONSTRAINT Unique_Email UNIQUE (Email)
 );
