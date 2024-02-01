@@ -146,6 +146,7 @@ public class NotificationHub : ApplicationHub
         var acc = _accountRepository.Get(currUserId);
         _accountService.AddProfileView(currUserId, parsedViewedProfileId);
         var viewedAcc = _accountRepository.Get(parsedViewedProfileId);
+        viewedAcc.FameRating++;
 
         var newNotify = _notificationService.AddProfileViewed(acc.Username, parsedViewedProfileId);
 
@@ -153,8 +154,9 @@ public class NotificationHub : ApplicationHub
             _mapper.Map(acc, new AccountsResponse()),
             _mapper.Map(viewedAcc, new AccountsResponse())
         );
-
         await sendAddNotification(parsedViewedProfileId, newNotify);
+
+        _accountRepository.Update(viewedAcc);
     }
 
     public async Task NotifyMessageReceived(string interlocutorId, Notification notification)
