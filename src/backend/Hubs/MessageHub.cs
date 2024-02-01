@@ -3,16 +3,22 @@
 using Backend.Services;
 using Backend.Entities;
 using Microsoft.AspNetCore.SignalR;
+using Backend.Repositories;
 
 public class MessageHub : ApplicationHub
 {
     private readonly IMessageService _messageService;
     private readonly INotificationService _notificationService;
+    private readonly IAccountRepository _accountRepository;
 
-    public MessageHub(IMessageService messageService, INotificationService notificationService)
+    public MessageHub(
+        IMessageService messageService, 
+        INotificationService notificationService, 
+        IAccountRepository accountRepository)
     {
         _messageService = messageService;
         _notificationService = notificationService;
+        _accountRepository = accountRepository;
     }
 
     public override Task OnConnectedAsync()
@@ -71,6 +77,8 @@ public class MessageHub : ApplicationHub
         _messageService.CreateMessage(messageObj);
 
         await renderMessage(messageObj, username, messageValidation.InterlocutorId, messageValidation.CurrUserId);
+
+        increaseFameRating(messageValidation.CurrUserId, messageValidation.InterlocutorId);
     }
 
     private async Task renderMessage(Message message, string username, Guid interlocutorId, Guid currUserId)
@@ -129,7 +137,24 @@ public class MessageHub : ApplicationHub
         return data;
     }
 
-    class NewMessageValidation
+    // increase fame rating by 5 on first message
+    private void increaseFameRating(Guid currUserId, Guid interlocutorId)
+    {
+        var messageCount = _messageService.GetMessagesCount(currUserId, interlocutorId);
+        if (messageCount == 1)
+        {
+            var acc1 = _accountRepository.Get(currUserId);
+            var acc2 = _accountRepository.Get(interlocutorId);
+
+            acc1.FameRating += 5;
+            acc2.FameRating += 5;
+
+            _accountRepository.Update(acc1);
+            _accountRepository.Update(acc2);
+        }
+    }
+
+    private class NewMessageValidation
     {
         public bool Valid;
         public string Message;
