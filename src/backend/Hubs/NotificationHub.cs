@@ -77,6 +77,8 @@ public class NotificationHub : ApplicationHub
 
         _accountService.LikeAccount(currUserId, parsedLikedAccountId);
         var acc = _accountRepository.Get(currUserId);
+        var likedAcc = _accountRepository.Get(parsedLikedAccountId);
+        likedAcc.FameRating += 5;
 
         var newNotify = _notificationService.AddProfileLiked(acc.Username, parsedLikedAccountId);
 
@@ -87,11 +89,16 @@ public class NotificationHub : ApplicationHub
         bool isProfilesMatched = _matchedProfilesService.IsTwoProfileMatched(currUserId, parsedLikedAccountId);
         if (isProfilesMatched)
         {
+            likedAcc.FameRating += 5;
+            acc.FameRating += 5;
             var matchedNotify = _notificationService.AddProfileMatched(acc.Username, parsedLikedAccountId);
             _messageService.CreateChat(currUserId, parsedLikedAccountId);
             await profilesMatched(parsedLikedAccountId);
             await sendAddNotification(parsedLikedAccountId, matchedNotify);
         }
+
+        _accountRepository.Update(likedAcc);
+        _accountRepository.Update(acc);
     }
 
     public async Task DislikeProfile(string unlikedProfileId)
@@ -105,6 +112,8 @@ public class NotificationHub : ApplicationHub
         bool isProfilesWasMatched = _matchedProfilesService.IsTwoProfileMatched(currUserId, parsedUnlikedProfileId);
         _accountService.DislikeAccount(currUserId, parsedUnlikedProfileId);
         var acc = _accountRepository.Get(currUserId);
+        var unlikedAcc = _accountRepository.Get(parsedUnlikedProfileId);
+        unlikedAcc.FameRating -= 5;
 
         var newNotify = _notificationService.AddProfileUnliked(acc.Username, parsedUnlikedProfileId);
 
@@ -114,9 +123,14 @@ public class NotificationHub : ApplicationHub
 
         if (isProfilesWasMatched)
         {
+            acc.FameRating -= 5;
+            unlikedAcc.FameRating -= 5;
             _messageService.DeleteChat(currUserId, parsedUnlikedProfileId);
             await profilesUnmatched(parsedUnlikedProfileId);
         }
+
+        _accountRepository.Update(acc);
+        _accountRepository.Update(unlikedAcc);
     }
 
     public void UnfavoriteProfile(string unfavoriteProfileId)
