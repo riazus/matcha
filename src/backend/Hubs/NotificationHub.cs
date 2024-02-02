@@ -95,7 +95,7 @@ public class NotificationHub : ApplicationHub
             likedAcc.FameRating += 5;
             acc.FameRating += 5;
             var matchedNotify = _notificationService.AddProfileMatched(acc.Username, parsedLikedAccountId);
-            await profilesMatched(parsedLikedAccountId);
+            await profilesMatched(currUserId, parsedLikedAccountId);
             await sendAddNotification(parsedLikedAccountId, matchedNotify);
         }
 
@@ -128,7 +128,7 @@ public class NotificationHub : ApplicationHub
             acc.FameRating -= 5;
             unlikedAcc.FameRating -= 5;
             _messageService.DeleteChat(currUserId, parsedUnlikedProfileId);
-            await profilesUnmatched(parsedUnlikedProfileId);
+            await profilesUnmatched(currUserId, parsedUnlikedProfileId);
         }
 
         _accountRepository.Update(acc);
@@ -358,13 +358,19 @@ public class NotificationHub : ApplicationHub
         }
     }
 
-    private async Task profilesMatched(Guid parsedLikedProfileId)
+    private async Task profilesMatched(Guid currUserId, Guid parsedLikedProfileId)
     {
-        await Clients.Client(Context.ConnectionId).SendAsync(NotificationEvent.ProfilesMatched);
-
-        if (_connectedNotificationClients.TryGetValue(parsedLikedProfileId, out var connectionIds))
+        if (_connectedNotificationClients.TryGetValue(currUserId, out var currUserConnectionIds))
         {
-            foreach (var connectionId in connectionIds)
+            foreach (var connectionId in currUserConnectionIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesMatched);
+            }
+        }
+
+        if (_connectedNotificationClients.TryGetValue(parsedLikedProfileId, out var likedConnectionIds))
+        {
+            foreach (var connectionId in likedConnectionIds)
             {
                 await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesMatched);
             }
