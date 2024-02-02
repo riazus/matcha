@@ -208,9 +208,14 @@ public class NotificationHub : ApplicationHub
             throw new AppException("Provided invalid id");
         }
 
+        var blockedAccount = _accountRepository.Get(parsedBlockAccountId);
+        blockedAccount.FameRating -= 10;
+
         _blockedProfileService.AddBlockAccount(parsedBlockAccountId, CurrentAccountId);
 
         await sendBlockProfileEvents(parsedBlockAccountId, CurrentAccountId);
+
+        _accountRepository.Update(blockedAccount);
     }
 
     public async Task UnblockProfile(string unblockAccountId)
