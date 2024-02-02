@@ -1,4 +1,4 @@
-﻿using Backend.Entities;
+using Backend.Entities;
 using Backend.Helpers;
 using Backend.Repositories;
 using Backend.Services;
@@ -80,6 +80,8 @@ public class NotificationHub : ApplicationHub
 
         _accountService.LikeAccount(currUserId, parsedLikedAccountId);
         var acc = _accountRepository.Get(currUserId);
+        var likedAcc = _accountRepository.Get(parsedLikedAccountId);
+        likedAcc.FameRating += 5;
 
         var newNotify = _notificationService.AddProfileLiked(acc.Username, parsedLikedAccountId);
 
@@ -90,10 +92,15 @@ public class NotificationHub : ApplicationHub
         bool isProfilesMatched = _matchedProfilesService.IsTwoProfileMatched(currUserId, parsedLikedAccountId);
         if (isProfilesMatched)
         {
+            likedAcc.FameRating += 5;
+            acc.FameRating += 5;
             var matchedNotify = _notificationService.AddProfileMatched(acc.Username, parsedLikedAccountId);
-            await profilesMatched(parsedLikedAccountId);
+            await profilesMatched(currUserId, parsedLikedAccountId);
             await sendAddNotification(parsedLikedAccountId, matchedNotify);
         }
+
+        _accountRepository.Update(likedAcc);
+        _accountRepository.Update(acc);
     }
 
     public async Task DislikeProfile(string unlikedProfileId)
@@ -107,6 +114,8 @@ public class NotificationHub : ApplicationHub
         bool isProfilesWasMatched = _matchedProfilesService.IsTwoProfileMatched(currUserId, parsedUnlikedProfileId);
         _accountService.DislikeAccount(currUserId, parsedUnlikedProfileId);
         var acc = _accountRepository.Get(currUserId);
+        var unlikedAcc = _accountRepository.Get(parsedUnlikedProfileId);
+        unlikedAcc.FameRating -= 5;
 
         var newNotify = _notificationService.AddProfileUnliked(acc.Username, parsedUnlikedProfileId);
 
@@ -116,8 +125,14 @@ public class NotificationHub : ApplicationHub
 
         if (isProfilesWasMatched)
         {
+            acc.FameRating -= 5;
+            unlikedAcc.FameRating -= 5;
+            _messageService.DeleteChat(currUserId, parsedUnlikedProfileId);
             await profilesUnmatched(currUserId, parsedUnlikedProfileId);
         }
+
+        _accountRepository.Update(acc);
+        _accountRepository.Update(unlikedAcc);
     }
 
     public void UnfavoriteProfile(string unfavoriteProfileId)
@@ -127,6 +142,10 @@ public class NotificationHub : ApplicationHub
             throw new AppException("Provided invalid id");
         }
 
+        var unfavoriteAcc = _accountRepository.Get(parsedUnfavoriteProfileId);
+        unfavoriteAcc.FameRating--;
+
+        _accountRepository.Update(unfavoriteAcc);
         _accountRepository.AddUnfavoriteProfile(new UnfavoriteProfile() 
         { 
             DislikedById = CurrentAccountId, 
@@ -147,6 +166,7 @@ public class NotificationHub : ApplicationHub
         var acc = _accountRepository.Get(currUserId);
         _accountService.AddProfileView(currUserId, parsedViewedProfileId);
         var viewedAcc = _accountRepository.Get(parsedViewedProfileId);
+        viewedAcc.FameRating++;
 
         var newNotify = _notificationService.AddProfileViewed(acc.Username, parsedViewedProfileId);
 
@@ -154,8 +174,9 @@ public class NotificationHub : ApplicationHub
             _mapper.Map(acc, new AccountsResponse()),
             _mapper.Map(viewedAcc, new AccountsResponse())
         );
-
         await sendAddNotification(parsedViewedProfileId, newNotify);
+
+        _accountRepository.Update(viewedAcc);
     }
 
     public async Task NotifyMessageReceived(string interlocutorId, Notification notification)
@@ -187,9 +208,14 @@ public class NotificationHub : ApplicationHub
             throw new AppException("Provided invalid id");
         }
 
+        var blockedAccount = _accountRepository.Get(parsedBlockAccountId);
+        blockedAccount.FameRating -= 10;
+
         _blockedProfileService.AddBlockAccount(parsedBlockAccountId, CurrentAccountId);
 
         await sendBlockProfileEvents(parsedBlockAccountId, CurrentAccountId);
+
+        _accountRepository.Update(blockedAccount);
     }
 
     public async Task UnblockProfile(string unblockAccountId)
@@ -337,13 +363,19 @@ public class NotificationHub : ApplicationHub
         }
     }
 
-    private async Task profilesMatched(Guid parsedLikedProfileId)
+    private async Task profilesMatched(Guid currUserId, Guid parsedLikedProfileId)
     {
-        await Clients.Client(Context.ConnectionId).SendAsync(NotificationEvent.ProfilesMatched);
-
-        if (_connectedNotificationClients.TryGetValue(parsedLikedProfileId, out var connectionIds))
+        if (_connectedNotificationClients.TryGetValue(currUserId, out var currUserConnectionIds))
         {
-            foreach (var connectionId in connectionIds)
+            foreach (var connectionId in currUserConnectionIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesMatched);
+            }
+        }
+
+        if (_connectedNotificationClients.TryGetValue(parsedLikedProfileId, out var likedConnectionIds))
+        {
+            foreach (var connectionId in likedConnectionIds)
             {
                 await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesMatched);
             }

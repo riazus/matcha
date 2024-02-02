@@ -13,6 +13,7 @@ public interface IMessageService
     void CreateMessage(Message message);
     void DeleteMessages(Guid chatId);
     void DeleteChat(Guid firstProfileId, Guid secondProfileId);
+    int GetMessagesCount(Guid firstProfileId, Guid secondProfileId);
 }
 
 public class MessageService : IMessageService
@@ -64,5 +65,10 @@ public class MessageService : IMessageService
         
         DeleteMessages(chat.Id);
         _messageRepository.DeleteChat(chat.Id);
+    }
+
+    public int GetMessagesCount(Guid firstProfileId, Guid secondProfileId)
+    {
+        return _messageRepository.GetMessagesCount(firstProfileId, secondProfileId);
     }
 }
