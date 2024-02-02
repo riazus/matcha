@@ -32,6 +32,7 @@ import {
   UpdatePasswordBody,
   ChangeProfilePictureResponse,
   Location,
+  IpAddressResponse,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -171,9 +172,10 @@ export const api = createApi({
           await cacheDataLoaded;
 
           // TODO: this is wrong!!! Need to replace this query in the another file
-          const connection = getChatConnection();
+          const chatConnection = getChatConnection();
+          const notificationConnection = getNotificationConnection();
 
-          connection?.on(
+          chatConnection?.on(
             ChatEvent.NewMessage,
             (username: string, text: string, date: string) => {
               updateCachedData((draft) => {
@@ -182,7 +184,7 @@ export const api = createApi({
             }
           );
 
-          connection?.on(ChatEvent.DeleteMessages, () => {
+          notificationConnection?.on(ChatEvent.DeleteMessages, () => {
             updateCachedData((draft) => {
               draft.messages.splice(0, draft.messages.length);
             });
@@ -190,8 +192,8 @@ export const api = createApi({
 
           await cacheEntryRemoved;
 
-          connection?.off(ChatEvent.NewMessage);
-          connection?.off(ChatEvent.DeleteMessages);
+          chatConnection?.off(ChatEvent.NewMessage);
+          notificationConnection?.off(ChatEvent.DeleteMessages);
         } catch (err) {
           console.error(err);
         }
@@ -264,6 +266,9 @@ export const api = createApi({
         }
       },
     }),
+    getIpAddress: builder.query<IpAddressResponse, void>({
+      query: () => ({ url: ACCOUNT_ROUTES.IP_ADRRESS }),
+    }),
     getUserById: builder.query<AccountResponse, string>({
       query: (id) => ({ url: ACCOUNT_ROUTES.USER_BY_ID(id) }),
       async onCacheEntryAdded(
@@ -298,12 +303,41 @@ export const api = createApi({
             }));
           });
 
+          connection?.on(NotificationEvent.ProfileBlocked, () => {
+            updateCachedData((draft) => ({
+              ...draft,
+              isBlockedByMe: true,
+              isLiked: false,
+              isProfilesMatched: false,
+            }));
+          });
+
+          connection?.on(NotificationEvent.MyProfileWasBlocked, () => {
+            updateCachedData((draft) => ({
+              ...draft,
+              isBlockedMe: true,
+              isLiked: false,
+              isProfilesMatched: false,
+            }));
+          });
+
+          connection?.on(NotificationEvent.UnblockProfile, () => {
+            updateCachedData((draft) => ({
+              ...draft,
+              isBlockedByMe: false,
+              isBlockedMe: false,
+            }));
+          });
+
           await cacheEntryRemoved;
 
           connection?.off(NotificationEvent.LikeProfile);
           connection?.off(NotificationEvent.DislikeProfile);
           connection?.off(NotificationEvent.ProfilesMatched);
           connection?.off(NotificationEvent.ProfilesUnmatched);
+          connection?.off(NotificationEvent.ProfileBlocked);
+          connection?.off(NotificationEvent.MyProfileWasBlocked);
+          connection?.off(NotificationEvent.UnblockProfile);
         } catch (err) {
           console.error(err);
         }
@@ -524,6 +558,7 @@ export const {
   useGetUsersWithFiltersQuery,
   useGetBrowsingUsersWithFiltersQuery,
   useGetSettingsDataQuery,
+  useGetIpAddressQuery,
   useUpdateProfileSettingsMutation,
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,

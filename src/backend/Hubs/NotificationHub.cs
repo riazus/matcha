@@ -1,4 +1,4 @@
-﻿using Backend.Entities;
+using Backend.Entities;
 using Backend.Helpers;
 using Backend.Repositories;
 using Backend.Services;
@@ -15,6 +15,7 @@ public class NotificationHub : ApplicationHub
     private readonly IAccountRepository _accountRepository;
     private readonly INotificationService _notificationService;
     private readonly IMatchedProfilesService _matchedProfilesService;
+    private readonly IBlockedProfileService _blockedProfileService;
 
     public NotificationHub(
         IMapper mapper,
@@ -22,7 +23,8 @@ public class NotificationHub : ApplicationHub
         IAccountRepository accountRepository,
         INotificationService notificationService,
         IMatchedProfilesService matchedProfilesService,
-        IMessageService messageService
+        IMessageService messageService,
+        IBlockedProfileService blockedProfileService
     ) {
         _mapper = mapper;
         _accountService = accountService;
@@ -30,6 +32,7 @@ public class NotificationHub : ApplicationHub
         _notificationService = notificationService;
         _matchedProfilesService = matchedProfilesService;
         _messageService = messageService;
+        _blockedProfileService = blockedProfileService;
     }
 
     public override Task OnConnectedAsync()
@@ -92,7 +95,6 @@ public class NotificationHub : ApplicationHub
             likedAcc.FameRating += 5;
             acc.FameRating += 5;
             var matchedNotify = _notificationService.AddProfileMatched(acc.Username, parsedLikedAccountId);
-            _messageService.CreateChat(currUserId, parsedLikedAccountId);
             await profilesMatched(parsedLikedAccountId);
             await sendAddNotification(parsedLikedAccountId, matchedNotify);
         }
@@ -199,6 +201,72 @@ public class NotificationHub : ApplicationHub
         await sendDeleteNotification(CurrentAccountId, parsedNotificationId);
     }
 
+    public async Task BlockProfile(string blockAccountId)
+    {
+        if (!Guid.TryParse(blockAccountId, out var parsedBlockAccountId))
+        {
+            throw new AppException("Provided invalid id");
+        }
+
+        _blockedProfileService.AddBlockAccount(parsedBlockAccountId, CurrentAccountId);
+
+        await sendBlockProfileEvents(parsedBlockAccountId, CurrentAccountId);
+    }
+
+    public async Task UnblockProfile(string unblockAccountId)
+    {
+        if (!Guid.TryParse(unblockAccountId, out var parsedUnblockAccountId))
+        {
+            throw new AppException("Provided invalid id");
+        }
+
+        await sendUnblockProfileEvents(parsedUnblockAccountId, CurrentAccountId);
+
+        _blockedProfileService.DeleteBlockAccount(parsedUnblockAccountId, CurrentAccountId);
+    }
+
+    #region private methods
+
+    private async Task sendUnblockProfileEvents(Guid unblockedAccountId, Guid unblockedByAccountId)
+    {
+        if (_connectedNotificationClients.TryGetValue(unblockedByAccountId, out var currUserIds))
+        {
+            foreach (var connectionId in currUserIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.UnblockProfile);
+            }
+        }
+
+        if (_connectedNotificationClients.TryGetValue(unblockedAccountId, out var blockedProfileIds))
+        {
+            foreach (var connectionId in blockedProfileIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.UnblockProfile);
+            }
+        }
+    }
+
+    private async Task sendBlockProfileEvents(Guid blockedAccountId, Guid blockedByAccountId)
+    {
+        if (_connectedNotificationClients.TryGetValue(blockedByAccountId, out var currUserIds))
+        {
+            foreach (var connectionId in currUserIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfileBlocked);
+                await Clients.Client(connectionId).SendAsync(ChatEvent.DeleteMessages);
+            }
+        }
+
+        if (_connectedNotificationClients.TryGetValue(blockedAccountId, out var blockedProfileIds))
+        {
+            foreach (var connectionId in blockedProfileIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.MyProfileWasBlocked);
+                await Clients.Client(connectionId).SendAsync(ChatEvent.DeleteMessages);
+            }
+        }
+    }
+
     private async Task updateProfileViewsCache(AccountsResponse acc, AccountsResponse viewedAcc)
     {
         // update current user cache 
@@ -206,7 +274,7 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in currUserIds)
             {
-                await Clients.Client(connectionId).SendAsync("AddViewedProfile", viewedAcc);
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.AddViewedProfile, viewedAcc);
             }
         }
 
@@ -215,7 +283,7 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in viewedProfileIds)
             {
-                await Clients.Client(connectionId).SendAsync("AddProfileMeViewed", acc);
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.AddProfileMeViewed, acc);
             }
         }
     }
@@ -226,7 +294,7 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("LikeProfile");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.LikeProfile);
             }
         }
     }
@@ -237,7 +305,7 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("DislikeProfile");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.DislikeProfile);
             }
         }
     }
@@ -248,9 +316,9 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("ReduceNotificationsCount");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ReduceNotificationsCount);
 
-                await Clients.Client(connectionId).SendAsync("DeleteNotification", notificationId);
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.DeleteNotification, notificationId);
             }
         }
     }
@@ -261,37 +329,47 @@ public class NotificationHub : ApplicationHub
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("IncreaseNotificationsCount");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.IncreaseNotificationsCount);
 
-                await Clients.Client(connectionId).SendAsync("AddNotification",
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.AddNotification,
                     notification.Id.ToString(), notification.Text, notification.Date.ToString());
             }
         }
     }
 
-    private async Task profilesUnmatched(Guid parsedUnlikedProfileId)
+    private async Task profilesUnmatched(Guid currUserId, Guid parsedUnlikedProfileId)
     {
-        await Clients.Client(Context.ConnectionId).SendAsync("ProfilesUnmatched");
+        if (_connectedNotificationClients.TryGetValue(currUserId, out var currUserConnectionIds))
+        {
+            foreach (var connectionId in currUserConnectionIds)
+            {
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesUnmatched);
+                await Clients.Client(connectionId).SendAsync(ChatEvent.DeleteMessages);
+            }
+        }
 
         if (_connectedNotificationClients.TryGetValue(parsedUnlikedProfileId, out var connectionIds))
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("ProfilesUnmatched");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesUnmatched);
+                await Clients.Client(connectionId).SendAsync(ChatEvent.DeleteMessages);
             }
         }
     }
 
     private async Task profilesMatched(Guid parsedLikedProfileId)
     {
-        await Clients.Client(Context.ConnectionId).SendAsync("ProfilesMatched");
+        await Clients.Client(Context.ConnectionId).SendAsync(NotificationEvent.ProfilesMatched);
 
         if (_connectedNotificationClients.TryGetValue(parsedLikedProfileId, out var connectionIds))
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("ProfilesMatched");
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.ProfilesMatched);
             }
         }
     }
+
+    #endregion
 }

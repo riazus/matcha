@@ -224,6 +224,26 @@ CREATE TABLE [UnfavoriteProfile] (
 );
 GO
 
+-- BlockedProfile
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[BlockedProfile]') AND type in (N'U'))
+DROP TABLE [dbo].[BlockedProfile]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [BlockedProfile] (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    BlockedAccountId UNIQUEIDENTIFIER NOT NULL,
+    BlockedByAccountId UNIQUEIDENTIFIER NOT NULL,
+    FOREIGN KEY (BlockedAccountId) REFERENCES Account(Id),
+    FOREIGN KEY (BlockedByAccountId) REFERENCES Account(Id)
+);
+GO
+
 
 
 /* INDEXES */
@@ -274,6 +294,74 @@ INNER JOIN deleted d ON (d.FavoriteAccountId = mp.Profile1 AND d.LikedById = mp.
 
 END
 GO
+
+-- trg_CreateChat
+CREATE OR ALTER TRIGGER dbo.trg_CreateChat
+ON dbo.MatchedProfiles
+AFTER INSERT
+AS
+BEGIN
+SET NOCOUNT ON;
+
+INSERT INTO dbo.Chat
+(Id, FirstAccountId, SecondAccountId)
+SELECT 
+	newid(),
+	i.Profile1,
+	i.Profile2
+FROM [inserted] as i
+
+END
+GO
+
+-- trg_DeleteChat
+CREATE OR ALTER TRIGGER dbo.trg_DeleteChat
+ON dbo.MatchedProfiles
+AFTER DELETE
+AS
+BEGIN
+SET NOCOUNT ON;
+
+DECLARE @chatId UNIQUEIDENTIFIER; 
+
+SELECT 
+	@chatId = ch.Id 
+from Chat ch
+INNER JOIN [deleted] d ON 
+	(d.Profile1 = ch.FirstAccountId AND d.Profile2 = ch.SecondAccountId) 
+	OR (d.Profile1 = ch.SecondAccountId AND d.Profile2 = ch.FirstAccountId)
+
+DELETE FROM [Message]
+WHERE ChatId = @chatId
+
+DELETE FROM Chat
+WHERE Id = @chatId
+
+END
+GO
+
+-- trg_CreateBlockedProfile
+CREATE OR ALTER TRIGGER dbo.trg_CreateBlockedProfile
+ON dbo.BlockedProfile
+AFTER INSERT
+AS
+BEGIN
+SET NOCOUNT ON;
+
+DECLARE @currUserId UNIQUEIDENTIFIER, @blockedUserId UNIQUEIDENTIFIER
+
+SELECT
+	@currUserId = i.BlockedByAccountId,
+	@blockedUserId = i.BlockedAccountId
+FROM [inserted] i
+
+DELETE FROM FavoriteProfile
+WHERE (LikedById = @currUserId AND FavoriteAccountId = @blockedUserId) 
+	OR (LikedById = @blockedUserId AND FavoriteAccountId = @currUserId)
+
+END
+GO
+
 
 
 

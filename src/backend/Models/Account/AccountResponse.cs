@@ -23,4 +23,6 @@ public class AccountResponse
     public bool UserCanChat { get; set; } = false;
     public bool IsLiked { get; set; }
     public bool IsProfilesMatched { get; set; }
+    public bool IsBlockedMe { get; set; } = false;
+    public bool IsBlockedByMe { get; set; } = false;
 }

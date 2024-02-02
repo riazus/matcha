@@ -58,6 +58,7 @@ public class AccountService : IAccountService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMessageRepository _messageRepository;
     private readonly IMatchedProfilesService _matchedProfilesService;
+    private readonly IBlockedProfileService _blockedProfileService;
 
     public AccountService(
         IAccountRepository accountRepository,
@@ -68,9 +69,9 @@ public class AccountService : IAccountService
         IEmailService emailService,
         IHttpClientFactory httpClientFactory,
         IMessageRepository messageRepository,
-        IMatchedProfilesService matchedProfilesService
-        )
-    {
+        IMatchedProfilesService matchedProfilesService,
+        IBlockedProfileService blockedProfileService
+    ) {
         _accountRepository = accountRepository;
         _passwordHasher = passwordHasher;
         _jwtUtils = jwtUtils;
@@ -80,6 +81,7 @@ public class AccountService : IAccountService
         _httpClientFactory = httpClientFactory;
         _messageRepository = messageRepository;
         _matchedProfilesService = matchedProfilesService;
+        _blockedProfileService = blockedProfileService;
     }
 
     public AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress)
@@ -112,11 +114,18 @@ public class AccountService : IAccountService
         var isCanChat = _messageRepository.TwoUsersHaveChat(currUser.Id, id);
         var isProfilesMatched = _matchedProfilesService.IsTwoProfileMatched(currUser.Id, id);
         var isLiked = _accountRepository.IsUserLikedProfile(currUser.Id, id);
+        var blockedProfile = _blockedProfileService.GetBlockedProfile(currUser.Id, id);
 
         var res = _mapper.Map(acc, new AccountResponse());
         res.UserCanChat = isCanChat;
         res.IsLiked = isLiked;
         res.IsProfilesMatched = isProfilesMatched;
+
+        if (blockedProfile != null)
+        {
+            res.IsBlockedMe = blockedProfile.BlockedByAccountId == id;
+            res.IsBlockedByMe = blockedProfile.BlockedByAccountId == currUser.Id;
+        }
 
         return res;
     }

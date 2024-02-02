@@ -28,6 +28,7 @@ export const ACCOUNT_ROUTES = {
   DELETE_PICTURE: (id: string) => `accounts/pictures/${id}`,
   MY_VIEWS: "/accounts/my-views",
   VIEWED_ME: "/accounts/viewed-me",
+  IP_ADRRESS: "/accounts/ip-address",
   USER_BY_ID: (id: string) => `/accounts/${id}`,
   USERS: "/accounts",
   SETTINGS_DATA: "/accounts/settings-data",
@@ -93,6 +94,10 @@ export enum NotificationEvent {
   ProfilesMatched = "ProfilesMatched",
   ProfilesUnmatched = "ProfilesUnmatched",
   NotifyMessageReceived = "NotifyMessageReceived",
+  BlockProfile = "BlockProfile",
+  UnblockProfile = "UnblockProfile",
+  ProfileBlocked = "ProfileBlocked",
+  MyProfileWasBlocked = "MyProfileWasBlocked",
 }
 
 export enum ChatEvent {

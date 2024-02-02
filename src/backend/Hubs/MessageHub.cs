@@ -62,7 +62,7 @@ public class MessageHub : ApplicationHub
 
         if (!messageValidation.Valid)
         {
-            await Clients.Client(Context.ConnectionId).SendAsync("MessageNotValid", messageValidation.Message);
+            await Clients.Client(Context.ConnectionId).SendAsync(ChatEvent.MessageNotValid, messageValidation.Message);
             return;
         }
 
@@ -87,7 +87,7 @@ public class MessageHub : ApplicationHub
         {
             foreach (var connectionId in currUserConnectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("NewMessage", username, message.Text, message.Date.ToString());
+                await Clients.Client(connectionId).SendAsync(ChatEvent.NewMessage, username, message.Text, message.Date.ToString());
             }
         }
 
@@ -95,14 +95,14 @@ public class MessageHub : ApplicationHub
         {
             foreach (var connectionId in interlocutorConnectionIds)
             {
-                await Clients.Client(connectionId).SendAsync("NewMessage", username, message.Text, message.Date.ToString());
+                await Clients.Client(connectionId).SendAsync(ChatEvent.NewMessage, username, message.Text, message.Date.ToString());
             }
         }
         else
         {
             var newNotify = _notificationService.AddMessageReceived(username, interlocutorId);
 
-            await Clients.Client(Context.ConnectionId).SendAsync("NotifyInterlocutor", interlocutorId, newNotify);
+            await Clients.Client(Context.ConnectionId).SendAsync(ChatEvent.NotifyInterlocutor, interlocutorId, newNotify);
         }
     }
 

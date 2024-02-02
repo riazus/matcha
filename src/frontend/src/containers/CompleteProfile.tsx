@@ -27,14 +27,7 @@ import HobbiesModal from "../components/HobbiesModal";
 import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
 import { matchaColors } from "../styles/colors";
 import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
-
-export interface AddressData {
-  latitude: number;
-  longitude: number;
-  postCode: string;
-  town: string;
-  country: string;
-}
+import LocationSwitch from "../components/LocationSwitch";
 
 const ITextField = styled(TextField)({
   "& label.Mui-focused": {
@@ -56,6 +49,8 @@ const ITextField = styled(TextField)({
   },
 });
 
+const IP_API_URL = "https://ipapi.co/json/";
+
 function CompleteProfile() {
   const [completeProfile, { isLoading, isSuccess }] =
     useCompleteProfileMutation();
@@ -64,15 +59,21 @@ function CompleteProfile() {
   const [genderPreferences, setGenderPreferences] = useState<Orientation>(
     Orientation.Male
   );
+
+  const noLocationAddressData = {
+    latitude: undefined,
+    longitude: undefined,
+    postcode: undefined,
+    town: undefined,
+    country: undefined,
+  };
   const [birthday, setBirthday] = useState<Dayjs | null>(dayjs("2000-01-01"));
   const [age, setAge] = useState<number | null>(null);
-  const [addressData, setAddressData] = useState<Location>({
-    latitude: 0,
-    longitude: 0,
-    postcode: "",
-    town: "",
-    country: "",
-  });
+  const [addressData, setAddressData] = useState<Location>(
+    noLocationAddressData
+  );
+  const [checkedLocation, setCheckedLocation] = useState<boolean>(false);
+  const switchLabel = { inputProps: { "aria-label": "location-switch" } };
   const [tags, setTags] = useState<string[] | null>(null);
   const [description, setDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -80,6 +81,40 @@ function CompleteProfile() {
   const [pictures, setPictures] = useState<(File | null)[]>(
     Array.from({ length: 4 }, () => null)
   );
+  const [ip, setIp] = useState();
+
+  const getIp = async () => {
+    const response = await fetch(IP_API_URL);
+    const data = await response.json();
+    setIp(data.ip);
+  };
+
+  useEffect(() => {
+    getIp();
+  }, []);
+
+  const handleChangeLocationSetting = () => {
+    setCheckedLocation(!checkedLocation);
+    if (checkedLocation === false) {
+      setAddressData(noLocationAddressData);
+    } else {
+      fetch(`https://ipapi.co/${ip}/json`)
+        .then((res) => res.json())
+        .then((res) => {
+          const data = {
+            latitude: res.latitude,
+            longitude: res.longitude,
+            postcode: res.postal,
+            town: res.city,
+            country: res.country_name,
+          };
+          setAddressData(data);
+        })
+        .catch((err) => {
+          console.log("Request failed:", err);
+        });
+    }
+  };
 
   const handleDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 300) {
@@ -239,12 +274,21 @@ function CompleteProfile() {
       </Box>
 
       <Box sx={styles.locationBox}>
-        <FormLabel sx={styles.label}>
-          Click on the map to select your location :
-        </FormLabel>
-        <Box sx={styles.location}>
-          <OpenStreetMap setAddressData={setAddressData} />
-        </Box>
+        <LocationSwitch
+          checked={checkedLocation}
+          onChange={handleChangeLocationSetting}
+          {...switchLabel}
+        />
+        {checkedLocation && (
+          <>
+            <FormLabel sx={styles.label}>
+              Click on the map to select your location :
+            </FormLabel>
+            <Box sx={styles.location}>
+              <OpenStreetMap setAddressData={setAddressData} />
+            </Box>
+          </>
+        )}
       </Box>
 
       <Box sx={{ my: 5 }}>

@@ -108,7 +108,7 @@ function SettingsForm() {
             🏠 Location settings
           </AccordionSummary>
           <AccordionDetails>
-            <ChangeLocationSettings />
+            <ChangeLocationSettings user={user} />
           </AccordionDetails>
         </Accordion>
 

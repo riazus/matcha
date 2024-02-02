@@ -13,6 +13,8 @@ namespace Backend.Models.Account
         public string JwtToken { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
+        public string town { get; set; }
+        public string country { get; set; }
         public List<string> Tags { get; set; }
         [JsonIgnore] // refresh token is returned in http only cookie
         public string RefreshToken { get; set; }
