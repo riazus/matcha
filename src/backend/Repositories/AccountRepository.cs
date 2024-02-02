@@ -259,11 +259,15 @@ public class AccountRepository : IAccountRepository
         } 
         else if (filter.OrderByField == "Age")
         {
-            query.Append(" Birthday");
+            query.Append(" acc1.Birthday");
         }
         else if (filter.OrderByField == "Tags")
         {
             query.Append(" Tags.CommonTagsCount");
+        }
+        else if (filter.OrderByField == "FameRating")
+        {
+            query.Append(" acc1.FameRating");
         }
         else
         {

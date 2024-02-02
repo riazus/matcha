@@ -160,6 +160,7 @@ function Filter() {
                 <MenuItem value={"Distance"}>Distance</MenuItem>
               )}
               <MenuItem value={"Tags"}>Common tags</MenuItem>
+              <MenuItem value={"FameRating"}>Fame Rating</MenuItem>
             </Select>
             <IconButton onClick={handleOrderByAscClick}>
               {newFilter.orderByAsc ? <NorthIcon /> : <SouthIcon />}
