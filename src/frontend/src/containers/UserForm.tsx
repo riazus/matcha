@@ -45,7 +45,9 @@ function UserForm() {
   useEffect(() => {
     if (
       isSuccess &&
-      notificationConnection?.state === HubConnectionState.Connected
+      notificationConnection?.state === HubConnectionState.Connected &&
+      !formData.isBlockedByMe &&
+      !formData.isBlockedMe
     ) {
       emitNotificationConnectionEvent(
         NotificationEvent.ProfileView,
@@ -53,6 +55,10 @@ function UserForm() {
       );
     }
   }, [notificationConnection, isLoading]);
+
+  useEffect(() => {
+    setIsLikeLoading(false);
+  }, [formData?.isLiked]);
 
   const handleLikeClick = () => {
     emitNotificationConnectionEvent(
@@ -70,14 +76,39 @@ function UserForm() {
     setIsLikeLoading(true);
   };
 
-  useEffect(() => {
-    setIsLikeLoading(false);
-  }, [formData?.isLiked]);
+  const handleBlockProfile = () => {
+    emitNotificationConnectionEvent(
+      NotificationEvent.BlockProfile,
+      formData!.id
+    );
+  };
+
+  const handleUnblockProfile = () => {
+    emitNotificationConnectionEvent(
+      NotificationEvent.UnblockProfile,
+      formData!.id
+    );
+  };
 
   if (isLoading) {
     return <FullScreenLoader />;
   } else if (isError) {
-    return <></>;
+    return <Typography>Error was occured while fetching data</Typography>;
+  } else if (formData?.isBlockedMe) {
+    return (
+      <Typography>
+        You cannot see profile of this user, because you are blocked
+      </Typography>
+    );
+  } else if (formData?.isBlockedByMe) {
+    return (
+      <>
+        <Typography>
+          You cannot see profile of this user, firstly unblock
+        </Typography>
+        <Button onClick={handleUnblockProfile}>Unblock profile</Button>
+      </>
+    );
   }
 
   return (
@@ -121,6 +152,8 @@ function UserForm() {
           <FavoriteBorderIcon />
         </IconButton>
       )}
+
+      <Button onClick={handleBlockProfile}>Block Profile</Button>
     </>
   );
 }

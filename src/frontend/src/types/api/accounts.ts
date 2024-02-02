@@ -113,6 +113,8 @@ export interface AccountResponse {
   userCanChat: boolean;
   isLiked: boolean;
   isProfilesMatched: boolean;
+  isBlockedMe: boolean;
+  isBlockedByMe: boolean;
 }
 
 export interface Pictures {
