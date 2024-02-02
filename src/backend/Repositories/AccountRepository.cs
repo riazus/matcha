@@ -222,9 +222,13 @@ public class AccountRepository : IAccountRepository
                 $" ) AS Distance");
         }
 
+        var minFameRating = filter.MinFameRating == -1001 ? int.MinValue : filter.MinFameRating;
+        var maxFameRating = filter.MaxFameRating == 1001 ? int.MaxValue : filter.MaxFameRating;
+
         query.Append($" WHERE JSON_QUERY(acc1.TagsDB) IS NOT NULL" +
             $" AND Tags.CommonTagsCount BETWEEN {filter.MinTag} AND {filter.MaxTag}" +
             $" AND DATEDIFF(YEAR, acc1.Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}" +
+            $" AND acc1.FameRating BETWEEN {minFameRating} AND {maxFameRating}" +
             $" AND acc1.Id != \'{currUser.Id}\'");
 
         if (isDistanceFilterable)

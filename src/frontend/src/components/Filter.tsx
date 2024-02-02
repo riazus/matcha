@@ -90,7 +90,20 @@ function Filter() {
       orderByAsc: !prev.orderByAsc,
     }));
 
+  const handleFameRatingChange = (_: Event, newValue: number | number[]) => {
+    if (typeof newValue === "number" || newValue[0] > newValue[1]) return;
+
+    setNewFilter((prev) => ({
+      ...prev,
+      minFameRating: newValue[0],
+      maxFameRating: newValue[1],
+    }));
+  };
+
   const distanceValueLabelFormat = (value: number) => `${value} km`;
+
+  const fameRatingRangeLabelFormat = (value: number) =>
+    value === 1001 ? `1000+` : value === -1001 ? `-1000+` : `${value}`;
 
   const handleModalClose = () => {
     if (true) {
@@ -143,6 +156,16 @@ function Filter() {
             max={user?.tags.length}
             valueLabelDisplay="on"
           ></StyledSlider>
+          <Typography>Fame Rating Range:</Typography>
+          <StyledSlider
+            getAriaLabel={() => "Fame Rating Range"}
+            valueLabelFormat={fameRatingRangeLabelFormat}
+            value={[newFilter.minFameRating, newFilter.maxFameRating]}
+            onChange={handleFameRatingChange}
+            min={-1001}
+            max={1001}
+            valueLabelDisplay="on"
+          ></StyledSlider>
           <Box
             sx={{
               minWidth: 120,
@@ -193,7 +216,8 @@ const styles = {
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4,
+    py: 3,
+    px: 6,
   },
   applyButton: {
     color: "black",

@@ -38,6 +38,8 @@ const defaultFilter: Filter = {
   minDistance: undefined,
   minTagMatch: 0,
   maxTagMatch: 5,
+  minFameRating: -1001,
+  maxFameRating: 1001,
   orderByField: "Age",
   orderByAsc: true,
   isForBrowsing: false,

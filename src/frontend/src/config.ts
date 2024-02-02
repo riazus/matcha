@@ -44,6 +44,10 @@ export const ACCOUNT_ROUTES = {
     filter.minTagMatch +
     "&maxTag=" +
     filter.maxTagMatch +
+    "&minFameRating=" +
+    filter.minFameRating +
+    "&maxFameRating=" +
+    filter.maxFameRating +
     "&page=" +
     page +
     "&orderByField=" +

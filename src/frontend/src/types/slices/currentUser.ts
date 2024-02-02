@@ -17,6 +17,8 @@ export interface Filter {
   minDistance: number | undefined;
   minTagMatch: number;
   maxTagMatch: number;
+  minFameRating: number;
+  maxFameRating: number;
   orderByField: string;
   orderByAsc: boolean;
   isForBrowsing: boolean;

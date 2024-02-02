@@ -13,6 +13,10 @@ public class AccountsFilter
     [Required]
     public int MaxTag { get; set; }
     [Required]
+    public int MinFameRating { get; set; }
+    [Required]
+    public int MaxFameRating { get; set; }
+    [Required]
     public int Page {  get; set; }
     [Required]
     public string OrderByField {  get; set; }
