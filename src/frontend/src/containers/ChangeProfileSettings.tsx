@@ -69,6 +69,8 @@ function ChangeProfileSettings({
   const handleChangeDescription = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    if (e.target.value.length > 300)
+      return;
     setProfileData((prev) => ({
       ...prev,
       description: e.target.value,

@@ -53,6 +53,8 @@ const fillUserData = (state: CurrentUserState, payload: UserState) => {
     isProfileCompleted: payload.isProfileCompleted,
     latitude: payload.latitude,
     longitude: payload.longitude,
+    town: payload.town,
+    country: payload.country,
     tags: payload.tags,
   };
 
@@ -129,6 +131,8 @@ export const currentUserSlice = createSlice({
       if (state.user) {
         state.user.latitude = payload.latitude;
         state.user.longitude = payload.longitude;
+        state.user.town = payload.town;
+        state.user.country = payload.country;
       }
     },
     setTags: (state, { payload }) => {

@@ -3,6 +3,10 @@ export interface GenericResponse {
   message: string;
 }
 
+export interface IpAddressResponse {
+  ipAddress: string;
+}
+
 export interface RegisterBody {
   username: string;
   firstName: string;
@@ -45,15 +49,17 @@ export interface RefreshTokenResponse {
   isProfileCompleted: boolean;
   latitude: number | undefined;
   longitude: number | undefined;
+  town: string | undefined;
+  country: string | undefined;
   tags: string[];
 }
 
 export interface Location {
-  latitude: number;
-  longitude: number;
-  postcode: string;
-  town: string;
-  country: string;
+  latitude: number | undefined;
+  longitude: number | undefined;
+  postcode: string | undefined;
+  town: string | undefined;
+  country: string | undefined;
 }
 
 export interface CompleteProfileBody {
@@ -66,9 +72,9 @@ export interface CompleteProfileBody {
   birthday: Date;
   latitude: number | undefined;
   longitude: number | undefined;
-  town: string | null;
-  country: string | null;
-  postcode: string | null;
+  town: string | undefined;
+  country: string | undefined;
+  postcode: string | undefined;
 }
 
 export interface CompleteProfileResponse {
