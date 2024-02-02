@@ -1,54 +1,31 @@
-import {
-  Box,
-  Typography,
-  Switch,
-  FormControlLabel,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import OpenStreetMap from "./OpenStreetMap";
 import { Location } from "../types/api/accounts";
 import { useAppDispatch } from "../app/hooks/hooks";
 import { useChangeLocationMutation } from "../app/api/api";
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setLocation } from "../app/slices/currentUserSlice";
 import { UserState } from "../types/slices/currentUser";
-
-interface LocationSwitchProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
+import LocationSwitch from "../components/LocationSwitch";
 
 const IP_API_URL = "https://ipapi.co/json/";
-
-const LocationSwitch: React.FC<LocationSwitchProps> = ({
-  checked,
-  onChange,
-}) => {
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.checked);
-  };
-
-  return (
-    <FormControlLabel
-      control={<Switch checked={checked} onChange={handleChange} />}
-      label="Enable Location"
-    />
-  );
-};
 
 function ChangeLocationSettings({ user }: { user: UserState | null }) {
   const nullAddress = {
     latitude: undefined,
     longitude: undefined,
-    postcode: "",
-    town: "",
-    country: "",
+    postcode: undefined,
+    town: undefined,
+    country: undefined,
   };
   const dispatch = useAppDispatch();
   const [changeLocation, { isLoading, isSuccess }] =
     useChangeLocationMutation();
   const [newLocation, setNewLocation] = useState<Location>();
-  const [checkedLocation, setCheckedLocation] = useState<boolean>(user?.latitude !== null);
+  const [checkedLocation, setCheckedLocation] = useState<boolean>(
+    user?.latitude !== null
+  );
   const switchLabel = { inputProps: { "aria-label": "location-switch" } };
   const [ip, setIp] = useState();
 
@@ -60,7 +37,6 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
 
   useEffect(() => {
     getIp();
-    console.log("user : ", user)
   }, []);
 
   useEffect(() => {
@@ -78,7 +54,9 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
         toast.success(`Localisation has been disabled`);
       else
         toast.success(
-          `Location successfully changed to ${newLocation.town ? newLocation.town : ""} ${newLocation.country}`
+          `Location successfully changed to ${
+            newLocation.town ? newLocation.town : ""
+          } ${newLocation.country}`
         );
     }
   }, [isLoading, isSuccess, newLocation]);
@@ -110,8 +88,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
             postcode: res.postal,
             town: res.city,
             country: res.country_name,
-          }
-          console.log("data : ", data)
+          };
           setNewLocation(data);
           changeLocation(data);
         })
@@ -135,11 +112,14 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
             <OpenStreetMap setAddressData={handleChangeLocation} />
           </Box>
           {newLocation ? (
-            <Typography>{`You are located in ${newLocation.town || ""} ${newLocation.country}`}</Typography>
+            <Typography>{`You are located in ${newLocation.town || ""} ${
+              newLocation.country
+            }`}</Typography>
           ) : user?.country ? (
-            <Typography>{`You are located in ${user?.town || ""} ${user?.country}`}</Typography>)
-            : null
-          }
+            <Typography>{`You are located in ${user?.town || ""} ${
+              user?.country
+            }`}</Typography>
+          ) : null}
         </>
       )}
     </Box>
