@@ -5,7 +5,7 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { useGetUsersWithFiltersQuery } from "../app/api/api";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import title from "../styles/title";
 
 function UsersList() {
-  const [searchQuery, setSearchQuery] = useState("");
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(
     (root) => root.user
   );
@@ -60,11 +59,6 @@ function UsersList() {
     return <FullScreenLoader />;
   }
 
-  const filteredUsers = data?.filter(
-    (user) =>
-      user.username.toLowerCase().startsWith(searchQuery.toLowerCase())
-  );
-
   return (
     <Box sx={styles.usersListContent}>
       <Typography sx={title} variant="h6" component="div">
@@ -72,14 +66,8 @@ function UsersList() {
       </Typography>
       <Box sx={styles.filterAndUserlistBox}>
         <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-          {filteredUsers?.length} users
+          {data?.length} users
         </Typography>
-        <TextField
-          label="Search Users by Username"
-          variant="outlined"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
         <Filter />
       </Box>
       <div style={{ marginLeft: "10%" }}>
@@ -90,7 +78,7 @@ function UsersList() {
             hasMore={hasMoreSearchingPage!}
             loader={<h4>Loading...</h4>}
           >
-            {filteredUsers?.map((user, ind) => {
+            {data?.map((user, ind) => {
               return (
                 <ListItemButton
                   key={ind}
