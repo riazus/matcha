@@ -57,9 +57,9 @@ export interface RefreshTokenResponse {
 export interface Location {
   latitude: number | undefined;
   longitude: number | undefined;
-  postcode: string;
-  town: string;
-  country: string;
+  postcode: string | undefined;
+  town: string | undefined;
+  country: string | undefined;
 }
 
 export interface CompleteProfileBody {
@@ -70,11 +70,11 @@ export interface CompleteProfileBody {
   genderPreferences: Orientation;
   description: string;
   birthday: Date;
-  latitude: number | null | undefined;
-  longitude: number | null | undefined;
-  town: string | null;
-  country: string | null;
-  postcode: string | null;
+  latitude: number | undefined;
+  longitude: number | undefined;
+  town: string | undefined;
+  country: string | undefined;
+  postcode: string | undefined;
 }
 
 export interface CompleteProfileResponse {

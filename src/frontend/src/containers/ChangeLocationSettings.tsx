@@ -40,9 +40,9 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
   const nullAddress = {
     latitude: undefined,
     longitude: undefined,
-    postcode: "",
-    town: "",
-    country: "",
+    postcode: undefined,
+    town: undefined,
+    country: undefined,
   };
   const dispatch = useAppDispatch();
   const [changeLocation, { isLoading, isSuccess }] =
@@ -60,7 +60,6 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
 
   useEffect(() => {
     getIp();
-    console.log("user : ", user)
   }, []);
 
   useEffect(() => {
@@ -111,7 +110,6 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
             town: res.city,
             country: res.country_name,
           }
-          console.log("data : ", data)
           setNewLocation(data);
           changeLocation(data);
         })
