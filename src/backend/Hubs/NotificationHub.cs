@@ -140,6 +140,10 @@ public class NotificationHub : ApplicationHub
             throw new AppException("Provided invalid id");
         }
 
+        var unfavoriteAcc = _accountRepository.Get(parsedUnfavoriteProfileId);
+        unfavoriteAcc.FameRating--;
+
+        _accountRepository.Update(unfavoriteAcc);
         _accountRepository.AddUnfavoriteProfile(new UnfavoriteProfile() 
         { 
             DislikedById = CurrentAccountId, 

@@ -441,13 +441,22 @@ export const api = createApi({
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;
       },
-      merge: (currentCache, newItems) => {
-        currentCache.push(...newItems);
+      merge: (currentCache, newItems, { arg }) => {
+        if (arg.page === 0) {
+          currentCache.splice(0, currentCache.length);
+          currentCache.push(...newItems);
+        } else {
+          currentCache.push(...newItems);
+        }
       },
       forceRefetch({ currentArg, previousArg }) {
         if (!currentArg || !previousArg) return false;
 
-        return currentArg.page !== previousArg.page;
+        return (
+          currentArg.page !== previousArg.page ||
+          JSON.stringify(currentArg.filter) !==
+            JSON.stringify(previousArg.filter)
+        );
       },
     }),
     getSettingsData: builder.query<SettingsDataResponse, void>({

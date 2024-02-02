@@ -272,7 +272,22 @@ public class AccountRepository : IAccountRepository
 
         query.Append((filter.OrderByAsc ? " ASC" : " DESC") + ", Id");
 
-        query.Append($" OFFSET (20 * {filter.Page}) ROWS FETCH NEXT 20 ROWS ONLY;");
+        if (filter.IsForBrowsing)
+        {
+            /*Why 4? Because this represents the remaining users in the current list
+            It will fetch the next 20 users regardless of the page number
+            This is because in the case of IsForBrowsing, we filter out users that already
+            exist in the FavoriteProfile or UnfavoriteProfile tables
+            So, 4 is very important number and must be equal to the value of
+            frontend (before how much rest of profiles front will fetch) */
+            
+            var offeset = filter.Page == 0 ? 0 : 4;
+            query.Append($" OFFSET ({offeset}) ROWS FETCH NEXT 20 ROWS ONLY;");
+        }
+        else
+        {
+            query.Append($" OFFSET (20 * {filter.Page}) ROWS FETCH NEXT 20 ROWS ONLY;");
+        }
 
         var accounts = _context.GetListWithQuery<Account>(query.ToString());
 
