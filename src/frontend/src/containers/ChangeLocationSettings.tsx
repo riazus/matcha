@@ -38,8 +38,8 @@ const LocationSwitch: React.FC<LocationSwitchProps> = ({
 
 function ChangeLocationSettings({ user }: { user: UserState | null }) {
   const nullAddress = {
-    latitude: 0,
-    longitude: 0,
+    latitude: undefined,
+    longitude: undefined,
     postcode: "",
     town: "",
     country: "",
@@ -48,7 +48,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
   const [changeLocation, { isLoading, isSuccess }] =
     useChangeLocationMutation();
   const [newLocation, setNewLocation] = useState<Location>();
-  const [checkedLocation, setCheckedLocation] = useState<boolean>(true);
+  const [checkedLocation, setCheckedLocation] = useState<boolean>(user?.latitude !== null);
   const switchLabel = { inputProps: { "aria-label": "location-switch" } };
   const [ip, setIp] = useState();
 
@@ -60,6 +60,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
 
   useEffect(() => {
     getIp();
+    console.log("user : ", user)
   }, []);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
             town: res.city,
             country: res.country_name,
           }
+          console.log("data : ", data)
           setNewLocation(data);
           changeLocation(data);
         })

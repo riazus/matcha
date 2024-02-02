@@ -628,9 +628,13 @@ public class AccountService : IAccountService
         currUser.Country = req.Country;
         currUser.Town = req.Town;
         currUser.Postcode = req.Postcode;
-        currUser.Longitude = req.Longitude;
-        currUser.Latitude = req.Latitude;
-
+        if (req.Postcode == "") {
+            currUser.Longitude = null;
+            currUser.Latitude = null;
+        } else {
+            currUser.Longitude = req.Longitude;
+            currUser.Latitude = req.Latitude;
+        }
         _accountRepository.Update(currUser);
 
         return req;

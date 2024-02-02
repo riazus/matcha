@@ -49,14 +49,14 @@ export interface RefreshTokenResponse {
   isProfileCompleted: boolean;
   latitude: number | undefined;
   longitude: number | undefined;
-  town: string;
-  country: string;
+  town: string | undefined;
+  country: string | undefined;
   tags: string[];
 }
 
 export interface Location {
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number | undefined;
+  longitude: number | undefined;
   postcode: string;
   town: string;
   country: string;
