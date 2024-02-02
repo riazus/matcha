@@ -21,4 +21,5 @@ public class AccountsFilter
     public bool IsForBrowsing { get; set; } = false;
     public int? MinDistance { get; set; }
     public int? MaxDistance { get; set; }
+    public string Username { get; set; }
 }

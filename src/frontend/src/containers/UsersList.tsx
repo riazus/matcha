@@ -5,13 +5,16 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { useGetUsersWithFiltersQuery } from "../app/api/api";
-import { Box, Button } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import Filter from "../components/Filter";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { increaseSearchingPage } from "../app/slices/currentUserSlice";
+import {
+  applyFilter,
+  increaseSearchingPage,
+} from "../app/slices/currentUserSlice";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
 import title from "../styles/title";
@@ -20,7 +23,7 @@ function UsersList() {
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(
     (root) => root.user
   );
-  const { data, isLoading } = useGetUsersWithFiltersQuery(
+  const { data, isLoading, isFetching, isError } = useGetUsersWithFiltersQuery(
     {
       filter,
       page: searchingPage!,
@@ -55,8 +58,22 @@ function UsersList() {
     };
   }, []);
 
-  if (isLoading) {
+  const handleUsernameChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!isFetching) {
+      const username = e.target.value;
+
+      if (username.length === 0 || /^\w+$/.test(username)) {
+        dispatch(applyFilter({ ...filter!, username }));
+      }
+    }
+  };
+
+  if (isLoading || isFetching) {
     return <FullScreenLoader />;
+  } else if (isError) {
+    return <Typography>Error occcured while fetching users</Typography>;
   }
 
   return (
@@ -68,6 +85,12 @@ function UsersList() {
         <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
           {data?.length} users
         </Typography>
+        <TextField
+          label="Search Users by Username"
+          variant="outlined"
+          value={filter!.username}
+          onChange={handleUsernameChange}
+        />
         <Filter />
       </Box>
       <div style={{ marginLeft: "10%" }}>

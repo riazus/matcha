@@ -62,6 +62,9 @@ export const ACCOUNT_ROUTES = {
       : "") +
     (filter.maxDistance !== undefined
       ? "&maxDistance=" + filter.maxDistance
+      : "") +
+    (filter.username.length !== 0
+      ? "&username=" + filter.username
       : ""),
 };
 

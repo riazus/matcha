@@ -41,6 +41,7 @@ const defaultFilter: Filter = {
   orderByField: "Age",
   orderByAsc: true,
   isForBrowsing: false,
+  username: "",
 };
 
 const fillUserData = (state: CurrentUserState, payload: UserState) => {

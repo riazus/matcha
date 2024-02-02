@@ -227,6 +227,11 @@ public class AccountRepository : IAccountRepository
             $" AND DATEDIFF(YEAR, acc1.Birthday, GETDATE()) BETWEEN {filter.MinAge} AND {filter.MaxAge}" +
             $" AND acc1.Id != \'{currUser.Id}\'");
 
+        if (!filter.Username.IsNullOrEmpty())
+        {
+            query.Append($" AND acc1.Username LIKE \'%{filter.Username}%\'");
+        }
+
         if (isDistanceFilterable)
         {
             query.Append($" AND Distance.Distance BETWEEN {filter.MinDistance} AND {filter.MaxDistance}" +

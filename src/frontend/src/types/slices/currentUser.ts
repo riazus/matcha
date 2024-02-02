@@ -22,4 +22,5 @@ export interface Filter {
   orderByField: string;
   orderByAsc: boolean;
   isForBrowsing: boolean;
+  username: string;
 }
