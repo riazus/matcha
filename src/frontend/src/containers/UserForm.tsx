@@ -1,7 +1,7 @@
 import { IconButton, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks/hooks";
-import { Button, Box } from "@mui/material";
+import { Button, Box, Avatar } from "@mui/material";
 import { useEffect, useState } from "react";
 import ChatModal from "./ChatModal";
 import {
@@ -119,11 +119,11 @@ function UserForm() {
       <Box sx={styles.box}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
-        <img src={formData!.profilePictureUrl} width={64} height={64} />
+        <Avatar src={formData!.profilePictureUrl} sx={{marginTop: "10px", width: 100, height: 100}} />
 
         {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
-        <Box sx={styles.birthday}>{formData!.birthday.toLocaleString()}</Box>
+        <Box sx={styles.birthday}>{new Date().getFullYear() - new Date(formData!.birthday).getFullYear()}</Box>
 
         <Box sx={styles.description}>{formData!.description}</Box>
 
