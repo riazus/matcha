@@ -1,15 +1,18 @@
 import { useEffect } from "react";
-import { Demo } from "./HistoryList";
 import { useGetViewedProfilesQuery } from "../app/api/api";
-import { List, ListItem, ListItemText } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
+import ProfileViewDisplay from "../components/ProfileViewDisplay";
 
 interface ViewedProfilesListProps {
   setViewedProfilesCount: (count: number) => void;
 }
 
 function ViewedProfilesList(props: ViewedProfilesListProps) {
-  const { data: viewedProfiles, isSuccess, isLoading } = useGetViewedProfilesQuery();
+  const {
+    data: viewedProfiles,
+    isSuccess,
+    isLoading,
+  } = useGetViewedProfilesQuery();
 
   useEffect(() => {
     if (isSuccess) {
@@ -21,19 +24,7 @@ function ViewedProfilesList(props: ViewedProfilesListProps) {
     return <FullScreenLoader />;
   }
 
-  return (
-    <Demo>
-      <List dense={true}>
-        {viewedProfiles?.map((item, ind) => {
-          return (
-            <ListItem key={ind}>
-              <ListItemText primary={item.username} />
-            </ListItem>
-          );
-        })}
-      </List>
-    </Demo>
-  );
+  return <ProfileViewDisplay viewProfiles={viewedProfiles} />;
 }
 
 export default ViewedProfilesList;

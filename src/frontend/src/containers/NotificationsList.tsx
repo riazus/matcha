@@ -1,4 +1,3 @@
-import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
@@ -39,8 +38,7 @@ function NotificationsList() {
       <Typography sx={title} variant="h6" component="div">
         Notifications List
       </Typography>
-      <Grid container>
-        <Grid item xs={12} md={6}>
+        <Box sx={styles.notificationsList}>
           <Demo>
             <List dense={true}>
               {notifications?.map((item) => {
@@ -56,6 +54,7 @@ function NotificationsList() {
                         <RemoveRedEyeIcon />
                       </IconButton>
                     }
+                    sx={styles.listItem}
                   >
                     <ListItemText primary={item.text} secondary={item.date} />
                   </ListItem>
@@ -63,10 +62,22 @@ function NotificationsList() {
               })}
             </List>
           </Demo>
-        </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
+}
+
+const styles = {
+  notificationsList: {
+    marginTop: "16px",
+    backgroundColor: '#f0f0f0',
+    padding: '16px',
+  },
+  listItem: {
+    '&:hover': {
+      backgroundColor: '#e0e0e0',
+    },
+  },
 }
 
 export default NotificationsList;

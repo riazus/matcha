@@ -1,7 +1,7 @@
 import { IconButton, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks/hooks";
-import { Button } from "@mui/base";
+import { Button, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import ChatModal from "./ChatModal";
 import {
@@ -18,6 +18,9 @@ import {
 } from "../sockets/notificationConnection";
 import { HubConnectionState } from "@microsoft/signalr";
 import { NotificationEvent } from "../config";
+import title from "../styles/title";
+import MaleIcon from "@mui/icons-material/Male";
+import FemaleIcon from "@mui/icons-material/Female";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -112,34 +115,37 @@ function UserForm() {
   }
 
   return (
-    <>
-      <img src={formData!.profilePictureUrl} width={64} height={64} />
+    <Box>
+      <Box sx={styles.box}>
+        <Typography sx={title}>{formData!.username}'s profile</Typography>
 
-      {formData!.isProfilesMatched && (
-        <Button onClick={handleOpenChat}>Open chat</Button>
-      )}
+        <img src={formData!.profilePictureUrl} width={64} height={64} />
 
-      {chatOpen && (
-        <ChatModal chatOpen={chatOpen} handleCloseChat={handleCloseChat} />
-      )}
+        {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
-      <Typography
-        textAlign="center"
-        component="h1"
-        sx={{
-          fontWeight: 600,
-          fontSize: { xs: "2rem", md: "3rem" },
-          color: "#f9d13e",
-        }}
-      >
-        User Profile Here
-      </Typography>
+        <Box sx={styles.birthday}>{formData!.birthday.toLocaleString()}</Box>
 
+        <Box sx={styles.description}>{formData!.description}</Box>
+
+        {formData!.isProfilesMatched && (
+          <Button onClick={handleOpenChat} sx={styles.chatButton}>
+            Open chat
+          </Button>
+        )}
+        {chatOpen && (
+          <ChatModal chatOpen={chatOpen} handleCloseChat={handleCloseChat} />
+        )}
+
+        <Button onClick={handleBlockProfile} sx={styles.blockButton}>
+          Block Profile
+        </Button>
+      </Box>
       {formData!.isLiked ? (
         <IconButton
           aria-label="like user"
           onClick={handleRemoveLikeClick}
           disabled={isLikeLoading}
+          sx={styles.likeButton}
         >
           <FavoriteIcon />
         </IconButton>
@@ -148,14 +154,80 @@ function UserForm() {
           aria-label="dislike user"
           onClick={handleLikeClick}
           disabled={isLikeLoading}
+          sx={styles.unlikeButton}
         >
           <FavoriteBorderIcon />
         </IconButton>
       )}
-
-      <Button onClick={handleBlockProfile}>Block Profile</Button>
-    </>
+    </Box>
   );
 }
+
+const styles = {
+  box: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  chatButton: {
+    backgroundColor: "#87CEFA",
+    borderRadius: "10px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    padding: "10px 20px",
+    color: "#fff",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+    "&:hover": {
+      backgroundColor: "#6495ED",
+    },
+  },
+  blockButton: {
+    backgroundColor: "#ffdddd",
+    color: "#ff0000",
+    padding: "10px 20px",
+    fontSize: "16px",
+    borderRadius: "8px",
+    border: "1px solid #ff0000",
+    cursor: "pointer",
+    boxShadow: "0 2px 4px rgba(255, 0, 0, 0.1)",
+    transition: "background-color 0.3s ease",
+  },
+  description: {
+    backgroundColor: "#f8f8f8",
+    padding: "15px",
+    borderRadius: "8px",
+    border: "1px solid #e0e0e0",
+    marginBottom: "20px",
+    marginTop: "20px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    height: "20%",
+    width: "100%",
+  },
+  likeButton: {
+    backgroundColor: "#FF5A5F", 
+    color: "#fff", 
+    borderRadius: "12px", 
+    padding: "10px 20px",  
+    fontSize: "16px", 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  unlikeButton: {
+    backgroundColor: "#FFFFFF", 
+    color: "red", 
+    borderRadius: "12px", 
+    padding: "10px 20px", 
+    fontSize: "16px", 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+  },
+  birthday: {
+
+  }
+};
 
 export default UserForm;
