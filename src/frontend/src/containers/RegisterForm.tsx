@@ -60,10 +60,10 @@ function RegisterForm() {
 
   return (
     <Box sx={styles.registerBox}>
-      <Typography textAlign="center" component="h1" sx={styles.matchaText}>
+      <Typography textAlign="center" component="h1" sx={title}>
         Welcome to Matcha!
       </Typography>
-      <Typography component="h2" sx={title}>
+      <Typography component="h2" sx={styles.matchaText}>
         Sign Up To Get Started
       </Typography>
       <FormProvider {...methods}>
@@ -102,9 +102,8 @@ function RegisterForm() {
 const styles = {
   matchaText: {
     color: matchaColors.yellowlight,
-    fontSize: { xs: "2rem", md: "3rem" },
+    fontSize: "1rem",
     fontWeight: 600,
-    m: 2,
     letterSpacing: 1,
   },
   registerBox: {
@@ -135,8 +134,6 @@ const styles = {
     color: "#003049",
   },
   signupButton: {
-    mt: 1,
-    mb: 2,
     width: "10rem",
     display: "flex",
     justifyContent: "center",

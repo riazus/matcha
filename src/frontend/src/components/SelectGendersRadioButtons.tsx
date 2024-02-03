@@ -1,5 +1,6 @@
 import { FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 import { Orientation } from "../types/api/accounts";
+import { matchaColors } from "../styles/colors";
 
 interface SelectGendersRadioButtonsProps {
   gender: number;
@@ -68,7 +69,7 @@ function SelectGendersRadioButtons({
 
 const styles = {
   selection: {
-    backgroundColor: "rgb(253, 255, 252)",
+    backgroundColor: matchaColors.usersBox,
     padding: "1%",
   },
   selectionContentSearch: {

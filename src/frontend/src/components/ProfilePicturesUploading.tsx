@@ -79,15 +79,13 @@ function ProfilePicturesUploading({
       </Box>
 
       <FormLabel sx={styles.labelText}>
-        You can select additionnal pictures :
         <Tooltip
-          title={
-            "Each additional picture adds one point to your Fame Rating!"
-          }
+          title={"Each additional picture adds one point to your Fame Rating!"}
           arrow
         >
-          <InfoIcon />
+          <InfoIcon sx={{ marginRight: "10px" }} />
         </Tooltip>
+        You can select additionnal pictures :
       </FormLabel>
       <Box sx={styles.picturesBox}>
         {pictures.map((picture, index) => (
@@ -140,6 +138,7 @@ const styles = {
     backgroundSize: "cover",
   },
   labelText: {
+    marginLeft: "10px",
     fontWeight: 900,
     fontFamily: "Roboto, Arial, Helvetica, sans-serif",
   },

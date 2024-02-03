@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/system";
+import { Box } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { styled } from "@mui/material/styles";
@@ -170,13 +170,7 @@ function CompleteProfile() {
   };
 
   return (
-    <Container sx={styles.mainBox}>
-      <ProfilePicturesUploading
-        profilePicture={profilePicture}
-        pictures={pictures}
-        setPictures={setPictures}
-        setProfilePicture={setProfilePicture}
-      />
+    <Box sx={styles.mainBox}>
       <Box sx={styles.dateBox}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -194,13 +188,19 @@ function CompleteProfile() {
                   new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -
                     1970
                 )
-              );
-            }}
+                );
+              }}
             maxDate={dayjs()}
             defaultValue={dayjs("2000-01-01")}
           />
         </LocalizationProvider>
       </Box>
+              <ProfilePicturesUploading
+                profilePicture={profilePicture}
+                pictures={pictures}
+                setPictures={setPictures}
+                setProfilePicture={setProfilePicture}
+              />
 
       <SelectGendersRadioButtons
         gender={gender}
@@ -300,7 +300,7 @@ function CompleteProfile() {
           Saving
         </LoadingButton>
       </Box>
-    </Container>
+    </Box>
   );
 }
 
@@ -308,7 +308,13 @@ const styles = {
   mainBox: {
     display: "flex",
     flexDirection: "column",
-    margin: "1%",
+    width: "90%",
+    margin: "7%",
+    padding: "2%",
+    borderRadius: "10px", 
+    backgroundColor: matchaColors.darkBox, 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    border: "1px solid black",
   },
   uploadProfileButton: {
     width: "50%",

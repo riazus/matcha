@@ -13,6 +13,7 @@ import { getGitHubUrl } from "../helpers/getGithubUrl";
 import { useLoginMutation } from "../app/api/api";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { matchaColors } from "../styles/colors";
 
 const loginSchema = object({
   email: string()
@@ -59,21 +60,26 @@ function LoginForm() {
           color: "#f9d13e",
           fontWeight: 600,
           fontSize: { xs: "2rem", md: "3rem" },
-          mb: 2,
           letterSpacing: 1,
+          mb: "5px",
         }}
       >
         Welcome Back!
       </Typography>
       <Typography
-        variant="body1"
+        variant="h6"
         component="h2"
-        sx={{ color: "#e5e7eb", mb: 2 }}
+        sx={{ color: matchaColors.yellowlight, mb: 2 }}
       >
-        Login to have access!
+        Login to have access
       </Typography>
       <FormProvider {...methods}>
-        <Box component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box
+          sx={styles.boxForm}
+          component="form"
+          onSubmit={handleSubmit(onSubmitForm)}
+          noValidate
+        >
           <FormInput name="email" label="Email" type="email" />
           <FormInput name="password" label="Password" type="password" />
 
@@ -104,7 +110,7 @@ function LoginForm() {
               fontSize: "0.9rem",
               mb: "1rem",
               textAlign: "right",
-              color: "#e5e7eb",
+              color: "black",
             }}
           >
             Don't have an account?{" "}
@@ -116,9 +122,9 @@ function LoginForm() {
         variant="h6"
         component="p"
         sx={{
-          my: "1.5rem",
+          my: "10px",
           textAlign: "center",
-          color: "white",
+          color: matchaColors.yellowlight,
         }}
       >
         Log in with another provider:
@@ -127,9 +133,10 @@ function LoginForm() {
         maxWidth="27rem"
         width="100%"
         sx={{
-          backgroundColor: "#e5e7eb",
+          backgroundColor: matchaColors.darkBox,
           p: { xs: "1rem", sm: "2rem" },
           borderRadius: 2,
+          mb: "10px",
         }}
       >
         <MuiLink
@@ -183,5 +190,15 @@ function LoginForm() {
     </Box>
   );
 }
+
+const styles = {
+  boxForm: {
+    borderRadius: "10px", 
+    backgroundColor: matchaColors.darkBox, 
+    padding: "20px",
+    paddingBottom: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+  },
+};
 
 export default LoginForm;

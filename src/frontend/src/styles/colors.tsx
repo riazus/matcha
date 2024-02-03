@@ -7,6 +7,7 @@ const matchaColors = {
   "backgroundlight": "#80ed99",
   "background": "#1b263b",
   "usersBox": "rgb(200, 250, 230, 0.8)",
+  "darkBox": "rgb(113, 97, 239, 0.2)"
 }
 
 export {matchaColors}

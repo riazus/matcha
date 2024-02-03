@@ -32,7 +32,7 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
       defaultValue=""
       name={name}
       render={({ field }) => (
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        <FormControl fullWidth sx={{ mb: 1 }}>
           <Typography variant="body2" sx={styles.text}>
             {label}
           </Typography>
@@ -56,7 +56,7 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
 
 const styles = {
   text: { color: matchaColors.background, mb: 1, fontWeight: 800, fontSize: "17px" },
-  input: { borderRadius: "1rem", backgroundColor: matchaColors.usersBox, width: "90%" },
+  input: { borderRadius: "1rem", backgroundColor: matchaColors.usersBox, width: "100%" },
 };
 
 export default FormInput;
