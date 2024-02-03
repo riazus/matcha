@@ -381,6 +381,7 @@ public class AccountService : IAccountService
             }
 
             currUser.RelativeAdditionalPicturesUrl = additionalPicturesUrls;
+            currUser.FameRating = additionalPicturesUrls.Count;
         }
 
         currUser.RelativeProfilePictureUrl = relativeProfilePictureUrl.Replace("\\", "/");
@@ -502,6 +503,7 @@ public class AccountService : IAccountService
                 var tmpList = currUser.RelativeAdditionalPicturesUrl;
                 tmpList.RemoveAt(ind);
                 currUser.RelativeAdditionalPicturesUrl = tmpList;
+                currUser.FameRating--;
 
                 File.Delete(imagePath);
 
@@ -522,6 +524,11 @@ public class AccountService : IAccountService
     {
         validateFileExtension(newPicture.FileName);
 
+        if (currUser.RelativeAdditionalPicturesUrl != null && currUser.RelativeAdditionalPicturesUrl.Count == 4) 
+        {
+            throw new AppException("Achieved quota of additional images");
+        }
+
         string relativeUserImageDirectory = Path.Combine("Images", currUser.Id.ToString());
         string userImagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), relativeUserImageDirectory);
 
@@ -537,6 +544,8 @@ public class AccountService : IAccountService
         var tmpList = currUser.RelativeAdditionalPicturesUrl ?? new List<string>();
         tmpList.Add(relativeProfilePictureUrl.Replace("\\", "/"));
         currUser.RelativeAdditionalPicturesUrl = tmpList;
+
+        currUser.FameRating++;
 
         _accountRepository.Update(currUser);
 

@@ -14,6 +14,7 @@ public interface IMessageRepository
     bool TwoUsersHaveChat(Guid firstUserId, Guid secondUserId);
     void DeleteMessages(Guid chatId);
     void DeleteChat(Guid chatId);
+    int GetMessagesCount(Guid firstProfileId, Guid secondProfileId);
 }
 
 public class MessageRepository : IMessageRepository
@@ -85,5 +86,12 @@ public class MessageRepository : IMessageRepository
     public void DeleteChat(Guid chatId)
     {
         _context.DeleteWhere<Chat>($"Id = \'{chatId}\'");
+    }
+
+    public int GetMessagesCount(Guid firstProfileId, Guid secondProfileId)
+    {
+        var chat = GetChat(firstProfileId, secondProfileId);
+
+        return _context.GetWhereCount<Message>($"ChatId = \'{chat.Id}\'");
     }
 }
