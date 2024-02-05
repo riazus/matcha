@@ -1,10 +1,4 @@
 import Typography from "@mui/material/Typography";
-import { api, useGetBrowsingUsersWithFiltersQuery } from "../app/api/api";
-import FullScreenLoader from "../components/FullScreenLoader";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
-import Filter from "../components/Filter";
-import { matchaColors } from "../styles/colors";
 import {
   Box,
   Button,
@@ -14,13 +8,19 @@ import {
   CardMedia,
   Tooltip,
 } from "@mui/material";
+import { useGetBrowsingUsersWithFiltersQuery, api } from "../app/api/api";
 import { Favorite } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import InfoIcon from "@mui/icons-material/Info";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
+import FullScreenLoader from "../components/FullScreenLoader";
+import Filter from "../components/Filter";
 import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { NotificationEvent } from "../config";
-import InfoIcon from "@mui/icons-material/Info";
-import title from "../styles/title";
+import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import { matchaColors } from "../styles/colors";
+import {title}from "../styles/textStyles";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -66,48 +66,41 @@ function UsersBrowsing() {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "80%" }}>
+    <Box sx={styles.container}>
       <Typography sx={title} variant="h6">
-        Browsing page
+        Browse and like/dislike 
       </Typography>
-      <Typography
-        sx={{ mt: 4, mb: 2, display: "flex", justifyContent: "center" }}
-        variant="h6"
-      >
-        Number of Users left : {data?.length}
+      <Typography sx={styles.userCount} variant="h6">
+        Number of Users left: {data?.length}
       </Typography>
       {data && data[0] ? (
         <Box sx={styles.chooseProfileBox}>
           <Button onClick={handleUnmatchClick} sx={styles.dislikeButton}>
             <CloseIcon />
           </Button>
-          <Card>
-            <CardActionArea>
-              <div onClick={() => navigate(`/users/${data[0].id}`)}>
-                <CardMedia
-                  component="img"
-                  image={data[0].profilePictureUrl}
-                  height="200"
-                  width="150"
-                  sx={styles.cardMedia}
-                />
-              </div>
+          <Card sx={styles.card}>
+            <CardActionArea onClick={() => navigate(`/users/${data[0].id}`)}>
+              <CardMedia
+                component="img"
+                image={data[0].profilePictureUrl}
+                alt={data[0].username}
+                height="200"
+                sx={styles.cardMedia}
+              />
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {data[0].username}
-                </Typography>
-                <Typography variant="body2">
+                <Typography variant="h5">{data[0].username}</Typography>
+                <Typography variant="body2" sx={styles.userInfo}>
                   {new Date().getFullYear() -
                     new Date(data[0].birthday).getFullYear()}{" "}
                   years old
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={styles.userInfo}>
                   {data[0].town}, {data[0].country}
                 </Typography>
               </CardContent>
             </CardActionArea>
             <Tooltip title={data[0].description} arrow>
-              <InfoIcon />
+              <InfoIcon sx={styles.infoIcon} />
             </Tooltip>
           </Card>
           <Button onClick={handleMatchClick} sx={styles.likeButton}>
@@ -117,35 +110,77 @@ function UsersBrowsing() {
       ) : isFetching ? (
         <Typography>Loading...</Typography>
       ) : (
-        <Typography>This is end of the List</Typography>
+        <Typography>This is the end of the List</Typography>
       )}
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "10%" }}
-      >
+      <Box sx={styles.filterContainer}>
         <Filter />
-      </div>
+      </Box>
     </Box>
   );
 }
 
 const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    width: "50%",
+    alignItems: "center",
+  },
+  userCount: {
+    mt: 4,
+    mb: 2,
+    display: "flex",
+    justifyContent: "center",
+  },
   chooseProfileBox: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  likeButton: {
-    background: matchaColors.yellow,
-    color: matchaColors.red,
-    borderRadius: "20px",
-  },
   dislikeButton: {
-    borderRadius: "20px",
+    margin: "10px",
+    borderRadius: "13px",
     background: matchaColors.red,
     color: "black",
+    transition: "background 0.3s, color 0.3s, box-shadow 0.3s",
+    ':hover': {
+      color: "white",
+      background: "rgb(240, 50, 50)",
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+    }
+  },
+  likeButton: {
+    margin: "10px",
+    borderRadius: "13px",
+    background: matchaColors.yellow,
+    color: matchaColors.red,
+    transition: "background 0.3s, color 0.3s, box-shadow 0.3s",
+    ':hover': {
+      color: "white",
+      background: "rgb(240, 50, 50)",
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+    }
+  },
+  card: {
+    width: "100%",
+    mt: 2,
+    position: "relative",
   },
   cardMedia: {
-    borderRadius: "30px",
+    borderRadius: "20px",
+  },
+  userInfo: {
+    mb: 1,
+  },
+  infoIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+  },
+  filterContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "10%",
   },
 };
 

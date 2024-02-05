@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 import { useAppDispatch } from "../app/hooks/hooks";
 import { setTags as setUserStateTags } from "../app/slices/currentUserSlice";
+import { interrestsButton } from "../styles/textStyles";
 
 interface IProfileSettingsData {
   gender: number;
@@ -98,7 +99,7 @@ function ChangeProfileSettings({
     <Box sx={styles.profileBox}>
       <Box>
         <Typography>Hobbies :</Typography>
-        <Box>{tags && tags.map((tag) => <Button key={tag}>{tag}</Button>)}</Box>
+        <Box>{tags && tags.map((tag) => <Button sx={interrestsButton} key={tag}>{tag}</Button>)}</Box>
         <Button onClick={() => setOpenModal(true)}>
           You can change your hobbies here!
         </Button>

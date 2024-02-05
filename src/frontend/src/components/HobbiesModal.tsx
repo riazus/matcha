@@ -93,8 +93,8 @@ const HobbiesModal = forwardRef(
 
     return (
       <Box ref={ref} sx={styles.boxModal} tabIndex={-1}>
-        <Typography variant="h1" sx={styles.interrestsText}>
-          Interrests :
+        <Typography variant="h3" sx={styles.interrestsText}>
+          I am interrested in ...
         </Typography>
         <Grid container spacing={2}>
           {tagsData.map((tag) => (
@@ -111,9 +111,10 @@ const HobbiesModal = forwardRef(
             </Grid>
           ))}
         </Grid>
+        <Box sx={{display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
         <Button
           onClick={() => setTags([])}
-          sx={styles.interrestsFinishedButton}
+          sx={styles.interrestsClearButton}
         >
           Clear all
         </Button>
@@ -124,9 +125,18 @@ const HobbiesModal = forwardRef(
           Finished
         </Button>
       </Box>
+      </Box>
     );
   }
 );
+
+const clearAndFinishedButton = {
+  marginTop: "5%",
+  backgroundColor: matchaColors.darkBox,
+  color: "black",
+  borderRadius: "10px",
+  border: "3px solid black",
+}
 
 const styles = {
   boxModal: {
@@ -153,12 +163,15 @@ const styles = {
     },
   },
   interrestsText: {
-    fontSize: "3rem",
+    fontSize: "25px",
     fontWeight: "bold",
-    marginBottom: "2%",
+    marginBottom: "3%",
   },
   interrestsFinishedButton: {
-    marginTop: "3%",
+    ...clearAndFinishedButton
+  },
+  interrestsClearButton:{
+    ...clearAndFinishedButton
   },
   interrestsBox: {
     backgroundColor: "rgb(253, 255, 252)",

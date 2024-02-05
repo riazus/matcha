@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import FormInput from "../components/FormInput";
 import { LinkItem } from "../components/LinkItemForm";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 import { matchaColors } from "../styles/colors";
 
 const registerSchema = object({

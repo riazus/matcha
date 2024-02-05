@@ -1,4 +1,4 @@
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Typography, Tooltip } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks/hooks";
 import { Button, Box, Avatar } from "@mui/material";
@@ -18,9 +18,10 @@ import {
 } from "../sockets/notificationConnection";
 import { HubConnectionState } from "@microsoft/signalr";
 import { NotificationEvent } from "../config";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
+import { matchaColors } from "../styles/colors";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -105,12 +106,14 @@ function UserForm() {
     );
   } else if (formData?.isBlockedByMe) {
     return (
-      <>
-        <Typography>
+      <Box sx={{display: "flex", flexDirection: "column"}}>
+        <Typography sx={title}>
           You cannot see profile of this user, firstly unblock
         </Typography>
-        <Button onClick={handleUnblockProfile}>Unblock profile</Button>
-      </>
+        <Button onClick={handleUnblockProfile} sx={styles.unblockButton}>
+          Unblock profile
+        </Button>
+      </Box>
     );
   }
 
@@ -119,11 +122,17 @@ function UserForm() {
       <Box sx={styles.box}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
-        <Avatar src={formData!.profilePictureUrl} sx={{marginTop: "10px", width: 100, height: 100}} />
+        <Avatar
+          src={formData!.profilePictureUrl}
+          sx={{ marginTop: "10px", width: 100, height: 100 }}
+        />
 
         {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
-        <Box sx={styles.birthday}>{new Date().getFullYear() - new Date(formData!.birthday).getFullYear()}</Box>
+        <Box sx={styles.birthday}>
+          {new Date().getFullYear() -
+            new Date(formData!.birthday).getFullYear()}
+        </Box>
 
         <Box sx={styles.description}>{formData!.description}</Box>
 
@@ -141,27 +150,38 @@ function UserForm() {
         </Button>
       </Box>
       {formData!.isLiked ? (
-        <IconButton
-          aria-label="like user"
-          onClick={handleRemoveLikeClick}
-          disabled={isLikeLoading}
-          sx={styles.likeButton}
-        >
-          <FavoriteIcon />
-        </IconButton>
+        <Tooltip title="unlike this profile">
+          <IconButton
+            aria-label="like user"
+            onClick={handleRemoveLikeClick}
+            disabled={isLikeLoading}
+            sx={styles.likeButton}
+          >
+            <FavoriteIcon />
+          </IconButton>
+        </Tooltip>
       ) : (
-        <IconButton
-          aria-label="dislike user"
-          onClick={handleLikeClick}
-          disabled={isLikeLoading}
-          sx={styles.unlikeButton}
-        >
-          <FavoriteBorderIcon />
-        </IconButton>
+        <Tooltip title="like this profile">
+          <IconButton
+            aria-label="dislike user"
+            onClick={handleLikeClick}
+            disabled={isLikeLoading}
+            sx={styles.unlikeButton}
+          >
+            <FavoriteBorderIcon />
+          </IconButton>
+        </Tooltip>
       )}
     </Box>
   );
 }
+
+const baseButtonStyle = {
+  borderRadius: "12px",
+  padding: "10px 20px",
+  fontSize: "16px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+};
 
 const styles = {
   box: {
@@ -173,6 +193,7 @@ const styles = {
     border: "1px solid #ddd",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    backgroundColor: matchaColors.darkBox,
   },
   chatButton: {
     backgroundColor: "#87CEFA",
@@ -210,24 +231,32 @@ const styles = {
     width: "100%",
   },
   likeButton: {
-    backgroundColor: "#FF5A5F", 
-    color: "#fff", 
-    borderRadius: "12px", 
-    padding: "10px 20px",  
-    fontSize: "16px", 
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    ...baseButtonStyle,
+    backgroundColor: "#FF5A5F",
+    color: "#fff",
+    ":hover": {
+      backgroundColor: matchaColors.darkBox,
+      color: "rgb(255, 255, 255, 0.2)",
+    },
   },
   unlikeButton: {
-    backgroundColor: "#FFFFFF", 
-    color: "red", 
-    borderRadius: "12px", 
-    padding: "10px 20px", 
-    fontSize: "16px", 
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+    ...baseButtonStyle,
+    backgroundColor: "#FFFFFF",
+    color: "red",
+    ":hover": {
+      backgroundColor: matchaColors.red,
+      color: "black",
+    },
   },
-  birthday: {
-
-  }
+  birthday: {},
+  unblockButton: {
+    color: "black",
+    backgroundColor: matchaColors.yellow,
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    ':hover': {
+      backgroundColor: matchaColors.yellowlight
+    }
+  },
 };
 
 export default UserForm;

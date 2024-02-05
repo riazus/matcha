@@ -21,6 +21,7 @@ import { LoadingButton } from "@mui/lab";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import ChangeLocationSettings from "./ChangeLocationSettings";
+import { matchaColors } from "../styles/colors";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -64,7 +65,11 @@ function SettingsForm() {
             backgroundImage: `url(${data.profilePictureUrl})`,
           }}
         >
-          <LoadingButton loading={isUpdatePictureLoading} component="label">
+          <LoadingButton
+            sx={styles.loadingButton}
+            loading={isUpdatePictureLoading}
+            component="label"
+          >
             <DriveFileRenameOutlineIcon />
             <VisuallyHiddenInput
               type="file"
@@ -78,7 +83,7 @@ function SettingsForm() {
           {user?.firstName} {user?.lastName}
         </Typography>
 
-        <Accordion>
+        <Accordion sx={styles.accordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             📷 Additional pictures
           </AccordionSummary>
@@ -87,7 +92,7 @@ function SettingsForm() {
           </AccordionDetails>
         </Accordion>
 
-        <Accordion>
+        <Accordion sx={styles.accordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             👤 Profile settings
           </AccordionSummary>
@@ -103,7 +108,7 @@ function SettingsForm() {
           </AccordionDetails>
         </Accordion>
 
-        <Accordion>
+        <Accordion sx={styles.accordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             🏠 Location settings
           </AccordionSummary>
@@ -113,7 +118,7 @@ function SettingsForm() {
         </Accordion>
 
         {data.hasPassword && (
-          <Accordion>
+          <Accordion sx={styles.accordion}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               🔑 Identification settings
             </AccordionSummary>
@@ -135,18 +140,40 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     minWidth: "75%",
+    alignItems: "center",
+    margin: "3%",
   },
   onePictureBox: {
     backgroundColor: "rgb(150, 150, 150, 0.3)",
-    height: "25vh",
-    width: "15%",
-    borderRadius: "10px",
+    height: "250px",
+    width: "250px",
     justifyContent: "center",
     alignItems: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    backgroundPosition: "center",
+    borderRadius: "50%",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    margin: "1%",
   },
-  nameText: {},
+  nameText: {
+    fontWeight: "bold",
+    textShadow: "1px 1px 2px rgba(0, 0, 0, 0.1)",
+    color: matchaColors.yellowlight,
+    margin: "1%",
+    fontFamily: "Roboto, sans-serif",
+    fontStyle: "italic",
+  },
+  accordion: {
+    width: "70%",
+  },
+  loadingButton: {
+    backgroundColor: matchaColors.yellow,
+    borderRadius: "20px",
+    ':hover': {
+      backgroundColor: matchaColors.yellowlight
+    }
+  },
 };
 
 export default SettingsForm;

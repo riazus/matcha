@@ -14,7 +14,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { increaseSearchingPage } from "../app/slices/currentUserSlice";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 
 function UsersList() {
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(

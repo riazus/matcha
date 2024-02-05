@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import ViewedProfilesList from "./ViewedProfilesList";
 import ProfilesMeViewedList from "./ProfilesMeViewedList";
 import { useState } from "react";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 
 // TODO: need to change visual representing
 export interface Profile {

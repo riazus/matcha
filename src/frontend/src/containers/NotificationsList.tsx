@@ -10,7 +10,7 @@ import FullScreenLoader from "../components/FullScreenLoader";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { NotificationEvent } from "../config";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -36,8 +36,9 @@ function NotificationsList() {
   return (
     <Box>
       <Typography sx={title} variant="h6" component="div">
-        Notifications List
+        You have {notifications?.length} notifications
       </Typography>
+      {notifications && notifications?.length > 0 ? (
         <Box sx={styles.notificationsList}>
           <Demo>
             <List dense={true}>
@@ -62,7 +63,8 @@ function NotificationsList() {
               })}
             </List>
           </Demo>
-      </Box>
+        </Box>
+      ) : null}
     </Box>
   );
 }
@@ -70,14 +72,14 @@ function NotificationsList() {
 const styles = {
   notificationsList: {
     marginTop: "16px",
-    backgroundColor: '#f0f0f0',
-    padding: '16px',
+    backgroundColor: "#f0f0f0",
+    padding: "16px",
   },
   listItem: {
-    '&:hover': {
-      backgroundColor: '#e0e0e0',
+    "&:hover": {
+      backgroundColor: "#e0e0e0",
     },
   },
-}
+};
 
 export default NotificationsList;

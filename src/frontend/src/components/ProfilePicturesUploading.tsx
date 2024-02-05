@@ -122,12 +122,14 @@ function ProfilePicturesUploading({
 
 const styles = {
   picturesBox: {
+    margin: "1%",
     padding: "1%",
     display: "flex",
     fexDirection: "row",
     gap: "10px",
   },
   onePictureBox: {
+    margin: "1%",
     backgroundColor: "rgb(255, 255, 255, 0.3)",
     height: "25vh",
     width: "15%",
