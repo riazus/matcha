@@ -45,6 +45,7 @@ public interface IAccountService
     void UpdatePasswordSettings(Account currUser, UpdatePasswordSettingsRequest req);
     string UpdateProfilePicture(Account currUser, IFormFile newPicture);
     AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
+    IEnumerable<Coord> GetAccountsCoords();
 }
 
 public class AccountService : IAccountService
@@ -652,6 +653,12 @@ public class AccountService : IAccountService
         _accountRepository.Update(currUser);
 
         return req;
+    }
+
+    public IEnumerable<Coord> GetAccountsCoords()
+    {
+        var res = _accountRepository.GetAccountsCoords();
+        return res;
     }
 
     #region Helper methods
