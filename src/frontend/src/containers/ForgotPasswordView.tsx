@@ -9,6 +9,7 @@ import { ForgotPasswordBody } from "../types/api/accounts";
 import { useForgotPasswordMutation } from "../app/api/api";
 import { LoadingButton } from "../components/LoadingButtonForm";
 import { LinkItem } from "../components/LinkItemForm";
+import { matchaColors } from "../styles/colors";
 
 const forgotPasswordSchema = object({
   email: string()
@@ -66,17 +67,10 @@ function ForgotPasswordView() {
           letterSpacing: 1,
         }}
       >
-        Welcome Back!
-      </Typography>
-      <Typography
-        variant="body1"
-        component="h2"
-        sx={{ color: "#e5e7eb", mb: 2 }}
-      >
-        Login to have access!
+        Please enter your Email
       </Typography>
       <FormProvider {...methods}>
-        <Box component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box sx={styles.boxForm} component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
           <FormInput name="email" label="Email" type="email" />
 
           <LoadingButton
@@ -104,6 +98,15 @@ function ForgotPasswordView() {
       </FormProvider>
     </Box>
   );
+}
+
+const styles = {
+  boxForm: {
+    borderRadius: '10px', 
+    backgroundColor: matchaColors.darkBox, 
+    padding: '20px', 
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+  },
 }
 
 export default ForgotPasswordView;

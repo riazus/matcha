@@ -133,11 +133,8 @@ const styles = {
   },
   location: {
     height: "25vh",
-    width: "60vh",
+    width: "90%",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-    "@media (max-width: 600px)": {
-      width: "90vw",
-    },
   },
 };
 

@@ -16,10 +16,24 @@ const LocationSwitch: React.FC<LocationSwitchProps> = ({
 
   return (
     <FormControlLabel
-      control={<Switch checked={checked} onChange={handleChange} />}
+      control={<Switch sx={styles.LocationSwitch} checked={checked} onChange={handleChange} />}
       label="Enable Location"
     />
   );
 };
+
+const styles = {
+  LocationSwitch: {
+    '&.Mui-checked': {
+      color: 'yellow',
+    },
+    track: {
+      background: 'yellow',
+    },
+    thumb: {
+      backgroundColor: 'black',
+    },
+  }
+}
 
 export default LocationSwitch;

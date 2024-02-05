@@ -2,17 +2,12 @@ import {
   FormHelperText,
   Typography,
   FormControl,
-  Input as _Input,
+  Input,
   InputProps,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { FC } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-
-const Input = styled(_Input)`
-  background-color: white;
-  padding: 0.4rem 0.7rem;
-`;
+import { matchaColors } from "../styles/colors";
 
 type IFormInputProps = {
   name: string;
@@ -31,11 +26,8 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
       defaultValue=""
       name={name}
       render={({ field }) => (
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "#e5e7eb", mb: 1, fontWeight: 500 }}
-          >
+        <FormControl fullWidth sx={{ mb: 1 }}>
+          <Typography variant="body2" sx={styles.text}>
             {label}
           </Typography>
           <Input
@@ -43,7 +35,7 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
             color="success"
             fullWidth
             disableUnderline
-            sx={{ borderRadius: "1rem" }}
+            sx={styles.input}
             error={!!errors[name]}
             {...otherProps}
           />
@@ -54,6 +46,11 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => {
       )}
     />
   );
+};
+
+const styles = {
+  text: { color: matchaColors.background, mb: 1, fontWeight: 800, fontSize: "17px" },
+  input: { padding: "0.4rem 0.7rem", borderRadius: "1rem", backgroundColor: matchaColors.usersBox, width: "100%" },
 };
 
 export default FormInput;

@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/system";
+import { Box } from "@mui/system";
 import dayjs from "dayjs";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { styled } from "@mui/material/styles";
@@ -28,6 +28,8 @@ import ProfilePicturesUploading from "../components/ProfilePicturesUploading";
 import { matchaColors } from "../styles/colors";
 import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 import LocationSwitch from "../components/LocationSwitch";
+import { interrestsButton } from "../styles/textStyles";
+
 
 const ITextField = styled(TextField)({
   "& label.Mui-focused": {
@@ -170,13 +172,7 @@ function CompleteProfile() {
   };
 
   return (
-    <Container sx={styles.mainBox}>
-      <ProfilePicturesUploading
-        profilePicture={profilePicture}
-        pictures={pictures}
-        setPictures={setPictures}
-        setProfilePicture={setProfilePicture}
-      />
+    <Box sx={styles.mainBox}>
       <Box sx={styles.dateBox}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -201,6 +197,12 @@ function CompleteProfile() {
           />
         </LocalizationProvider>
       </Box>
+      <ProfilePicturesUploading
+        profilePicture={profilePicture}
+        pictures={pictures}
+        setPictures={setPictures}
+        setProfilePicture={setProfilePicture}
+      />
 
       <SelectGendersRadioButtons
         gender={gender}
@@ -235,7 +237,13 @@ function CompleteProfile() {
       />
 
       <Box sx={styles.interrestsBox}>
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            marginBottom: "10px",
+          }}
+        >
           <Button
             variant="contained"
             onClick={() => setOpenModal(!openModal)}
@@ -246,7 +254,7 @@ function CompleteProfile() {
           <Button
             startIcon={<CancelIcon />}
             onClick={() => setTags([])}
-            sx={styles.interrestsFinishedButton}
+            sx={styles.clearAllButton}
           >
             Clear all
           </Button>
@@ -254,7 +262,7 @@ function CompleteProfile() {
         <div>
           {tags &&
             tags.map((tag) => (
-              <Button key={tag} variant="outlined" sx={styles.interrestsButton}>
+              <Button key={tag} variant="outlined" sx={interrestsButton}>
                 {tag}
               </Button>
             ))}
@@ -300,7 +308,7 @@ function CompleteProfile() {
           Saving
         </LoadingButton>
       </Box>
-    </Container>
+    </Box>
   );
 }
 
@@ -308,7 +316,13 @@ const styles = {
   mainBox: {
     display: "flex",
     flexDirection: "column",
-    margin: "1%",
+    width: "90%",
+    margin: "7%",
+    padding: "2%",
+    borderRadius: "10px",
+    backgroundColor: matchaColors.darkBox,
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    border: "1px solid black",
   },
   uploadProfileButton: {
     width: "50%",
@@ -320,6 +334,7 @@ const styles = {
   },
   dateBox: {
     padding: "1%",
+    margin: "2%",
   },
   datePicker: {
     width: "40%",
@@ -384,11 +399,14 @@ const styles = {
     fontWeight: "bold",
     marginBottom: "2%",
   },
-  interrestsFinishedButton: {
-    backgroundColor: matchaColors.backgroundlight,
+  clearAllButton: {
+    backgroundColor: matchaColors.darkBox,
     color: matchaColors.text,
     marginLeft: "3%",
     borderRadius: "10px",
+    ":hover": {
+      background: "rgb(58, 90, 64, 0.8)",
+    },
   },
   selection: {
     backgroundColor: matchaColors.backgroundlight,
@@ -403,21 +421,9 @@ const styles = {
   },
   interrestsBox: {
     display: "flex",
-    alignItems: "baseline",
     flexDirection: "column",
     padding: "1%",
-  },
-  interrestsButton: {
-    margin: "1%",
-    borderRadius: "20px",
-    backgroundColor: "rgb(150, 50, 150)",
-    color: "white",
-    borderColor: "black",
-    cursor: "default",
-    ":hover": {
-      backgroundColor: "rgb(150, 50, 150)",
-      borderColor: "black",
-    },
+    margin: "5%",
   },
   tickbox: {
     marginLeft: "1%",

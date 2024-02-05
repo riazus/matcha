@@ -1,8 +1,7 @@
 import { useEffect } from "react";
-import { Demo } from "./HistoryList";
 import { useGetProfileMeViewedQuery } from "../app/api/api";
-import { List, ListItem, ListItemText } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
+import ProfileViewDisplay from "../components/ProfileViewDisplay";
 
 interface ProfilesMeViewedListProps {
   setProfilesMeViewedCount: (count: number) => void;
@@ -21,19 +20,7 @@ function ProfilesMeViewedList(props: ProfilesMeViewedListProps) {
     return <FullScreenLoader />;
   }
 
-  return (
-    <Demo>
-      <List dense={true}>
-        {profilesMeViewed?.map((item, ind) => {
-          return (
-            <ListItem key={ind}>
-              <ListItemText primary={item.username} />
-            </ListItem>
-          );
-        })}
-      </List>
-    </Demo>
-  );
+  return <ProfileViewDisplay viewProfiles={profilesMeViewed} />;
 }
 
 export default ProfilesMeViewedList;
