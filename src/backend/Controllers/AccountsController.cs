@@ -66,10 +66,7 @@ public class AccountsController : BaseController
     {
         var acc = _accountService.Register(model);
 
-        _ = Task.Run(async () =>
-        {
-            await _accountService.SendVerificationEmail(acc, Request.Headers["origin"]);
-        });
+        await _accountService.SendVerificationEmail(acc, Request.Headers["origin"]);
 
         return Ok(new { message = "Registration successful, please check your email for verification instructions" });
     }
