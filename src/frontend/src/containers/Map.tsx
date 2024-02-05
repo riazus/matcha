@@ -16,10 +16,10 @@ function Map() {
     <Box>
       <Globe
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-        width={1100}
-        height={700}
         hexBinPointsData={data}
         hexBinMerge={true}
+        width={700}
+        height={700}
       />
     </Box>
   );
