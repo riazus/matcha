@@ -16,9 +16,11 @@ import {
 interface MessageDisplayProps {
   currUserId: string;
   interlocutorId: string;
+  refreshChatRequested: boolean;
   setChatId: (arg: string) => void;
   setMessageText: (arg: string) => void;
   setIsSending: (arg: boolean) => void;
+  setRefreshChatRequested: (arg: boolean) => void;
 }
 
 function MessageDisplay(props: MessageDisplayProps) {
@@ -30,9 +32,10 @@ function MessageDisplay(props: MessageDisplayProps) {
     isLoading,
     isError,
     isSuccess,
+    isFetching,
   } = useGetChatMessagesQuery({
-    firstUserId: props.currUserId,
-    secondUserId: props.interlocutorId,
+    req: { firstUserId: props.currUserId, secondUserId: props.interlocutorId },
+    refreshChatRequested: props.refreshChatRequested,
   });
 
   useEffect(() => {
@@ -57,51 +60,52 @@ function MessageDisplay(props: MessageDisplayProps) {
   }, [messages]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isFetching && !isLoading && isSuccess) {
       props.setChatId(messages.chatId);
+      props.setRefreshChatRequested(false);
     }
-  }, [isLoading]);
+  }, [isFetching, isLoading, isSuccess]);
 
   if (isError) {
     return <></>;
-  } else if (isLoading) {
+  } else if (isLoading || isFetching) {
     return <Typography>Loading...</Typography>;
   }
 
   return (
     <Box sx={styles.box} ref={messagesContainerRef}>
-        {messages?.messages.map((message, i) => {
-          const isUser = message.username === user?.username;
-          const messageStyle = isUser ? styles.messageRight : styles.message;
-          return (
-            <Box
-              key={i}
-              sx={{
-                display: "flex",
-                alignItems: isUser ? "flex-end" : "flex-start",
-                flexDirection: "column",
-                pb: "10px",
-                pr: "15px",
-              }}
-            >
-              <Box sx={{alignItems: isUser ? "flex-end" : "flex-start"}}>
-                <Typography variant="body1">{message.username}</Typography>
-                <Typography variant="caption">
-                  {new Date(message.date).toLocaleDateString(undefined, {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Typography>
-              </Box>
-              <Box sx={messageStyle}>
-                <Typography variant="body2">{message.text}</Typography>
-              </Box>
+      {messages?.messages.map((message, i) => {
+        const isUser = message.username === user?.username;
+        const messageStyle = isUser ? styles.messageRight : styles.message;
+        return (
+          <Box
+            key={i}
+            sx={{
+              display: "flex",
+              alignItems: isUser ? "flex-end" : "flex-start",
+              flexDirection: "column",
+              pb: "10px",
+              pr: "15px",
+            }}
+          >
+            <Box sx={{ alignItems: isUser ? "flex-end" : "flex-start" }}>
+              <Typography variant="body1">{message.username}</Typography>
+              <Typography variant="caption">
+                {new Date(message.date).toLocaleDateString(undefined, {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Typography>
             </Box>
-          );
-        })}
+            <Box sx={messageStyle}>
+              <Typography variant="body2">{message.text}</Typography>
+            </Box>
+          </Box>
+        );
+      })}
     </Box>
   );
 }

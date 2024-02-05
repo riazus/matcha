@@ -18,7 +18,7 @@ import {
 } from "../sockets/notificationConnection";
 import { HubConnectionState } from "@microsoft/signalr";
 import { NotificationEvent } from "../config";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
@@ -28,6 +28,7 @@ function UserForm() {
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
   const [chatOpen, setChatOpen] = useState(false);
+  const [refreshChatRequested, setRefreshChatRequested] = useState(false);
   const handleOpenChat = () => setChatOpen(true);
   const handleCloseChat = () => setChatOpen(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -63,6 +64,13 @@ function UserForm() {
   useEffect(() => {
     setIsLikeLoading(false);
   }, [formData?.isLiked]);
+
+  useEffect(() => {
+    if (formData?.isProfilesMatched === false) {
+      setChatOpen(false);
+      setRefreshChatRequested(true);
+    }
+  }, [formData?.isProfilesMatched]);
 
   const handleLikeClick = () => {
     emitNotificationConnectionEvent(
@@ -106,7 +114,7 @@ function UserForm() {
     );
   } else if (formData?.isBlockedByMe) {
     return (
-      <Box sx={{display: "flex", flexDirection: "column"}}>
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Typography sx={title}>
           You cannot see profile of this user, firstly unblock
         </Typography>
@@ -142,7 +150,12 @@ function UserForm() {
           </Button>
         )}
         {chatOpen && (
-          <ChatModal chatOpen={chatOpen} handleCloseChat={handleCloseChat} />
+          <ChatModal
+            chatOpen={chatOpen}
+            handleCloseChat={handleCloseChat}
+            refreshChatRequested={refreshChatRequested}
+            setRefreshChatRequested={setRefreshChatRequested}
+          />
         )}
 
         <Button onClick={handleBlockProfile} sx={styles.blockButton}>
@@ -253,9 +266,9 @@ const styles = {
     color: "black",
     backgroundColor: matchaColors.yellow,
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    ':hover': {
-      backgroundColor: matchaColors.yellowlight
-    }
+    ":hover": {
+      backgroundColor: matchaColors.yellowlight,
+    },
   },
 };
 

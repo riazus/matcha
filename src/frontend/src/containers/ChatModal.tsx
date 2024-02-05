@@ -1,12 +1,13 @@
 import { FormEvent, useState } from "react";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import { Typography, Button, Box } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useAppSelector } from "../app/hooks/hooks";
 import MessageDisplay from "../components/MessageDisplay";
 import { emitChatConnectionEvent } from "../sockets/chatConnection";
 import { ChatEvent } from "../config";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
+import { LoadingButton } from "@mui/lab";
 
 export interface ChatMessage {
   username: string;
@@ -17,6 +18,8 @@ export interface ChatMessage {
 interface ChatModalProps {
   chatOpen: boolean;
   handleCloseChat: () => void;
+  refreshChatRequested: boolean;
+  setRefreshChatRequested: (arg: boolean) => void;
 }
 
 function ChatModal(props: ChatModalProps) {
@@ -58,9 +61,10 @@ function ChatModal(props: ChatModalProps) {
           setChatId={setChatId}
           setMessageText={setMessageText}
           setIsSending={setIsSending}
+          refreshChatRequested={props.refreshChatRequested}
+          setRefreshChatRequested={props.setRefreshChatRequested}
         />
         <Box sx={styles.sendBox}>
-          {/* TODO: Block submit form when messages loading */}
           <form onSubmit={handleSubmit}>
             <fieldset disabled={isSending}>
               <TextField
@@ -69,7 +73,9 @@ function ChatModal(props: ChatModalProps) {
                 placeholder="Write a message..."
                 sx={styles.textField}
               ></TextField>
-              <Button><SendIcon/></Button>
+              <LoadingButton loading={isSending}>
+                <SendIcon />
+              </LoadingButton>
             </fieldset>
           </form>
         </Box>
@@ -103,8 +109,8 @@ const styles = {
     alignItems: "center",
   },
   textField: {
-    marginRight: "10px", 
-  }
-}
+    marginRight: "10px",
+  },
+};
 
 export default ChatModal;
