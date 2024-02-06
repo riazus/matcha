@@ -16,9 +16,11 @@ import {
 interface MessageDisplayProps {
   currUserId: string;
   interlocutorId: string;
+  refreshChatRequested: boolean;
   setChatId: (arg: string) => void;
   setMessageText: (arg: string) => void;
   setIsSending: (arg: boolean) => void;
+  setRefreshChatRequested: (arg: boolean) => void;
 }
 
 function MessageDisplay(props: MessageDisplayProps) {
@@ -30,9 +32,10 @@ function MessageDisplay(props: MessageDisplayProps) {
     isLoading,
     isError,
     isSuccess,
+    isFetching,
   } = useGetChatMessagesQuery({
-    firstUserId: props.currUserId,
-    secondUserId: props.interlocutorId,
+    req: { firstUserId: props.currUserId, secondUserId: props.interlocutorId },
+    refreshChatRequested: props.refreshChatRequested,
   });
 
   useEffect(() => {
@@ -57,14 +60,15 @@ function MessageDisplay(props: MessageDisplayProps) {
   }, [messages]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (!isFetching && !isLoading && isSuccess) {
       props.setChatId(messages.chatId);
+      props.setRefreshChatRequested(false);
     }
-  }, [isLoading]);
+  }, [isFetching, isLoading, isSuccess]);
 
   if (isError) {
     return <></>;
-  } else if (isLoading) {
+  } else if (isLoading || isFetching) {
     return <Typography>Loading...</Typography>;
   }
 

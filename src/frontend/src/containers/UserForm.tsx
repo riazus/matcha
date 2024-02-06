@@ -18,7 +18,7 @@ import {
 } from "../sockets/notificationConnection";
 import { HubConnectionState } from "@microsoft/signalr";
 import { NotificationEvent } from "../config";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
@@ -28,6 +28,7 @@ function UserForm() {
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
   const [chatOpen, setChatOpen] = useState(false);
+  const [refreshChatRequested, setRefreshChatRequested] = useState(false);
   const handleOpenChat = () => setChatOpen(true);
   const handleCloseChat = () => setChatOpen(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -63,6 +64,13 @@ function UserForm() {
   useEffect(() => {
     setIsLikeLoading(false);
   }, [formData?.isLiked]);
+
+  useEffect(() => {
+    if (formData?.isProfilesMatched === false) {
+      setChatOpen(false);
+      setRefreshChatRequested(true);
+    }
+  }, [formData?.isProfilesMatched]);
 
   const handleLikeClick = () => {
     emitNotificationConnectionEvent(
@@ -106,7 +114,7 @@ function UserForm() {
     );
   } else if (formData?.isBlockedByMe) {
     return (
-      <Box sx={{display: "flex", flexDirection: "column"}}>
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Typography sx={title}>
           You cannot see profile of this user, firstly unblock
         </Typography>
@@ -129,6 +137,15 @@ function UserForm() {
 
         {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
+        {chatOpen && (
+          <ChatModal
+            chatOpen={chatOpen}
+            handleCloseChat={handleCloseChat}
+            refreshChatRequested={refreshChatRequested}
+            setRefreshChatRequested={setRefreshChatRequested}
+          />
+        )}
+
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}
@@ -141,9 +158,6 @@ function UserForm() {
             Open chat
           </Button>
         )}
-        {chatOpen && (
-          <ChatModal chatOpen={chatOpen} handleCloseChat={handleCloseChat} />
-        )}
 
         <Button onClick={handleBlockProfile} sx={styles.blockButton}>
           Block Profile
@@ -152,27 +166,27 @@ function UserForm() {
       {formData!.isLiked ? (
         <Tooltip title="unlike this profile">
           <span>
-          <IconButton
-            aria-label="like user"
-            onClick={handleRemoveLikeClick}
-            disabled={isLikeLoading}
-            sx={styles.likeButton}
-          >
-            <FavoriteIcon />
-          </IconButton>
+            <IconButton
+              aria-label="like user"
+              onClick={handleRemoveLikeClick}
+              disabled={isLikeLoading}
+              sx={styles.likeButton}
+            >
+              <FavoriteIcon />
+            </IconButton>
           </span>
         </Tooltip>
       ) : (
         <Tooltip title="like this profile">
           <span>
-          <IconButton
-            aria-label="dislike user"
-            onClick={handleLikeClick}
-            disabled={isLikeLoading}
-            sx={styles.unlikeButton}
-          >
-            <FavoriteBorderIcon />
-          </IconButton>
+            <IconButton
+              aria-label="dislike user"
+              onClick={handleLikeClick}
+              disabled={isLikeLoading}
+              sx={styles.unlikeButton}
+            >
+              <FavoriteBorderIcon />
+            </IconButton>
           </span>
         </Tooltip>
       )}
@@ -257,9 +271,9 @@ const styles = {
     color: "black",
     backgroundColor: matchaColors.yellow,
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-    ':hover': {
-      backgroundColor: matchaColors.yellowlight
-    }
+    ":hover": {
+      backgroundColor: matchaColors.yellowlight,
+    },
   },
 };
 
