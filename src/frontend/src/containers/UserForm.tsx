@@ -151,6 +151,7 @@ function UserForm() {
       </Box>
       {formData!.isLiked ? (
         <Tooltip title="unlike this profile">
+          <span>
           <IconButton
             aria-label="like user"
             onClick={handleRemoveLikeClick}
@@ -159,9 +160,11 @@ function UserForm() {
           >
             <FavoriteIcon />
           </IconButton>
+          </span>
         </Tooltip>
       ) : (
         <Tooltip title="like this profile">
+          <span>
           <IconButton
             aria-label="dislike user"
             onClick={handleLikeClick}
@@ -170,6 +173,7 @@ function UserForm() {
           >
             <FavoriteBorderIcon />
           </IconButton>
+          </span>
         </Tooltip>
       )}
     </Box>
