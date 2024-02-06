@@ -69,6 +69,7 @@ function Header() {
           "Favorites",
           "History",
           "Settings",
+          "Map",
         ].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
@@ -104,42 +105,32 @@ function Header() {
           {user?.id && user?.isProfileCompleted && !isMobile && (
             <>
               <Box display="flex" sx={{ ml: "auto" }}>
-                <LoadingButton onClick={() => navigate("/users")}>
-                  Users
-                </LoadingButton>
-                <LoadingButton
+                <Button onClick={() => navigate("/users")}>Users</Button>
+                <Button
                   sx={{ padding: 0 }}
                   onClick={() => navigate("/notifications")}
                 >
                   Notifications
-                </LoadingButton>
+                </Button>
                 <Box sx={{ color: matchaColors.yellow }}>
                   {notificationCount}
                 </Box>
-                <LoadingButton onClick={() => navigate("/favorites")}>
+                <Button onClick={() => navigate("/favorites")}>
                   Favorites
-                </LoadingButton>
-                <LoadingButton onClick={() => navigate("/history")}>
-                  History
-                </LoadingButton>
-                <LoadingButton onClick={() => navigate("/settings")}>
-                  Settings
-                </LoadingButton>
+                </Button>
+                <Button onClick={() => navigate("/history")}>History</Button>
+                <Button onClick={() => navigate("/settings")}>Settings</Button>
+                <Button onClick={() => navigate("/map")}>Map</Button>
               </Box>
             </>
           )}
           <Box display="flex" sx={{ ml: "auto" }}>
             {!user?.id ? (
               <>
-                <LoadingButton
-                  sx={{ mr: 2 }}
-                  onClick={() => navigate("/register")}
-                >
+                <Button sx={{ mr: 2 }} onClick={() => navigate("/register")}>
                   SignUp
-                </LoadingButton>
-                <LoadingButton onClick={() => navigate("/login")}>
-                  Login
-                </LoadingButton>
+                </Button>
+                <Button onClick={() => navigate("/login")}>Login</Button>
               </>
             ) : (
               <LoadingButton

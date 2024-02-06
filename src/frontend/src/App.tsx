@@ -22,6 +22,7 @@ import { disconnectNotificationConnection } from "./sockets/notificationConnecti
 import { useEffect } from "react";
 import GreetingPage from "./components/GreetingPage";
 import Home from "./components/Home";
+import Map from "./containers/Map";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ const router = createBrowserRouter([
               {
                 path: "/users/:id",
                 element: <UserForm />,
+              },
+              {
+                path: "map",
+                element: <Map />,
               },
             ],
           },

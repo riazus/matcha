@@ -33,6 +33,7 @@ import {
   ChangeProfilePictureResponse,
   Location,
   IpAddressResponse,
+  Coord,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -545,6 +546,9 @@ export const api = createApi({
         method: "PATCH",
       }),
     }),
+    getAccountsCoord: builder.query<Coord[], void>({
+      query: () => ({ url: ACCOUNT_ROUTES.ACCOUNTS_COORDS }),
+    }),
   }),
 });
 
@@ -578,4 +582,5 @@ export const {
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,
   useChangeLocationMutation,
+  useGetAccountsCoordQuery,
 } = api;
