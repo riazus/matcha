@@ -7,6 +7,8 @@ import { useAppSelector } from "../app/hooks/hooks";
 import MessageDisplay from "../components/MessageDisplay";
 import { emitChatConnectionEvent } from "../sockets/chatConnection";
 import { ChatEvent } from "../config";
+import SendIcon from "@mui/icons-material/Send";
+import { LoadingButton } from "@mui/lab";
 
 const chatStyle = {
   position: "absolute" as "absolute",
@@ -29,6 +31,8 @@ export interface ChatMessage {
 interface ChatModalProps {
   chatOpen: boolean;
   handleCloseChat: () => void;
+  refreshChatRequested: boolean;
+  setRefreshChatRequested: (arg: boolean) => void;
 }
 
 function ChatModal(props: ChatModalProps) {
@@ -79,6 +83,8 @@ function ChatModal(props: ChatModalProps) {
           setChatId={setChatId}
           setMessageText={setMessageText}
           setIsSending={setIsSending}
+          refreshChatRequested={props.refreshChatRequested}
+          setRefreshChatRequested={props.setRefreshChatRequested}
         />
 
         <Grid item>
@@ -90,7 +96,9 @@ function ChatModal(props: ChatModalProps) {
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Write a message..."
               ></TextField>
-              <button>Send</button>
+              <LoadingButton loading={isSending}>
+                <SendIcon />
+              </LoadingButton>
             </fieldset>
           </form>
         </Grid>

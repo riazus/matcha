@@ -24,6 +24,7 @@ function UserForm() {
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
   const [chatOpen, setChatOpen] = useState(false);
+  const [refreshChatRequested, setRefreshChatRequested] = useState(false);
   const handleOpenChat = () => setChatOpen(true);
   const handleCloseChat = () => setChatOpen(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
@@ -59,6 +60,13 @@ function UserForm() {
   useEffect(() => {
     setIsLikeLoading(false);
   }, [formData?.isLiked]);
+
+  useEffect(() => {
+    if (formData?.isProfilesMatched === false) {
+      setChatOpen(false);
+      setRefreshChatRequested(true);
+    }
+  }, [formData?.isProfilesMatched]);
 
   const handleLikeClick = () => {
     emitNotificationConnectionEvent(
@@ -120,7 +128,12 @@ function UserForm() {
       )}
 
       {chatOpen && (
-        <ChatModal chatOpen={chatOpen} handleCloseChat={handleCloseChat} />
+        <ChatModal
+          chatOpen={chatOpen}
+          handleCloseChat={handleCloseChat}
+          refreshChatRequested={refreshChatRequested}
+          setRefreshChatRequested={setRefreshChatRequested}
+        />
       )}
 
       <Typography

@@ -159,9 +159,12 @@ export const api = createApi({
         };
       },
     }),
-    getChatMessages: builder.query<MessageDataResponse, MessageRequest>({
+    getChatMessages: builder.query<
+      MessageDataResponse,
+      { req: MessageRequest; refreshChatRequested: boolean }
+    >({
       query: (options) => ({
-        url: MESSAGE_ROUTES.GET_MESSAGES(options),
+        url: MESSAGE_ROUTES.GET_MESSAGES(options.req),
         method: "GET",
       }),
       async onCacheEntryAdded(
@@ -197,6 +200,18 @@ export const api = createApi({
         } catch (err) {
           console.error(err);
         }
+      },
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.chatId = newItems.chatId;
+        currentCache.messages = newItems.messages
+      },
+      forceRefetch({ currentArg }) {
+        if (!currentArg) return false;
+
+        return currentArg.refreshChatRequested;
       },
     }),
     getFavoriteProfiles: builder.query<AccountsResponse[], void>({
