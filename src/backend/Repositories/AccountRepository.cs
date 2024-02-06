@@ -38,6 +38,7 @@ public interface IAccountRepository
     IEnumerable<Account>  GetProfilesMeViewed(Guid id);
     bool IsUserLikedProfile(Guid likedById, Guid id);
     PropertyInfo GetProperty(string propertyName);
+    IEnumerable<Coord> GetAccountsCoords();
 }
 
 public class AccountRepository : IAccountRepository
@@ -146,6 +147,20 @@ public class AccountRepository : IAccountRepository
         }
 
         return acc;
+    }
+
+    public IEnumerable<Coord> GetAccountsCoords()
+    {
+        var res = new List<Coord>();
+        var accs = _context.GetWhereList<Account>("Latitude IS NOT NULL AND Longitude IS NOT NULL").ToList();
+
+
+        accs?.ForEach((acc) =>
+        {
+            res.Add(new Coord() { Lat = acc.Latitude, Lng = acc.Longitude });
+        });
+
+        return res;
     }
 
     public Account GetByVerificationToken(string token)

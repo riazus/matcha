@@ -152,6 +152,11 @@ export interface ChangeProfilePictureResponse {
   profilePictureUrl: string;
 }
 
+export interface Coord {
+  lat: number;
+  lng: number;
+}
+
 export enum Orientation {
   Male = 0,
   Female = 1,

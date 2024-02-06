@@ -34,6 +34,7 @@ import {
   ChangeProfilePictureResponse,
   Location,
   IpAddressResponse,
+  Coord,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -550,6 +551,9 @@ export const api = createApi({
         method: "PATCH",
       }),
     }),
+    getAccountsCoord: builder.query<Coord[], void>({
+      query: () => ({ url: ACCOUNT_ROUTES.ACCOUNTS_COORDS }),
+    }),
     getScheduledEvents: builder.query<ScheduledEventResponse[], string>({
       query: (id) => ({ url: SCHEDULED_EVENT_ROUTES.GET_EVENTS(id) }),
     }),
@@ -593,6 +597,7 @@ export const {
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,
   useChangeLocationMutation,
+  useGetAccountsCoordQuery,
   useGetScheduledEventsQuery,
   useCreateScheduledEventMutation,
 } = api;

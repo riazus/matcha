@@ -36,6 +36,7 @@ export const ACCOUNT_ROUTES = {
   UPDATE_PASSWORD: "accounts/update-password",
   PROFILE_PICTURE: "/accounts/update-profile-picture",
   UPDATE_LOCATION: "/accounts/update-location",
+  ACCOUNTS_COORDS: "/accounts/coords",
   WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
     filter.minAge +

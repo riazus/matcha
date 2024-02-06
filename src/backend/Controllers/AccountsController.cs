@@ -247,6 +247,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    [HttpGet("coords")]
+    public ActionResult GetAccountsCoords()
+    {
+        var res = _accountService.GetAccountsCoords();
+        return Ok(res);
+    }
+
     #region Helpers
     private string ipAddress()
     {
