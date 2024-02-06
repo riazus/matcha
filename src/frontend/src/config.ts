@@ -80,6 +80,11 @@ export const NOTIFICATION_ROUTES = {
   DELETE: (id: string) => `notifications/${id}`,
 };
 
+export const SCHEDULED_EVENT_ROUTES = {
+  GET_EVENTS: (id: string) => `/events/${id}`,
+  CREATE: `/events`,
+};
+
 export enum NotificationEvent {
   AddNotification = "AddNotification",
   DeleteNotification = "DeleteNotification",

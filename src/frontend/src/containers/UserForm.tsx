@@ -22,15 +22,16 @@ import { title } from "../styles/textStyles";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
+import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
+import CreateEventModal from "./CreateEventModal";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
   const [chatOpen, setChatOpen] = useState(false);
+  const [createEventOpen, setCreateEventOpen] = useState(false);
   const [refreshChatRequested, setRefreshChatRequested] = useState(false);
-  const handleOpenChat = () => setChatOpen(true);
-  const handleCloseChat = () => setChatOpen(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const {
     data: formData,
@@ -79,6 +80,11 @@ function UserForm() {
     );
     setIsLikeLoading(true);
   };
+
+  const handleOpenChat = () => setChatOpen(true);
+  const handleCloseChat = () => setChatOpen(false);
+  const handleOpenCreateEvent = () => setCreateEventOpen(true);
+  const handleCloseCreateEvent = () => setCreateEventOpen(false);
 
   const handleRemoveLikeClick = () => {
     emitNotificationConnectionEvent(
@@ -137,15 +143,6 @@ function UserForm() {
 
         {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
-        {chatOpen && (
-          <ChatModal
-            chatOpen={chatOpen}
-            handleCloseChat={handleCloseChat}
-            refreshChatRequested={refreshChatRequested}
-            setRefreshChatRequested={setRefreshChatRequested}
-          />
-        )}
-
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}
@@ -154,14 +151,26 @@ function UserForm() {
         <Box sx={styles.description}>{formData!.description}</Box>
 
         {formData!.isProfilesMatched && (
-          <Button onClick={handleOpenChat} sx={styles.chatButton}>
-            Open chat
-          </Button>
+          <>
+            <Button onClick={handleOpenChat} sx={styles.chatButton}>
+              Open chat
+            </Button>
+            <Button
+              onClick={handleOpenCreateEvent}
+              sx={styles.scheduleEventButton}
+            >
+              Create Event
+            </Button>
+          </>
         )}
 
         <Button onClick={handleBlockProfile} sx={styles.blockButton}>
           Block Profile
         </Button>
+
+        {formData!.isProfilesMatched && (
+          <ScheduledEventsAccordion profileId={formData!.id} />
+        )}
       </Box>
       {formData!.isLiked ? (
         <Tooltip title="unlike this profile">
@@ -189,6 +198,23 @@ function UserForm() {
             </IconButton>
           </span>
         </Tooltip>
+      )}
+
+      {chatOpen && (
+        <ChatModal
+          chatOpen={chatOpen}
+          handleCloseChat={handleCloseChat}
+          refreshChatRequested={refreshChatRequested}
+          setRefreshChatRequested={setRefreshChatRequested}
+        />
+      )}
+
+      {createEventOpen && (
+        <CreateEventModal
+          profileId={formData!.id}
+          modalOpen={createEventOpen}
+          handleClose={handleCloseCreateEvent}
+        />
       )}
     </Box>
   );
@@ -226,9 +252,23 @@ const styles = {
       backgroundColor: "#6495ED",
     },
   },
+  scheduleEventButton: {
+    backgroundColor: "#dffa87",
+    borderRadius: "10px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    padding: "10px 20px",
+    color: "#28bfcd",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
+    "&:hover": {
+      backgroundColor: "#93db05",
+    },
+  },
   blockButton: {
     backgroundColor: "#ffdddd",
     color: "#ff0000",
+    margin: "10px",
     padding: "10px 20px",
     fontSize: "16px",
     borderRadius: "8px",

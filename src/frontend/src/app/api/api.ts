@@ -12,6 +12,7 @@ import {
   MESSAGE_ROUTES,
   NOTIFICATION_ROUTES,
   NotificationEvent,
+  SCHEDULED_EVENT_ROUTES,
 } from "../../config";
 import {
   GenericResponse,
@@ -42,6 +43,10 @@ import { NotificationsResponse } from "../../types/api/notification";
 import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
 import { Filter } from "../../types/slices/currentUser";
+import {
+  ScheduledEventRequest,
+  ScheduledEventResponse,
+} from "../../types/api/scheduledEvent";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -206,7 +211,7 @@ export const api = createApi({
       },
       merge: (currentCache, newItems) => {
         currentCache.chatId = newItems.chatId;
-        currentCache.messages = newItems.messages
+        currentCache.messages = newItems.messages;
       },
       forceRefetch({ currentArg }) {
         if (!currentArg) return false;
@@ -545,6 +550,16 @@ export const api = createApi({
         method: "PATCH",
       }),
     }),
+    getScheduledEvents: builder.query<ScheduledEventResponse[], string>({
+      query: (id) => ({ url: SCHEDULED_EVENT_ROUTES.GET_EVENTS(id) }),
+    }),
+    createScheduledEvent: builder.mutation<void, ScheduledEventRequest>({
+      query: (body) => ({
+        url: SCHEDULED_EVENT_ROUTES.CREATE,
+        body,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -578,4 +593,6 @@ export const {
   useUpdatePasswordSettingsMutation,
   useChangeProfilePictureMutation,
   useChangeLocationMutation,
+  useGetScheduledEventsQuery,
+  useCreateScheduledEventMutation,
 } = api;

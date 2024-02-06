@@ -34,6 +34,8 @@ var connString = builder.Configuration.GetConnectionString("DefaultConnection");
     services.AddScoped<IMatchedProfilesRepository, MatchedProfilesRepository>();
     services.AddScoped<IBlockedProfileService, BlockedProfileService>();
     services.AddScoped<IBlockedProfileRepository, BlockedProfileRepository>();
+    services.AddScoped<IEventService, EventService>();
+    services.AddScoped<IEventRepository, EventRepository>();
     services.AddSingleton<IPasswordHasher, PasswordHasher>();
     services.AddSingleton<IMapper, Mapper>();
     services.AddHttpClient();
