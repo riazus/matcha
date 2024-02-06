@@ -100,7 +100,7 @@ function UserForm() {
     return <Typography>Error was occured while fetching data</Typography>;
   } else if (formData?.isBlockedMe) {
     return (
-      <Typography>
+      <Typography sx={{ ...title, fontSize: "28px" }}>
         You cannot see profile of this user, because you are blocked
       </Typography>
     );
