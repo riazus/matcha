@@ -1,26 +1,13 @@
 import { FormEvent, useState } from "react";
 import Modal from "@mui/material/Modal";
-import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import { Typography } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { useAppSelector } from "../app/hooks/hooks";
 import MessageDisplay from "../components/MessageDisplay";
 import { emitChatConnectionEvent } from "../sockets/chatConnection";
 import { ChatEvent } from "../config";
 import SendIcon from "@mui/icons-material/Send";
 import { LoadingButton } from "@mui/lab";
-
-const chatStyle = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
 
 export interface ChatMessage {
   username: string;
@@ -64,19 +51,10 @@ function ChatModal(props: ChatModalProps) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Grid
-        container
-        sx={chatStyle}
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="center"
-        minHeight="70vh"
-        spacing={3}
-      >
-        <Grid item component={Typography}>
+      <Box sx={styles.modal}>
+        <Box component={Typography} sx={styles.title}>
           Chat
-        </Grid>
-
+        </Box>
         <MessageDisplay
           currUserId={user!.id}
           interlocutorId={interlocutorId!}
@@ -86,8 +64,7 @@ function ChatModal(props: ChatModalProps) {
           refreshChatRequested={props.refreshChatRequested}
           setRefreshChatRequested={props.setRefreshChatRequested}
         />
-
-        <Grid item>
+        <Box sx={styles.sendBox}>
           {/* TODO: Block submit form when messages loading */}
           <form onSubmit={handleSubmit}>
             <fieldset disabled={isSending}>
@@ -95,16 +72,46 @@ function ChatModal(props: ChatModalProps) {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Write a message..."
+                sx={styles.textField}
               ></TextField>
               <LoadingButton loading={isSending}>
                 <SendIcon />
               </LoadingButton>
             </fieldset>
           </form>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Modal>
   );
 }
+
+const styles = {
+  modal: {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  },
+  title: {
+    pt: "10px",
+    pb: "20px",
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+  },
+  sendBox: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "20px",
+    alignItems: "center",
+  },
+  textField: {
+    marginRight: "10px",
+  },
+};
 
 export default ChatModal;

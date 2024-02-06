@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import FormInput from "../components/FormInput";
 import { LinkItem } from "../components/LinkItemForm";
 import { LoadingButton } from "../components/LoadingButtonForm";
+import {title}from "../styles/textStyles";
+import { matchaColors } from "../styles/colors";
 
 const registerSchema = object({
   firstName: string().min(1, "First Name is required"),
@@ -58,14 +60,14 @@ function RegisterForm() {
 
   return (
     <Box sx={styles.registerBox}>
-      <Typography textAlign="center" component="h1" sx={styles.matchaText}>
+      <Typography textAlign="center" component="h1" sx={title}>
         Welcome to Matcha!
       </Typography>
-      <Typography component="h2" sx={styles.signupText}>
-        Sign Up To Get Started!
+      <Typography component="h2" sx={styles.matchaText}>
+        Sign Up To Get Started
       </Typography>
       <FormProvider {...methods}>
-        <Box component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box sx={styles.formBox} component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
           <FormInput name="firstName" label="First Name" />
           <FormInput name="lastName" label="Last Name" />
           <FormInput name="username" label="Username" />
@@ -99,10 +101,9 @@ function RegisterForm() {
 
 const styles = {
   matchaText: {
-    color: "#00b4d8",
-    fontSize: { xs: "2rem", md: "3rem" },
+    color: matchaColors.yellowlight,
+    fontSize: "1rem",
     fontWeight: 600,
-    m: 2,
     letterSpacing: 1,
   },
   registerBox: {
@@ -112,10 +113,14 @@ const styles = {
     flexDirection: "column",
   },
   formBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
     borderRadius: "10px",
     backgroundColor: "rgb(113, 97, 239, 0.2)",
     borderWidth: "10px",
-    padding: "10px",
+    width: "100%",
+    padding: "20px",
     margin: "10px",
   },
   signupText: {
@@ -129,8 +134,6 @@ const styles = {
     color: "#003049",
   },
   signupButton: {
-    mt: 1,
-    mb: 2,
     width: "10rem",
     display: "flex",
     justifyContent: "center",

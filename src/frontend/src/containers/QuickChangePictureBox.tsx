@@ -97,12 +97,13 @@ const styles = {
   onePictureBox: {
     backgroundColor: "rgb(150, 150, 150, 0.3)",
     height: "25vh",
-    width: "15%",
+    width: "20%",
     borderRadius: "10px",
     justifyContent: "center",
     alignItems: "center",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    backgroundPosition: "center",
   },
 };
 

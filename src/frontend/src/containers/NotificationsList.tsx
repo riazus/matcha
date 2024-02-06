@@ -1,4 +1,3 @@
-import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import List from "@mui/material/List";
@@ -11,7 +10,7 @@ import FullScreenLoader from "../components/FullScreenLoader";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { NotificationEvent } from "../config";
-import title from "../styles/title";
+import {title}from "../styles/textStyles";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -37,10 +36,10 @@ function NotificationsList() {
   return (
     <Box>
       <Typography sx={title} variant="h6" component="div">
-        Notifications List
+        You have {notifications?.length} notifications
       </Typography>
-      <Grid container>
-        <Grid item xs={12} md={6}>
+      {notifications && notifications?.length > 0 ? (
+        <Box sx={styles.notificationsList}>
           <Demo>
             <List dense={true}>
               {notifications?.map((item) => {
@@ -56,6 +55,7 @@ function NotificationsList() {
                         <RemoveRedEyeIcon />
                       </IconButton>
                     }
+                    sx={styles.listItem}
                   >
                     <ListItemText primary={item.text} secondary={item.date} />
                   </ListItem>
@@ -63,10 +63,23 @@ function NotificationsList() {
               })}
             </List>
           </Demo>
-        </Grid>
-      </Grid>
+        </Box>
+      ) : null}
     </Box>
   );
 }
+
+const styles = {
+  notificationsList: {
+    marginTop: "16px",
+    backgroundColor: "#f0f0f0",
+    padding: "16px",
+  },
+  listItem: {
+    "&:hover": {
+      backgroundColor: "#e0e0e0",
+    },
+  },
+};
 
 export default NotificationsList;
