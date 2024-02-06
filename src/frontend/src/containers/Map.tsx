@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import Globe from "react-globe.gl";
+import Globe from "react-globe.gl-riazus";
 import { useGetAccountsCoordQuery } from "../app/api/api";
 import FullScreenLoader from "../components/FullScreenLoader";
 
