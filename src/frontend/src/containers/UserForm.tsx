@@ -108,7 +108,7 @@ function UserForm() {
     return <Typography>Error was occured while fetching data</Typography>;
   } else if (formData?.isBlockedMe) {
     return (
-      <Typography>
+      <Typography sx={{ ...title, fontSize: "28px" }}>
         You cannot see profile of this user, because you are blocked
       </Typography>
     );
@@ -137,6 +137,15 @@ function UserForm() {
 
         {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
 
+        {chatOpen && (
+          <ChatModal
+            chatOpen={chatOpen}
+            handleCloseChat={handleCloseChat}
+            refreshChatRequested={refreshChatRequested}
+            setRefreshChatRequested={setRefreshChatRequested}
+          />
+        )}
+
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}
@@ -149,14 +158,6 @@ function UserForm() {
             Open chat
           </Button>
         )}
-        {chatOpen && (
-          <ChatModal
-            chatOpen={chatOpen}
-            handleCloseChat={handleCloseChat}
-            refreshChatRequested={refreshChatRequested}
-            setRefreshChatRequested={setRefreshChatRequested}
-          />
-        )}
 
         <Button onClick={handleBlockProfile} sx={styles.blockButton}>
           Block Profile
@@ -164,25 +165,29 @@ function UserForm() {
       </Box>
       {formData!.isLiked ? (
         <Tooltip title="unlike this profile">
-          <IconButton
-            aria-label="like user"
-            onClick={handleRemoveLikeClick}
-            disabled={isLikeLoading}
-            sx={styles.likeButton}
-          >
-            <FavoriteIcon />
-          </IconButton>
+          <span>
+            <IconButton
+              aria-label="like user"
+              onClick={handleRemoveLikeClick}
+              disabled={isLikeLoading}
+              sx={styles.likeButton}
+            >
+              <FavoriteIcon />
+            </IconButton>
+          </span>
         </Tooltip>
       ) : (
         <Tooltip title="like this profile">
-          <IconButton
-            aria-label="dislike user"
-            onClick={handleLikeClick}
-            disabled={isLikeLoading}
-            sx={styles.unlikeButton}
-          >
-            <FavoriteBorderIcon />
-          </IconButton>
+          <span>
+            <IconButton
+              aria-label="dislike user"
+              onClick={handleLikeClick}
+              disabled={isLikeLoading}
+              sx={styles.unlikeButton}
+            >
+              <FavoriteBorderIcon />
+            </IconButton>
+          </span>
         </Tooltip>
       )}
     </Box>
