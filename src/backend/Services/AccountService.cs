@@ -46,6 +46,7 @@ public interface IAccountService
     string UpdateProfilePicture(Account currUser, IFormFile newPicture);
     AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
     IEnumerable<Coord> GetAccountsCoords();
+    Task ReportProfile(Account currUser, Guid profileId);
 }
 
 public class AccountService : IAccountService
@@ -659,6 +660,21 @@ public class AccountService : IAccountService
     {
         var res = _accountRepository.GetAccountsCoords();
         return res;
+    }
+
+    public async Task ReportProfile(Account currUser, Guid profileId)
+    {
+        var profile = _accountRepository.Get(profileId);
+
+        var html = $@"<h1>Report Profile received from {currUser.Username}</h1>
+                       <h3>Suspect Profile Information</h3>
+                       <p>Id: {profile.Id}</p>
+                       <p>Username: {profile.Username}</p>
+                       <p>Birthday: {profile.Birthday}</p>
+                       <p>Username: {profile.Username}</p>
+                       <img src='{profile.ProfilePictureUrl}'/>";
+
+        await _emailService.SendAsync("admin@matcha.com", "Profile Report", html);
     }
 
     #region Helper methods

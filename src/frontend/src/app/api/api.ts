@@ -564,6 +564,12 @@ export const api = createApi({
         method: "POST",
       }),
     }),
+    reportProfile: builder.mutation<void, string>({
+      query: (id) => ({
+        url: ACCOUNT_ROUTES.REPORT_PROFILE(id),
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -600,4 +606,5 @@ export const {
   useGetAccountsCoordQuery,
   useGetScheduledEventsQuery,
   useCreateScheduledEventMutation,
+  useReportProfileMutation,
 } = api;

@@ -254,6 +254,13 @@ public class AccountsController : BaseController
         return Ok(res);
     }
 
+    [HttpPatch("{profileId:Guid}")]
+    public async Task<ActionResult> ReportProfile(Guid profileId)
+    {
+        await _accountService.ReportProfile(Account, profileId);
+        return Ok();
+    }
+
     #region Helpers
     private string ipAddress()
     {

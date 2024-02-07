@@ -37,6 +37,7 @@ export const ACCOUNT_ROUTES = {
   PROFILE_PICTURE: "/accounts/update-profile-picture",
   UPDATE_LOCATION: "/accounts/update-location",
   ACCOUNTS_COORDS: "/accounts/coords",
+  REPORT_PROFILE: (id: string) => `/accounts/${id}`,
   WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
     filter.minAge +
