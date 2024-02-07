@@ -8,7 +8,7 @@ public interface IMatchedProfilesRepository
     bool IsTwoProfileMatched(Guid firstAccountId, Guid secondAccountId);
 }
 
-public class MatchedProfilesRepository : IMatchedProfilesRepository
+internal class MatchedProfilesRepository : IMatchedProfilesRepository
 {
     private readonly IDBContext _context;
 

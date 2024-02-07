@@ -11,7 +11,7 @@ public interface INotificationRepository
     void Delete(Guid id);
 }
 
-public class NotificationRepository : INotificationRepository
+internal class NotificationRepository : INotificationRepository
 {
     private readonly IDBContext _context;
 

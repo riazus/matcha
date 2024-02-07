@@ -41,7 +41,7 @@ public interface IAccountRepository
     IEnumerable<Coord> GetAccountsCoords();
 }
 
-public class AccountRepository : IAccountRepository
+internal class AccountRepository : IAccountRepository
 {
     private readonly IDBContext _context;
 

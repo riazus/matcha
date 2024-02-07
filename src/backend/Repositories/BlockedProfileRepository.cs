@@ -10,7 +10,7 @@ public interface IBlockedProfileRepository
     void DeleteBlockProfile(BlockedProfile profile);
 }
 
-public class BlockedProfileRepository : IBlockedProfileRepository
+internal class BlockedProfileRepository : IBlockedProfileRepository
 {
     private readonly IDBContext _dbContext;
 

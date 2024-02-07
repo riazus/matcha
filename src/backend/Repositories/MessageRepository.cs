@@ -17,7 +17,7 @@ public interface IMessageRepository
     int GetMessagesCount(Guid firstProfileId, Guid secondProfileId);
 }
 
-public class MessageRepository : IMessageRepository
+internal class MessageRepository : IMessageRepository
 {
     private readonly IDBContext _context;
 

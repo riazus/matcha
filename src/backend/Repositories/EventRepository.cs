@@ -9,7 +9,7 @@ public interface IEventRepository
     void Create(ScheduleEvent ev);
 }
 
-public class EventRepository : IEventRepository
+internal class EventRepository : IEventRepository
 {
     private readonly IDBContext _context;
 

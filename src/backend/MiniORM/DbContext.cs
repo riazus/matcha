@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace MiniORM;
 
-public interface IDBContext
+internal interface IDBContext
 {
     IEnumerable<T> Get<T>();
     IEnumerable<T> GetWhereList<T>(string where);
@@ -20,7 +20,7 @@ public interface IDBContext
     void DeleteWhere<T>(string  where);
 }
 
-public class DbContext : IDBContext
+internal class DbContext : IDBContext
 {
     private readonly SqlConnection _sqlConnection;
 
