@@ -65,7 +65,6 @@ function ChatModal(props: ChatModalProps) {
           setRefreshChatRequested={props.setRefreshChatRequested}
         />
         <Box sx={styles.sendBox}>
-          {/* TODO: Block submit form when messages loading */}
           <form onSubmit={handleSubmit}>
             <fieldset disabled={isSending}>
               <TextField
