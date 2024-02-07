@@ -1,7 +1,7 @@
 import { LoadingButton } from "@mui/lab";
 import { Modal, Box, FormControl, Input, InputLabel } from "@mui/material";
 import { useCreateScheduledEventMutation } from "../app/api/api";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
@@ -31,6 +31,22 @@ function CreateEventModal({
     }
   }, [isSuccess]);
 
+  const handleEventNameChange = (
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    if (e.target.value.length < 20) {
+      setEventName(e.target.value);
+    }
+  };
+
+  const handleDescriptionChange = (
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    if (e.target.value.length < 50) {
+      setDescription(e.target.value);
+    }
+  };
+
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -55,7 +71,7 @@ function CreateEventModal({
           <Input
             id="eventName"
             type="text"
-            onChange={(e) => setEventName(e.target.value)}
+            onChange={handleEventNameChange}
             value={eventName}
           />
         </FormControl>
@@ -65,7 +81,7 @@ function CreateEventModal({
           <Input
             id="description"
             type="text"
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleDescriptionChange}
             value={description}
           />
         </FormControl>
