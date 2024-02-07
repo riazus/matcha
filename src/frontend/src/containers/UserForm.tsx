@@ -46,7 +46,7 @@ function UserForm() {
     } else {
       dispatch(removeInterlocuterId());
     }
-  }, [chatOpen]);
+  }, [chatOpen, idFromParams, dispatch]);
 
   useEffect(() => {
     if (
@@ -60,7 +60,14 @@ function UserForm() {
         formData.id
       );
     }
-  }, [notificationConnection, isLoading]);
+  }, [
+    notificationConnection,
+    isLoading,
+    formData?.id,
+    formData?.isBlockedByMe,
+    formData?.isBlockedMe,
+    isSuccess,
+  ]);
 
   useEffect(() => {
     setIsLikeLoading(false);

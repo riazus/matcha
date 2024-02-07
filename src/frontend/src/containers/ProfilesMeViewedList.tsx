@@ -7,14 +7,20 @@ interface ProfilesMeViewedListProps {
   setProfilesMeViewedCount: (count: number) => void;
 }
 
-function ProfilesMeViewedList(props: ProfilesMeViewedListProps) {
-  const { data: profilesMeViewed, isSuccess, isLoading } = useGetProfileMeViewedQuery();
+function ProfilesMeViewedList({
+  setProfilesMeViewedCount,
+}: ProfilesMeViewedListProps) {
+  const {
+    data: profilesMeViewed,
+    isSuccess,
+    isLoading,
+  } = useGetProfileMeViewedQuery();
 
   useEffect(() => {
     if (isSuccess) {
-      props.setProfilesMeViewedCount(profilesMeViewed.length);
+      setProfilesMeViewedCount(profilesMeViewed.length);
     }
-  }, [isLoading]);
+  }, [isSuccess, setProfilesMeViewedCount, profilesMeViewed?.length]);
 
   if (isLoading) {
     return <FullScreenLoader />;

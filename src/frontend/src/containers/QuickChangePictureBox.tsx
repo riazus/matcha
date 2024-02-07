@@ -38,13 +38,13 @@ function QuickChangePictureBox({
     if (!isDeleteLoading && isDeleteSuccess) {
       reduceAdditionalPictures(index);
     }
-  }, [isDeleteLoading, isDeleteSuccess]);
+  }, [isDeleteLoading, isDeleteSuccess, reduceAdditionalPictures, index]);
 
   useEffect(() => {
     if (!isUploadLoading && isUploadSuccess) {
       increaseAdditionalPictures(data!.pictureUrl);
     }
-  }, [isUploadLoading, isUploadSuccess]);
+  }, [isUploadLoading, isUploadSuccess, increaseAdditionalPictures, data]);
 
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

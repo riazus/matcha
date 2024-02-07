@@ -39,7 +39,7 @@ function Header() {
   );
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [windowSize, _] = useState({
+  const [windowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
@@ -49,7 +49,7 @@ function Header() {
     if (isLogoutSuccess) {
       navigate("/");
     }
-  }, [isLogoutLoading]);
+  }, [isLogoutSuccess, navigate]);
 
   const onLogoutHandler = async () => {
     logoutUser();

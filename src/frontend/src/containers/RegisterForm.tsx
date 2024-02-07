@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import FormInput from "../components/FormInput";
 import { LinkItem } from "../components/LinkItemForm";
 import { LoadingButton } from "../components/LoadingButtonForm";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 import { matchaColors } from "../styles/colors";
 
 const registerSchema = object({
@@ -40,7 +40,7 @@ function RegisterForm() {
     if (isSuccess) {
       toast.success(data?.message);
     }
-  }, [isLoading]);
+  }, [isSuccess, data?.message]);
 
   const {
     reset,
@@ -52,7 +52,7 @@ function RegisterForm() {
     if (isSubmitSuccessful) {
       reset();
     }
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   const onSubmitForm: SubmitHandler<RegisterBody> = (values) => {
     registerUser(values);
@@ -67,7 +67,12 @@ function RegisterForm() {
         Sign Up To Get Started
       </Typography>
       <FormProvider {...methods}>
-        <Box sx={styles.formBox} component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box
+          sx={styles.formBox}
+          component="form"
+          onSubmit={handleSubmit(onSubmitForm)}
+          noValidate
+        >
           <FormInput name="firstName" label="First Name" />
           <FormInput name="lastName" label="Last Name" />
           <FormInput name="username" label="Username" />

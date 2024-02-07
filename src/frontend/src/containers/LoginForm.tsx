@@ -36,7 +36,7 @@ function LoginForm() {
     if (isSuccess) {
       navigate("/home");
     }
-  }, [isLoading]);
+  }, [isSuccess, navigate]);
 
   const onSubmitForm: SubmitHandler<LoginBody> = (values) => {
     loginUser(values);
@@ -193,11 +193,11 @@ function LoginForm() {
 
 const styles = {
   boxForm: {
-    borderRadius: "10px", 
-    backgroundColor: matchaColors.darkBox, 
+    borderRadius: "10px",
+    backgroundColor: matchaColors.darkBox,
     padding: "20px",
     paddingBottom: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
 };
 

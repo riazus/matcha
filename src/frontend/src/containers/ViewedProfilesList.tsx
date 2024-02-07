@@ -7,7 +7,9 @@ interface ViewedProfilesListProps {
   setViewedProfilesCount: (count: number) => void;
 }
 
-function ViewedProfilesList(props: ViewedProfilesListProps) {
+function ViewedProfilesList({
+  setViewedProfilesCount,
+}: ViewedProfilesListProps) {
   const {
     data: viewedProfiles,
     isSuccess,
@@ -16,9 +18,9 @@ function ViewedProfilesList(props: ViewedProfilesListProps) {
 
   useEffect(() => {
     if (isSuccess) {
-      props.setViewedProfilesCount(viewedProfiles.length);
+      setViewedProfilesCount(viewedProfiles.length);
     }
-  }, [isLoading]);
+  }, [isSuccess, setViewedProfilesCount, viewedProfiles?.length]);
 
   if (isLoading) {
     return <FullScreenLoader />;

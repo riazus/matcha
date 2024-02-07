@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useGetFavoriteProfilesQuery } from "../app/api/api";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 import { useNavigate } from "react-router-dom";
 
 // TODO: need to change visual representing
@@ -23,14 +23,14 @@ const Demo = styled("div")(({ theme }) => ({
 
 function FavoritesList() {
   const [favorites, setFavorites] = useState<Profile[]>([]);
-  const { data, isLoading, isSuccess } = useGetFavoriteProfilesQuery();
+  const { data, isSuccess } = useGetFavoriteProfilesQuery();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     if (isSuccess) {
       setFavorites(data.map((el) => ({ username: el.username, id: el.id })));
     }
-  }, [isLoading]);
+  }, [isSuccess, setFavorites, data]);
 
   return (
     <Box>
@@ -45,8 +45,12 @@ function FavoritesList() {
         <List dense={true}>
           {favorites?.map((item, ind) => {
             return (
-              <ListItem key={ind} sx={styles.listItem} onClick={() => navigate(`/users/${item.id}`)}>
-                  <ListItemText primary={item.username} />
+              <ListItem
+                key={ind}
+                sx={styles.listItem}
+                onClick={() => navigate(`/users/${item.id}`)}
+              >
+                <ListItemText primary={item.username} />
               </ListItem>
             );
           })}

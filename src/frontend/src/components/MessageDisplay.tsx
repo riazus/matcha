@@ -23,7 +23,15 @@ interface MessageDisplayProps {
   setRefreshChatRequested: (arg: boolean) => void;
 }
 
-function MessageDisplay(props: MessageDisplayProps) {
+function MessageDisplay({
+  currUserId,
+  interlocutorId,
+  refreshChatRequested,
+  setChatId,
+  setIsSending,
+  setMessageText,
+  setRefreshChatRequested,
+}: MessageDisplayProps) {
   const { user } = useAppSelector((root) => root.user);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,8 +42,8 @@ function MessageDisplay(props: MessageDisplayProps) {
     isSuccess,
     isFetching,
   } = useGetChatMessagesQuery({
-    req: { firstUserId: props.currUserId, secondUserId: props.interlocutorId },
-    refreshChatRequested: props.refreshChatRequested,
+    req: { firstUserId: currUserId, secondUserId: interlocutorId },
+    refreshChatRequested: refreshChatRequested,
   });
 
   useEffect(() => {
@@ -47,7 +55,7 @@ function MessageDisplay(props: MessageDisplayProps) {
       removeChatListeners();
       disconnectChatConnection();
     };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -55,16 +63,23 @@ function MessageDisplay(props: MessageDisplayProps) {
         messagesContainerRef.current.scrollHeight;
     }
 
-    props.setMessageText("");
-    props.setIsSending(false);
-  }, [messages]);
+    setMessageText("");
+    setIsSending(false);
+  }, [messages, setMessageText, setIsSending]);
 
   useEffect(() => {
     if (!isFetching && !isLoading && isSuccess) {
-      props.setChatId(messages.chatId);
-      props.setRefreshChatRequested(false);
+      setChatId(messages.chatId);
+      setRefreshChatRequested(false);
     }
-  }, [isFetching, isLoading, isSuccess]);
+  }, [
+    isFetching,
+    isLoading,
+    isSuccess,
+    messages?.chatId,
+    setChatId,
+    setRefreshChatRequested,
+  ]);
 
   if (isError) {
     return <></>;

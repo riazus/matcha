@@ -73,7 +73,7 @@ const baseQueryWithReauth: BaseQueryFn<
   if (
     result.error &&
     result.error.status === 401 &&
-    (args as FetchArgs).url != ACCOUNT_ROUTES.REFRESH
+    (args as FetchArgs).url !== ACCOUNT_ROUTES.REFRESH
   ) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();

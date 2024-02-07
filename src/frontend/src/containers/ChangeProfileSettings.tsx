@@ -40,7 +40,7 @@ function ChangeProfileSettings({
   const [tags, setTags] = useState<string[] | null>(profileDataResponse.tags);
 
   useEffect(() => {
-    if (!isLoading && isSuccess) {
+    if (isSuccess) {
       dispatch(setUserStateTags(tags));
       dispatch(
         api.util.updateQueryData("getSettingsData", undefined, (draft) => {
@@ -51,7 +51,8 @@ function ChangeProfileSettings({
       );
       toast.success("Changes saved successfully!");
     }
-  }, [isLoading, isSuccess, tags]);
+    // eslint-disable-next-line
+  }, [isSuccess]);
 
   const handleChangeGender = (orientation: Orientation) => {
     setProfileData((prev) => ({
@@ -70,8 +71,7 @@ function ChangeProfileSettings({
   const handleChangeDescription = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    if (e.target.value.length > 300)
-      return;
+    if (e.target.value.length > 300) return;
     setProfileData((prev) => ({
       ...prev,
       description: e.target.value,
@@ -99,7 +99,14 @@ function ChangeProfileSettings({
     <Box sx={styles.profileBox}>
       <Box>
         <Typography>Hobbies :</Typography>
-        <Box>{tags && tags.map((tag) => <Button sx={interrestsButton} key={tag}>{tag}</Button>)}</Box>
+        <Box>
+          {tags &&
+            tags.map((tag) => (
+              <Button sx={interrestsButton} key={tag}>
+                {tag}
+              </Button>
+            ))}
+        </Box>
         <Button onClick={() => setOpenModal(true)}>
           You can change your hobbies here!
         </Button>

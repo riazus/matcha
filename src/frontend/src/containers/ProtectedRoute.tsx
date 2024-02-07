@@ -19,7 +19,7 @@ function ProtectedRoute() {
         connectNotificationConnection();
       }
     }
-  }, [isLoading]);
+  }, [isSuccess, user]);
 
   return (
     <>

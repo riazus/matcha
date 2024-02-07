@@ -29,7 +29,7 @@ function CreateEventModal({
       handleClose();
       toast.success("Scheduled Event created successfully");
     }
-  }, [isSuccess]);
+  }, [isSuccess, handleClose]);
 
   const handleEventNameChange = (
     e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>

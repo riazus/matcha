@@ -37,7 +37,7 @@ function ResetPasswordView() {
     if (isSuccess) {
       navigate("/login");
     }
-  }, [isLoading]);
+  }, [isSuccess, navigate]);
 
   const onSubmitForm: SubmitHandler<ResetPasswordInput> = (values) => {
     resetPasswordUser({

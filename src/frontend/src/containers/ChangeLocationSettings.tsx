@@ -59,7 +59,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
           } ${newLocation.country}`
         );
     }
-  }, [isLoading, isSuccess, newLocation]);
+  }, [isLoading, isSuccess, newLocation, checkedLocation, dispatch]);
 
   const handleChangeLocation = (location: Location) => {
     if (

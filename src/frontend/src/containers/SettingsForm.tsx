@@ -39,14 +39,15 @@ function SettingsForm() {
   ] = useChangeProfilePictureMutation();
 
   useEffect(() => {
-    if (!isUpdatePictureLoading && isUpdatePictureSuccess) {
+    if (isUpdatePictureSuccess) {
       dispatch(
         api.util.updateQueryData("getSettingsData", undefined, (draft) => {
           draft.profilePictureUrl = updatePictureResponse!.profilePictureUrl;
         })
       );
     }
-  }, [isUpdatePictureLoading, isUpdatePictureSuccess]);
+    // eslint-disable-next-line
+  }, [isUpdatePictureSuccess]);
 
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -170,9 +171,9 @@ const styles = {
   loadingButton: {
     backgroundColor: matchaColors.yellow,
     borderRadius: "20px",
-    ':hover': {
-      backgroundColor: matchaColors.yellowlight
-    }
+    ":hover": {
+      backgroundColor: matchaColors.yellowlight,
+    },
   },
 };
 

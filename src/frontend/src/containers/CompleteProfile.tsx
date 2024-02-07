@@ -30,7 +30,6 @@ import SelectGendersRadioButtons from "../components/SelectGendersRadioButtons";
 import LocationSwitch from "../components/LocationSwitch";
 import { interrestsButton } from "../styles/textStyles";
 
-
 const ITextField = styled(TextField)({
   "& label.Mui-focused": {
     color: matchaColors.yellow,
@@ -129,7 +128,7 @@ function CompleteProfile() {
     if (isSuccess) {
       navigate("/home", { replace: true });
     }
-  }, [isLoading]);
+  }, [isSuccess, navigate]);
 
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

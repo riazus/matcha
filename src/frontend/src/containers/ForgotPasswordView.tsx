@@ -29,7 +29,7 @@ function ForgotPasswordView() {
     if (isSuccess) {
       toast.success(data?.message);
     }
-  }, [isLoading]);
+  }, [isSuccess, data?.message]);
 
   const onSubmitForm: SubmitHandler<ForgotPasswordBody> = (values) => {
     forgotPasswordUser(values);
@@ -45,7 +45,7 @@ function ForgotPasswordView() {
     if (isSubmitSuccessful) {
       reset();
     }
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <Box
@@ -70,7 +70,12 @@ function ForgotPasswordView() {
         Please enter your Email
       </Typography>
       <FormProvider {...methods}>
-        <Box sx={styles.boxForm} component="form" onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <Box
+          sx={styles.boxForm}
+          component="form"
+          onSubmit={handleSubmit(onSubmitForm)}
+          noValidate
+        >
           <FormInput name="email" label="Email" type="email" />
 
           <LoadingButton
@@ -102,11 +107,11 @@ function ForgotPasswordView() {
 
 const styles = {
   boxForm: {
-    borderRadius: '10px', 
-    backgroundColor: matchaColors.darkBox, 
-    padding: '20px', 
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+    borderRadius: "10px",
+    backgroundColor: matchaColors.darkBox,
+    padding: "20px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
-}
+};
 
 export default ForgotPasswordView;

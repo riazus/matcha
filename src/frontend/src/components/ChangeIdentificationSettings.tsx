@@ -28,14 +28,14 @@ function ChangeIdentificationSettings() {
     resolver: zodResolver(identificationSchema),
   });
 
+  const { reset, handleSubmit } = methods;
+
   useEffect(() => {
     if (!isLoading && isSuccess) {
       reset();
       toast.success("Password successfully changed!");
     }
-  }, [isLoading, isSuccess]);
-
-  const { reset, handleSubmit } = methods;
+  }, [isLoading, isSuccess, reset]);
 
   const onSubmitForm: SubmitHandler<UpdatePasswordBody> = (values) => {
     updatePassword(values);
