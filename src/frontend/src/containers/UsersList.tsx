@@ -5,7 +5,7 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import { useGetUsersWithFiltersQuery } from "../app/api/api";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Badge } from "@mui/material";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
@@ -14,13 +14,14 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { increaseSearchingPage } from "../app/slices/currentUserSlice";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
+import { AccountsResponse } from "../types/api/accounts";
 
 function UsersList() {
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(
     (root) => root.user
   );
-  const { data, isLoading } = useGetUsersWithFiltersQuery(
+  const { data, isLoading, refetch } = useGetUsersWithFiltersQuery(
     {
       filter,
       page: searchingPage!,
@@ -33,7 +34,7 @@ function UsersList() {
   const increasePageCount = () => {
     dispatch(increaseSearchingPage());
   };
-
+  const [fameRating, setFameRating] = useState<number[]>([]);
   const [showButton, setShowButton] = useState(false);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -55,6 +56,19 @@ function UsersList() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("data changand")
+    if (data) {
+      const updatedFameRating = data.map((user) => user.fameRating);
+      setFameRating(updatedFameRating);
+    }
+  }, [data]);
+
+  const handleUserClick = (user: AccountsResponse) => {
+    navigate(`/users/${user.id}`);
+    refetch();
+  };
+
   if (isLoading) {
     return <FullScreenLoader />;
   }
@@ -70,7 +84,7 @@ function UsersList() {
         </Typography>
         <Filter />
       </Box>
-      <div style={{ marginLeft: "10%" }}>
+      <Box style={{ marginLeft: "10%" }}>
         <List dense={false} sx={styles.list}>
           <InfiniteScroll
             dataLength={data?.length ?? 0}
@@ -82,7 +96,7 @@ function UsersList() {
               return (
                 <ListItemButton
                   key={ind}
-                  onClick={() => navigate(`/users/${user.id}`)}
+                  onClick={() => handleUserClick(user)}
                   sx={styles.listItemButton}
                 >
                   <ListItemAvatar>
@@ -92,12 +106,15 @@ function UsersList() {
                     primary={user.username}
                     secondary={`${user.town}, ${user.country}`}
                   />
+                  <Badge badgeContent={fameRating[ind]} color="primary">
+                    <Typography>⭐</Typography>
+                  </Badge>
                 </ListItemButton>
               );
             })}
           </InfiniteScroll>
         </List>
-      </div>
+      </Box>
       {showButton && (
         <Button
           onClick={scrollToTop}

@@ -142,6 +142,8 @@ function UserForm() {
     <Box>
       <Box sx={styles.box}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
+   
+        <Typography sx={title}>Fame rate : {formData!.fameRating}</Typography>
 
         <Avatar
           src={formData!.profilePictureUrl}
