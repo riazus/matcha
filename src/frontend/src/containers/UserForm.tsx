@@ -146,7 +146,7 @@ function UserForm() {
           />
           <Box sx={styles.genderAndLocationBox}>
             <Typography sx={styles.locationText}>
-              {formData!.town} {formData!.country}
+              {formData!.town ?? ""} {formData!.country ?? ""}
             </Typography>
 
             {formData!.gender === 0 ? (

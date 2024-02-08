@@ -119,9 +119,9 @@ export interface AccountResponse {
   birthday: Date;
   description: string;
   tags: string[];
-  postcode: string;
-  country: string;
-  town: string;
+  postcode: string | undefined;
+  country: string | undefined;
+  town: string | undefined;
   fameRating: number;
   userCanChat: boolean;
   isLiked: boolean;

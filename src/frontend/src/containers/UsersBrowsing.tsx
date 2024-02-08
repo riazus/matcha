@@ -95,7 +95,7 @@ function UsersBrowsing() {
                   years old
                 </Typography>
                 <Typography variant="body2" sx={styles.userInfo}>
-                  {data[0].town ?? ""}, {data[0].country ?? ""}
+                  {data[0].town ?? ""} {data[0].country ?? ""}
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "space-around" }}>
                   {data[0].tags &&
