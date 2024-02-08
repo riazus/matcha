@@ -144,6 +144,7 @@ export const currentUserSlice = createSlice({
     },
     resetFilterDistance: (state) => {
       if (state.filter) {
+        state.filter.orderByField = "Age";
         state.filter.maxDistance = undefined;
         state.filter.minDistance = undefined;
       }
@@ -152,6 +153,7 @@ export const currentUserSlice = createSlice({
       if (state.filter) {
         state.filter.maxDistance = 13588;
         state.filter.minDistance = 0;
+        state.filter.orderByField = "Distance";
       }
     },
   },
