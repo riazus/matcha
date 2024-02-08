@@ -20,7 +20,7 @@ import { emitNotificationConnectionEvent } from "../sockets/notificationConnecti
 import { NotificationEvent } from "../config";
 import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
 import { matchaColors } from "../styles/colors";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -68,7 +68,7 @@ function UsersBrowsing() {
   return (
     <Box sx={styles.container}>
       <Typography sx={title} variant="h6">
-        Browse and like/dislike 
+        Browse and like/dislike
       </Typography>
       <Typography sx={styles.userCount} variant="h6">
         Number of Users left: {data?.length}
@@ -95,8 +95,16 @@ function UsersBrowsing() {
                   years old
                 </Typography>
                 <Typography variant="body2" sx={styles.userInfo}>
-                  {data[0].town}, {data[0].country}
+                  {data[0].town ?? ""}, {data[0].country ?? ""}
                 </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+                  {data[0].tags &&
+                    data[0].tags.map((tag) => (
+                      <Typography sx={styles.interrestsLabel} key={tag}>
+                        {tag}
+                      </Typography>
+                    ))}
+                </Box>
               </CardContent>
             </CardActionArea>
             <Tooltip title={data[0].description} arrow>
@@ -132,6 +140,13 @@ const styles = {
     display: "flex",
     justifyContent: "center",
   },
+  interrestsLabel: {
+    padding: "3px",
+    margin: "1%",
+    borderRadius: "5px",
+    backgroundColor: matchaColors.yellow,
+    borderColor: "black",
+  },
   chooseProfileBox: {
     display: "flex",
     alignItems: "center",
@@ -143,11 +158,11 @@ const styles = {
     background: matchaColors.red,
     color: "black",
     transition: "background 0.3s, color 0.3s, box-shadow 0.3s",
-    ':hover': {
+    ":hover": {
       color: "white",
       background: "rgb(240, 50, 50)",
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-    }
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+    },
   },
   likeButton: {
     margin: "10px",
@@ -155,11 +170,11 @@ const styles = {
     background: matchaColors.yellow,
     color: matchaColors.red,
     transition: "background 0.3s, color 0.3s, box-shadow 0.3s",
-    ':hover': {
+    ":hover": {
       color: "white",
       background: "rgb(240, 50, 50)",
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-    }
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+    },
   },
   card: {
     width: "100%",

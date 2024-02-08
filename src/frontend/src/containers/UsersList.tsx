@@ -103,7 +103,7 @@ function UsersList() {
                   </ListItemAvatar>
                   <ListItemText
                     primary={user.username}
-                    secondary={`${user.town}, ${user.country}`}
+                    secondary={`${user.town ?? ""}, ${user.country ?? ""}`}
                   />
                   <Badge badgeContent={fameRating[ind]} color="primary">
                     <Typography>⭐</Typography>
