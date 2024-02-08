@@ -273,7 +273,7 @@ internal class AccountRepository : IAccountRepository
             else
             {
                 query.Append(" Tags.CommonTagsCount");
-                addOrderBy = (query) => query.Append(", Distance.Distance ASC, acc1.FameRating DESC");
+                addOrderBy = (query) => query.Append(", acc1.FameRating DESC");
             }
         }
         else if (filter.OrderByField == "Distance" && isDistanceFilterable)
@@ -284,17 +284,20 @@ internal class AccountRepository : IAccountRepository
         else if (filter.OrderByField == "Age")
         {
             query.Append(" acc1.Birthday");
-            addOrderBy = (query) => query.Append(", Distance.Distance ASC, Tags.CommonTagsCount DESC, acc1.FameRating DESC");
+            var additionOrderBy = (isDistanceFilterable ? ", Distance.Distance ASC" : "") + ", Tags.CommonTagsCount DESC, acc1.FameRating DESC";
+            addOrderBy = (query) => query.Append(additionOrderBy);
         }
         else if (filter.OrderByField == "Tags")
         {
             query.Append(" Tags.CommonTagsCount");
-            addOrderBy = (query) => query.Append(", Distance.Distance ASC, acc1.FameRating DESC");
+            var additionOrderBy = (isDistanceFilterable ? ", Distance.Distance ASC" : "") + ", acc1.FameRating DESC";
+            addOrderBy = (query) => query.Append(additionOrderBy);
         }
         else if (filter.OrderByField == "FameRating")
         {
             query.Append(" acc1.FameRating");
-            addOrderBy = (query) => query.Append(", Distance.Distance ASC, Tags.CommonTagsCount DESC");
+            var additionOrderBy = (isDistanceFilterable ? ", Distance.Distance ASC" : "") + ", Tags.CommonTagsCount DESC";
+            addOrderBy = (query) => query.Append(additionOrderBy);
         }
         else
         {
