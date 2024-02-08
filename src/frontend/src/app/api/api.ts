@@ -570,6 +570,20 @@ export const api = createApi({
         method: "PATCH",
       }),
     }),
+    changeEmail: builder.mutation<void, string>({
+      query: (email) => ({
+        url: ACCOUNT_ROUTES.CHANGE_EMAIL,
+        body: { email },
+        method: "PATCH",
+      }),
+    }),
+    changedVerifyEmail: builder.query<void, VerifyEmailBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.VERIFY_CHANGED_EMAIL,
+        body,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -607,4 +621,6 @@ export const {
   useGetScheduledEventsQuery,
   useCreateScheduledEventMutation,
   useReportProfileMutation,
+  useChangeEmailMutation,
+  useChangedVerifyEmailQuery,
 } = api;

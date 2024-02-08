@@ -15,13 +15,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChangePicturesSettings from "./ChangePicturesSettings";
 import ChangeProfileSettings from "./ChangeProfileSettings";
 import FullScreenLoader from "../components/FullScreenLoader";
-import ChangeIdentificationSettings from "../components/ChangeIdentificationSettings";
+import ChangeIdentificationSettings from "./ChangeIdentificationSettings";
 import { useEffect } from "react";
 import { LoadingButton } from "@mui/lab";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import ChangeLocationSettings from "./ChangeLocationSettings";
 import { matchaColors } from "../styles/colors";
+import ChangeEmailSettings from "./ChangeEmailSettings";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
 
@@ -119,14 +120,24 @@ function SettingsForm() {
         </Accordion>
 
         {data.hasPassword && (
-          <Accordion sx={styles.accordion}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              🔑 Identification settings
-            </AccordionSummary>
-            <AccordionDetails>
-              <ChangeIdentificationSettings />
-            </AccordionDetails>
-          </Accordion>
+          <>
+            <Accordion sx={styles.accordion}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                ✉️ Email settings
+              </AccordionSummary>
+              <AccordionDetails>
+                <ChangeEmailSettings />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion sx={styles.accordion}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                🔑 Identification settings
+              </AccordionSummary>
+              <AccordionDetails>
+                <ChangeIdentificationSettings />
+              </AccordionDetails>
+            </Accordion>
+          </>
         )}
       </Box>
     );
