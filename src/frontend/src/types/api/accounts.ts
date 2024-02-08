@@ -29,6 +29,11 @@ export interface VerifyEmailBody {
   token: string;
 }
 
+export interface NamesBody {
+  firstName: string;
+  lastName: string;
+}
+
 export interface ForgotPasswordBody {
   email: string;
 }

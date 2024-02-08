@@ -38,7 +38,6 @@ function LocationMarker(props: OpenStreetMapProps) {
           postcode: res.address.postcode,
           town: res.address.town,
         });
-        console.log("set address data", res.address.town);
       })
       .catch((err) => toast(`Error occured when fetched location: ${err}`));
   };

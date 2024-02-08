@@ -217,6 +217,8 @@ internal class AccountRepository : IAccountRepository
 
     public IEnumerable<Account> GetWithFilters(AccountsFilter filter, Account currUser)
     {
+        Func<StringBuilder, StringBuilder> addOrderBy = (_) => throw new Exception("Delegate unitialized");
+
         StringBuilder query = new();
         bool isDistanceFilterable = 
             filter.MinDistance.HasValue
@@ -266,34 +268,42 @@ internal class AccountRepository : IAccountRepository
             if (isDistanceFilterable)
             {
                 query.Append(" Distance.Distance");
+                addOrderBy = (query) => query.Append(", Tags.CommonTagsCount DESC, acc1.FameRating DESC");
             }
             else
             {
                 query.Append(" Tags.CommonTagsCount");
+                addOrderBy = (query) => query.Append(", Distance.Distance ASC, acc1.FameRating DESC");
             }
         }
         else if (filter.OrderByField == "Distance" && isDistanceFilterable)
         {
             query.Append(" Distance.Distance");
+            addOrderBy = (query) => query.Append(", Tags.CommonTagsCount DESC, acc1.FameRating DESC");
         } 
         else if (filter.OrderByField == "Age")
         {
             query.Append(" acc1.Birthday");
+            addOrderBy = (query) => query.Append(", Distance.Distance ASC, Tags.CommonTagsCount DESC, acc1.FameRating DESC");
         }
         else if (filter.OrderByField == "Tags")
         {
             query.Append(" Tags.CommonTagsCount");
+            addOrderBy = (query) => query.Append(", Distance.Distance ASC, acc1.FameRating DESC");
         }
         else if (filter.OrderByField == "FameRating")
         {
             query.Append(" acc1.FameRating");
+            addOrderBy = (query) => query.Append(", Distance.Distance ASC, Tags.CommonTagsCount DESC");
         }
         else
         {
             throw new Exception("Provided invalid order by column");
         }
 
-        query.Append((filter.OrderByAsc ? " ASC" : " DESC") + ", Id");
+        query.Append(filter.OrderByAsc ? " ASC" : " DESC");
+        addOrderBy.Invoke(query);
+        query.Append(", Id");
 
         if (filter.IsForBrowsing)
         {

@@ -24,6 +24,7 @@ import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
+import BlockAndReportButtons from "./BlockAndReportButtons";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -101,13 +102,6 @@ function UserForm() {
     setIsLikeLoading(true);
   };
 
-  const handleBlockProfile = () => {
-    emitNotificationConnectionEvent(
-      NotificationEvent.BlockProfile,
-      formData!.id
-    );
-  };
-
   const handleUnblockProfile = () => {
     emitNotificationConnectionEvent(
       NotificationEvent.UnblockProfile,
@@ -173,9 +167,7 @@ function UserForm() {
           </>
         )}
 
-        <Button onClick={handleBlockProfile} sx={styles.blockButton}>
-          Block Profile
-        </Button>
+        <BlockAndReportButtons profileId={formData!.id} />
 
         {formData!.isProfilesMatched && (
           <ScheduledEventsAccordion profileId={formData!.id} />

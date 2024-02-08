@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdatePasswordBody } from "../types/api/accounts";
 import { useUpdatePasswordSettingsMutation } from "../app/api/api";
 import { Box } from "@mui/material";
-import FormInput from "./FormInput";
+import FormInput from "../components/FormInput";
 import { LoadingButton } from "@mui/lab";
 import { useEffect } from "react";
 import { toast } from "react-toastify";

@@ -5,9 +5,9 @@ using Backend.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
-using System.Security.Principal;
 using System.Text;
 
 namespace Backend.Services;
@@ -22,6 +22,7 @@ public interface IAccountService
     Task SendVerificationEmail(Account account, string origin);
     Task SendPasswordResetEmail(Account account, string origin);
     Task SendAlreadyRegisteredEmail(string email, string origin);
+    Task SendVerifyChangedEmail(string email, string token, string origin);
     void VerifyEmail(string token);
     Account ForgotPassword(ForgotPasswordRequest model);
     void ResetPassword(ResetPasswordRequest model);
@@ -46,6 +47,10 @@ public interface IAccountService
     string UpdateProfilePicture(Account currUser, IFormFile newPicture);
     AccountLocation UpdateProfileLocation(Account currUser, AccountLocation req);
     IEnumerable<Coord> GetAccountsCoords();
+    Task ReportProfile(Account currUser, Guid profileId);
+    void VerifyChangedEmail(string token);
+    string ChangeEmail(Account currUser, string newEmail);
+    void UpdateNames(Account currUser, UpdateNamesRequest req);
 }
 
 public class AccountService : IAccountService
@@ -208,6 +213,16 @@ public class AccountService : IAccountService
         );
     }
 
+    public async Task SendVerifyChangedEmail(string email, string token, string origin)
+    {
+        var verifyUrl = $"{origin}/verify-changed-email/{token}";
+        var html = $@"<h4>Verify Changed Email</h4>
+                    <p>Please click the below link to verify your email address:</p>
+                    <p><a href=""{verifyUrl}"">Click here</a></p>";
+
+        await _emailService.SendAsync(email, "Verify your new email", html);
+    }
+
     public void VerifyEmail(string token)
     {
         var account = _accountRepository.GetByVerificationToken(token)
@@ -217,6 +232,40 @@ public class AccountService : IAccountService
         account.VerificationToken = null;
 
         _accountRepository.Update(account);
+    }
+
+    public void VerifyChangedEmail(string token)
+    {
+        var account = _accountRepository.GetByVerificationToken(token)
+            ?? throw new AppException("Verification failed");
+
+        // get token from 2nd part, which contains new email hashed by base64
+        var base64EncodedEmail = account.VerificationToken.Split(";")[1] 
+            ?? throw new AppException("Provided invalid token");
+
+        account.Email = Base64Decode(base64EncodedEmail);
+        account.Verified = DateTime.UtcNow;
+        account.VerificationToken = null;
+
+        _accountRepository.Update(account);
+    }
+
+    public string ChangeEmail(Account currUser, string newEmail)
+    {
+        var account = _accountRepository.GetByEmail(newEmail);
+        if (account != null) 
+        {
+            throw new AppException("This email already exists. Try with another");
+        }
+        var verificationToken = generateVerificationToken();
+        verificationToken += ";" + Base64Encode(newEmail);
+
+        currUser.Verified = null;
+        currUser.VerificationToken = verificationToken;
+
+        _accountRepository.Update(currUser);
+
+        return verificationToken;
     }
 
     public Account ForgotPassword(ForgotPasswordRequest model)
@@ -661,6 +710,29 @@ public class AccountService : IAccountService
         return res;
     }
 
+    public async Task ReportProfile(Account currUser, Guid profileId)
+    {
+        var profile = _accountRepository.Get(profileId);
+
+        var html = $@"<h1>Report Profile received from {currUser.Username}</h1>
+                       <h3>Suspect Profile Information</h3>
+                       <p>Id: {profile.Id}</p>
+                       <p>Username: {profile.Username}</p>
+                       <p>Birthday: {profile.Birthday}</p>
+                       <p>Username: {profile.Username}</p>
+                       <img src='{profile.ProfilePictureUrl}'/>";
+
+        await _emailService.SendAsync("admin@matcha.com", "Profile Report", html);
+    }
+
+    public void UpdateNames(Account currUser, UpdateNamesRequest req)
+    {
+        currUser.FirstName = req.FirstName;
+        currUser.LastName = req.LastName;
+
+        _accountRepository.Update(currUser);
+    }
+
     #region Helper methods
     private void validateRequest(CompleteProfileRequest req)
     {
@@ -988,6 +1060,18 @@ public class AccountService : IAccountService
             JwtToken = jwtToken,
             RefreshToken = refreshToken.Token
         };
+    }
+
+    public static string Base64Decode(string base64EncodedData)
+    {
+        var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+        return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+    }
+
+    public static string Base64Encode(string plainText)
+    {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
     }
     #endregion
 }

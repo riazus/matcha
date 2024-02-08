@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import GreetingPage from "./components/GreetingPage";
 import Home from "./components/Home";
 import Map from "./containers/Map";
+import ChangedEmailVerification from "./containers/ChangedEmailVerification";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/verify-email/:token",
         element: <EmailVerificationView />,
+      },
+      {
+        path: "/verify-changed-email/:token",
+        element: <ChangedEmailVerification />,
       },
       {
         path: "/reset-password/:token",
