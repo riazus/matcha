@@ -405,7 +405,7 @@ const styles = {
   carouselBox: {
     width: 250,
     height: 250,
-    overflow: "scroll",
+    overflow: "hidden",
 
   }
 };
