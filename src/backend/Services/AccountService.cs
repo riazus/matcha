@@ -50,6 +50,7 @@ public interface IAccountService
     Task ReportProfile(Account currUser, Guid profileId);
     void VerifyChangedEmail(string token);
     string ChangeEmail(Account currUser, string newEmail);
+    void UpdateNames(Account currUser, UpdateNamesRequest req);
 }
 
 public class AccountService : IAccountService
@@ -722,6 +723,14 @@ public class AccountService : IAccountService
                        <img src='{profile.ProfilePictureUrl}'/>";
 
         await _emailService.SendAsync("admin@matcha.com", "Profile Report", html);
+    }
+
+    public void UpdateNames(Account currUser, UpdateNamesRequest req)
+    {
+        currUser.FirstName = req.FirstName;
+        currUser.LastName = req.LastName;
+
+        _accountRepository.Update(currUser);
     }
 
     #region Helper methods

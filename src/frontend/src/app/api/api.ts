@@ -35,6 +35,7 @@ import {
   Location,
   IpAddressResponse,
   Coord,
+  NamesBody,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -584,6 +585,13 @@ export const api = createApi({
         method: "POST",
       }),
     }),
+    updateNames: builder.mutation<void, NamesBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_NAMES,
+        body,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -623,4 +631,5 @@ export const {
   useReportProfileMutation,
   useChangeEmailMutation,
   useChangedVerifyEmailQuery,
+  useUpdateNamesMutation,
 } = api;

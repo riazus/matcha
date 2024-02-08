@@ -40,6 +40,7 @@ export const ACCOUNT_ROUTES = {
   REPORT_PROFILE: (id: string) => `/accounts/${id}`,
   CHANGE_EMAIL: "/accounts/change-email",
   VERIFY_CHANGED_EMAIL: "/accounts/verify-changed-email",
+  UPDATE_NAMES: "accounts/update-names",
   WITH_FILTER: (filter: Filter, page: number) =>
     "accounts/filter/options?minAge=" +
     filter.minAge +

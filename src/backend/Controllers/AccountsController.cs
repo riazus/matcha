@@ -276,6 +276,13 @@ public class AccountsController : BaseController
         return Ok();
     }
 
+    [HttpPatch("update-names")]
+    public ActionResult UpdateNames(UpdateNamesRequest req)
+    {
+        _accountService.UpdateNames(Account, req);
+        return Ok();
+    }
+
     #region Helpers
     private string ipAddress()
     {
