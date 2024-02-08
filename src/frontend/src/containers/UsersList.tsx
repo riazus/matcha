@@ -14,7 +14,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { increaseSearchingPage } from "../app/slices/currentUserSlice";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
-import { title } from "../styles/textStyles";
+import {title}from "../styles/textStyles";
+import { matchaColors } from "../styles/colors";
 import { AccountsResponse } from "../types/api/accounts";
 
 function UsersList() {
@@ -102,6 +103,7 @@ function UsersList() {
                     <Avatar src={user.profilePictureUrl}></Avatar>
                   </ListItemAvatar>
                   <ListItemText
+                    sx={{fontWeight: "bold", fontSize: "18px", fontFamily: "Roboto"}}
                     primary={user.username}
                     secondary={`${user.town ?? ""}, ${user.country ?? ""}`}
                   />
@@ -146,13 +148,16 @@ const styles = {
   listItemButton: {
     marginBottom: "1%",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
-    background: "rgb(142, 202, 230, 0.6)",
+    background: matchaColors.darkBox,
     borderRadius: "20px",
     marginRight: "10%",
+    ':hover': {
+      background: matchaColors.usersBox,
+    }
   },
   scrollButton: {
     padding: "10px",
-    backgroundColor: "#007BFF",
+    backgroundColor: matchaColors.yellowlight,
     color: "#fff",
     border: "none",
     borderRadius: "20px",

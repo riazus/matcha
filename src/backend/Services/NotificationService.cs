@@ -46,7 +46,7 @@ public class NotificationService : INotificationService
 
     public Notification AddProfileViewed(string username, Guid accountId)
     {
-        return Add($"Your profile viewed by {username}!", accountId, DateTime.Now, NotificationType.ProfileViewed);
+        return Add($"Your profile was viewed by {username}!", accountId, DateTime.Now, NotificationType.ProfileViewed);
     }
 
     public Notification AddProfileLiked(string username, Guid accountId)

@@ -24,6 +24,8 @@ import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
+import { interrestsButton } from "../styles/textStyles";
+import ScrollCarousel from 'scroll-carousel-react';
 import BlockAndReportButtons from "./BlockAndReportButtons";
 
 function UserForm() {
@@ -102,6 +104,13 @@ function UserForm() {
     setIsLikeLoading(true);
   };
 
+  const handleBlockProfile = () => {
+    emitNotificationConnectionEvent(
+      NotificationEvent.BlockProfile,
+      formData!.id
+    );
+  };
+
   const handleUnblockProfile = () => {
     emitNotificationConnectionEvent(
       NotificationEvent.UnblockProfile,
@@ -137,43 +146,94 @@ function UserForm() {
       <Box sx={styles.userBox}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
-        <Typography sx={title}>Fame rate : {formData!.fameRating}</Typography>
+        <Box sx={styles.avatarBox}>
+          <Avatar
+            src={formData!.profilePictureUrl}
+            sx={{ marginTop: "10px", width: 100, height: 100 }}
+          />
+          <Box sx={styles.genderAndLocationBox}>
+            <Typography sx={styles.locationText}>
+              {formData!.town} {formData!.country}
+            </Typography>
 
-        <Avatar
-          src={formData!.profilePictureUrl}
-          sx={{ marginTop: "10px", width: 100, height: 100 }}
-        />
-
-        {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
+            {formData!.gender === 0 ? (
+              <MaleIcon style={styles.genderIcon} />
+            ) : (
+              <FemaleIcon style={styles.genderIcon} />
+            )}
+          </Box>
+        </Box>
 
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
-            new Date(formData!.birthday).getFullYear()}
+            new Date(formData!.birthday).getFullYear()}{" "}
+          years old
+        </Box>
+        <Box sx={styles.carouselBox}>
+          {formData?.additionalPicturesUrl ? (
+            <ScrollCarousel
+            autoplay
+            autoplaySpeed={8}
+            speed={7}
+            >
+              {formData?.additionalPicturesUrl.map((item, index) => (
+                <div key={index} style={{ width: 300, height: 300}}>
+                  <img
+                    src={item}
+                    alt={`Img ${index}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+              ))}
+            </ScrollCarousel>
+          ) : null}
         </Box>
 
-        <Box sx={styles.description}>{formData!.description}</Box>
+        <Box sx={styles.description}>
+          {formData!.description === ""
+            ? "No bio provided"
+            : formData!.description}
+        </Box>
 
-        {formData!.isProfilesMatched && (
-          <>
-            <Button onClick={handleOpenChat} sx={styles.chatButton}>
-              Open chat
-            </Button>
-            <Button
-              onClick={handleOpenCreateEvent}
-              sx={styles.scheduleEventButton}
-            >
-              Create Event
-            </Button>
-          </>
-        )}
-
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            margin: "2%",
+            flexWrap: "wrap",
+          }}
+        >
+          {formData?.tags.map((tag) => (
+            <Button sx={interrestsButton}>{tag}</Button>
+          ))}
+        </Box>
         <BlockAndReportButtons profileId={formData!.id} />
 
-        {formData!.isProfilesMatched && (
-          <ScheduledEventsAccordion profileId={formData!.id} />
-        )}
+        <Box sx={styles.ButtonBox}>
+          {formData!.isProfilesMatched && (
+            <>
+              <Button onClick={handleOpenChat} sx={styles.chatButton}>
+                Open chat
+              </Button>
+              <Button
+                onClick={handleOpenCreateEvent}
+                sx={styles.scheduleEventButton}
+              >
+                Create Event
+              </Button>
+            </>
+          )}
+          {formData!.isProfilesMatched && (
+            <ScheduledEventsAccordion profileId={formData!.id} />
+          )}
+
+          <Button onClick={handleBlockProfile} sx={styles.blockButton}>
+            Block Profile
+          </Button>
+        </Box>
       </Box>
-      <Box sx={{margin: "3%", display: "flex", justifyContent: "center"}}>
+
+      <Box sx={{ margin: "3%", display: "flex", justifyContent: "center" }}>
         {formData!.isLiked ? (
           <Tooltip title="unlike this profile">
             <span>
@@ -235,6 +295,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
+    margin: "2%",
   },
   userBox: {
     display: "flex",
@@ -284,10 +345,10 @@ const styles = {
     cursor: "pointer",
     boxShadow: "0 2px 4px rgba(255, 0, 0, 0.1)",
     transition: "background-color 0.3s ease",
-    ':hover': {
+    ":hover": {
       backgroundColor: matchaColors.red,
-      color: "black"
-    }
+      color: "black",
+    },
   },
   description: {
     backgroundColor: "#f8f8f8",
@@ -318,7 +379,12 @@ const styles = {
       color: "black",
     },
   },
-  birthday: {},
+  birthday: {
+    color: matchaColors.yellowlight,
+    fontFamily: "Roboto",
+    fontWeight: "800",
+    fontSize: "2rem",
+  },
   unblockButton: {
     color: "black",
     backgroundColor: matchaColors.yellow,
@@ -327,6 +393,32 @@ const styles = {
       backgroundColor: matchaColors.yellowlight,
     },
   },
+  genderIcon: {
+    fontSize: "3rem",
+  },
+  ButtonBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    justifyContent: "space-around",
+  },
+  avatarBox: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  genderAndLocationBox: {
+    marginLeft: "5%",
+  },
+  locationText: {
+    fontSize: "18px",
+    fontWeight: 700,
+  },
+  carouselBox: {
+    width: 250,
+    height: 250,
+    overflow: "scroll",
+
+  }
 };
 
 export default UserForm;

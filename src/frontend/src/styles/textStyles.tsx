@@ -10,12 +10,15 @@ const title = {
 };
 
 const interrestsButton = {
+  width: "fit-content",
   margin: "1%",
-  borderRadius: "20px",
+  borderRadius: "15px",
   backgroundColor: "rgb(150, 50, 150)",
   color: "white",
-  borderColor: "black",
+  border: "1px solid black",
   cursor: "default",
+  paddingLeft: "10%",
+  paddingRight: "10%",
   ":hover": {
     backgroundColor: "rgb(150, 50, 150)",
     borderColor: "black",
