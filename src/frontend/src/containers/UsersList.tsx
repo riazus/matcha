@@ -57,7 +57,6 @@ function UsersList() {
   }, []);
 
   useEffect(() => {
-    console.log("data changand")
     if (data) {
       const updatedFameRating = data.map((user) => user.fameRating);
       setFameRating(updatedFameRating);
