@@ -5,7 +5,11 @@ import { useAppDispatch } from "../app/hooks/hooks";
 import { useChangeLocationMutation } from "../app/api/api";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { setLocation } from "../app/slices/currentUserSlice";
+import {
+  fillFilterDistance,
+  resetFilterDistance,
+  setLocation,
+} from "../app/slices/currentUserSlice";
 import { UserState } from "../types/slices/currentUser";
 import LocationSwitch from "../components/LocationSwitch";
 
@@ -24,7 +28,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
     useChangeLocationMutation();
   const [newLocation, setNewLocation] = useState<Location>();
   const [checkedLocation, setCheckedLocation] = useState<boolean>(
-    user?.latitude !== null
+    !!user?.latitude
   );
   const switchLabel = { inputProps: { "aria-label": "location-switch" } };
   const [ip, setIp] = useState();
@@ -50,14 +54,17 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
         })
       );
 
-      if (checkedLocation === false)
+      if (checkedLocation === false) {
+        dispatch(resetFilterDistance());
         toast.success(`Localisation has been disabled`);
-      else
+      } else {
         toast.success(
           `Location successfully changed to ${
             newLocation.town ? newLocation.town : ""
           } ${newLocation.country}`
         );
+        dispatch(fillFilterDistance());
+      }
     }
   }, [isLoading, isSuccess, newLocation, checkedLocation, dispatch]);
 
