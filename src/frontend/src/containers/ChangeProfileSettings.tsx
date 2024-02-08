@@ -79,10 +79,11 @@ function ChangeProfileSettings({
   };
 
   const handleSubmitChanges = () => {
+    console.log("description : ", profileData.description)
     if (!tags || tags.length < 1) {
       toast.error("You need provide at least one hobbie");
       return;
-    } else if (profileData.description.length < 1) {
+    } else if (profileData.description === null || profileData.description.length < 1) {
       toast.error("Description cannot be empty");
       return;
     }

@@ -20,6 +20,7 @@ public class AccountResponse
     public string Postcode { get; set; }
     public string Country { get; set; }
     public string Town { get; set; }
+    public int FameRating { get; set; }
     public bool UserCanChat { get; set; } = false;
     public bool IsLiked { get; set; }
     public bool IsProfilesMatched { get; set; }

@@ -133,9 +133,11 @@ function UserForm() {
   }
 
   return (
-    <Box>
-      <Box sx={styles.box}>
+    <Box sx={styles.containerBox}>
+      <Box sx={styles.userBox}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
+
+        <Typography sx={title}>Fame rate : {formData!.fameRating}</Typography>
 
         <Avatar
           src={formData!.profilePictureUrl}
@@ -171,33 +173,35 @@ function UserForm() {
           <ScheduledEventsAccordion profileId={formData!.id} />
         )}
       </Box>
-      {formData!.isLiked ? (
-        <Tooltip title="unlike this profile">
-          <span>
-            <IconButton
-              aria-label="like user"
-              onClick={handleRemoveLikeClick}
-              disabled={isLikeLoading}
-              sx={styles.likeButton}
-            >
-              <FavoriteIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      ) : (
-        <Tooltip title="like this profile">
-          <span>
-            <IconButton
-              aria-label="dislike user"
-              onClick={handleLikeClick}
-              disabled={isLikeLoading}
-              sx={styles.unlikeButton}
-            >
-              <FavoriteBorderIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      )}
+      <Box sx={{margin: "3%", display: "flex", justifyContent: "center"}}>
+        {formData!.isLiked ? (
+          <Tooltip title="unlike this profile">
+            <span>
+              <IconButton
+                aria-label="dislike user"
+                onClick={handleRemoveLikeClick}
+                disabled={isLikeLoading}
+                sx={styles.unlikeButton}
+              >
+                <FavoriteIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        ) : (
+          <Tooltip title="like this profile">
+            <span>
+              <IconButton
+                aria-label="like user"
+                onClick={handleLikeClick}
+                disabled={isLikeLoading}
+                sx={styles.likeButton}
+              >
+                <FavoriteBorderIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+      </Box>
 
       {chatOpen && (
         <ChatModal
@@ -227,7 +231,12 @@ const baseButtonStyle = {
 };
 
 const styles = {
-  box: {
+  containerBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  userBox: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -264,6 +273,22 @@ const styles = {
       backgroundColor: "#93db05",
     },
   },
+  blockButton: {
+    backgroundColor: "#ffdddd",
+    color: "#ff0000",
+    margin: "10px",
+    padding: "10px 20px",
+    fontSize: "16px",
+    borderRadius: "8px",
+    border: "1px solid #ff0000",
+    cursor: "pointer",
+    boxShadow: "0 2px 4px rgba(255, 0, 0, 0.1)",
+    transition: "background-color 0.3s ease",
+    ':hover': {
+      backgroundColor: matchaColors.red,
+      color: "black"
+    }
+  },
   description: {
     backgroundColor: "#f8f8f8",
     padding: "15px",
@@ -277,8 +302,8 @@ const styles = {
   },
   likeButton: {
     ...baseButtonStyle,
-    backgroundColor: "#FF5A5F",
-    color: "#fff",
+    backgroundColor: "#FFFFFF",
+    color: "red",
     ":hover": {
       backgroundColor: matchaColors.darkBox,
       color: "rgb(255, 255, 255, 0.2)",
@@ -286,8 +311,8 @@ const styles = {
   },
   unlikeButton: {
     ...baseButtonStyle,
-    backgroundColor: "#FFFFFF",
-    color: "red",
+    backgroundColor: matchaColors.red,
+    color: "white",
     ":hover": {
       backgroundColor: matchaColors.red,
       color: "black",

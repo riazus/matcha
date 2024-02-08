@@ -17,4 +17,5 @@ public class AccountsResponse
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public List<string> Tags { get; set; }
+    public int FameRating { get; set; }
 }
