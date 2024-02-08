@@ -1,33 +1,43 @@
 import {
   Box,
-  Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Input,
+  Typography,
 } from "@mui/material";
 import {
   api,
   useChangeProfilePictureMutation,
   useGetSettingsDataQuery,
+  useUpdateNamesMutation,
 } from "../app/api/api";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChangePicturesSettings from "./ChangePicturesSettings";
 import ChangeProfileSettings from "./ChangeProfileSettings";
 import FullScreenLoader from "../components/FullScreenLoader";
-import ChangeIdentificationSettings from "../components/ChangeIdentificationSettings";
-import { useEffect } from "react";
+import ChangeIdentificationSettings from "./ChangeIdentificationSettings";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { VisuallyHiddenInput } from "../components/VisuallyHiddenInput";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import ChangeLocationSettings from "./ChangeLocationSettings";
 import { matchaColors } from "../styles/colors";
+import ChangeEmailSettings from "./ChangeEmailSettings";
+import { toast } from "react-toastify";
 
 const ACCEPTED_IMAGE_TYPES = ".jpeg, .jpg, .png, .webp";
+
+interface INames {
+  firstName: string;
+  lastName: string;
+}
 
 function SettingsForm() {
   const { user } = useAppSelector((root) => root.user);
   const dispatch = useAppDispatch();
+  const [names, setNames] = useState<INames>({ firstName: "", lastName: "" });
   const { data, isLoading, isSuccess } = useGetSettingsDataQuery();
   const [
     updateProfilePicture,
@@ -37,6 +47,10 @@ function SettingsForm() {
       isSuccess: isUpdatePictureSuccess,
     },
   ] = useChangeProfilePictureMutation();
+  const [
+    updateNames,
+    { isLoading: isUpdateNamesLoading, isSuccess: isUpdateNamesSuccess },
+  ] = useUpdateNamesMutation();
 
   useEffect(() => {
     if (isUpdatePictureSuccess) {
@@ -49,9 +63,53 @@ function SettingsForm() {
     // eslint-disable-next-line
   }, [isUpdatePictureSuccess]);
 
+  useEffect(() => {
+    if (user) {
+      setNames({ firstName: user.firstName, lastName: user.lastName });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (isUpdateNamesSuccess) {
+      toast.success("First and Last names updated successfully!");
+    }
+  }, [isUpdateNamesSuccess]);
+
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       updateProfilePicture(e.target.files[0]);
+    }
+  };
+
+  const handleNamesUpdate = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (names.firstName.length < 0 || names.lastName.length < 0) {
+      toast.error("First Name and Last Name must be not empty!");
+    }
+
+    updateNames(names);
+  };
+
+  const handleFirstNameChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (e.target.value?.length <= 30) {
+      setNames((prev) => ({
+        ...prev,
+        firstName: e.target.value,
+      }));
+    }
+  };
+
+  const handleLastNameChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (e.target.value?.length <= 30) {
+      setNames((prev) => ({
+        ...prev,
+        lastName: e.target.value,
+      }));
     }
   };
 
@@ -81,8 +139,22 @@ function SettingsForm() {
         </div>
 
         <Typography variant="h2" sx={styles.nameText}>
-          {user?.firstName} {user?.lastName}
+          {user?.username}
         </Typography>
+
+        <Box component="form" onSubmit={handleNamesUpdate}>
+          <Input
+            value={names?.firstName}
+            onChange={handleFirstNameChange}
+          ></Input>
+          <Input
+            value={names?.lastName}
+            onChange={handleLastNameChange}
+          ></Input>
+          <LoadingButton type="submit" loading={isUpdateNamesLoading}>
+            <DriveFileRenameOutlineIcon />
+          </LoadingButton>
+        </Box>
 
         <Accordion sx={styles.accordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -119,14 +191,24 @@ function SettingsForm() {
         </Accordion>
 
         {data.hasPassword && (
-          <Accordion sx={styles.accordion}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              🔑 Identification settings
-            </AccordionSummary>
-            <AccordionDetails>
-              <ChangeIdentificationSettings />
-            </AccordionDetails>
-          </Accordion>
+          <>
+            <Accordion sx={styles.accordion}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                ✉️ Email settings
+              </AccordionSummary>
+              <AccordionDetails>
+                <ChangeEmailSettings />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion sx={styles.accordion}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                🔑 Identification settings
+              </AccordionSummary>
+              <AccordionDetails>
+                <ChangeIdentificationSettings />
+              </AccordionDetails>
+            </Accordion>
+          </>
         )}
       </Box>
     );

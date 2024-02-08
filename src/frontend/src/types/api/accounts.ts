@@ -29,6 +29,11 @@ export interface VerifyEmailBody {
   token: string;
 }
 
+export interface NamesBody {
+  firstName: string;
+  lastName: string;
+}
+
 export interface ForgotPasswordBody {
   email: string;
 }
@@ -97,6 +102,7 @@ export interface AccountsResponse {
   latitude: number;
   longitude: number;
   tags: string[];
+  fameRating: number;
 }
 
 export interface AccountResponse {
@@ -116,6 +122,7 @@ export interface AccountResponse {
   postcode: string;
   country: string;
   town: string;
+  fameRating: number;
   userCanChat: boolean;
   isLiked: boolean;
   isProfilesMatched: boolean;

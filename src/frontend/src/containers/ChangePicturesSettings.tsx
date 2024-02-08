@@ -19,7 +19,8 @@ function ChangePicturesSettings() {
     if (!isLoading && isSuccess) {
       setPictures(profilePictures);
     }
-  }, [isLoading, isSuccess, profilePictures]);
+    // eslint-disable-next-line
+  }, [isLoading, isSuccess]);
 
   const reduceAdditionalPictures = (index: number) => {
     if (pictures && pictures.additionalPicturesUrl) {

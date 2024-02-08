@@ -25,13 +25,13 @@ import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
 import { interrestsButton } from "../styles/textStyles";
-import ReactSimplyCarousel from "react-simply-carousel";
+import ScrollCarousel from 'scroll-carousel-react';
+import BlockAndReportButtons from "./BlockAndReportButtons";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
-  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [refreshChatRequested, setRefreshChatRequested] = useState(false);
@@ -169,68 +169,25 @@ function UserForm() {
             new Date(formData!.birthday).getFullYear()}{" "}
           years old
         </Box>
-
-        {formData?.additionalPicturesUrl ? (
-          <ReactSimplyCarousel
-            activeSlideIndex={activeSlideIndex}
-            onRequestChange={setActiveSlideIndex}
-            itemsToShow={1}
-            itemsToScroll={1}
-            forwardBtnProps={{
-              //here you can also pass className, or any other button element attributes
-              style: {
-                alignSelf: "center",
-                background: "black",
-                border: "none",
-                borderRadius: "50%",
-                color: "white",
-                cursor: "pointer",
-                fontSize: "20px",
-                height: 30,
-                lineHeight: 1,
-                textAlign: "center",
-                width: 30,
-              },
-              children: <span>{`>`}</span>,
-            }}
-            backwardBtnProps={{
-              //here you can also pass className, or any other button element attributes
-              style: {
-                alignSelf: "center",
-                background: "black",
-                border: "none",
-                borderRadius: "50%",
-                color: "white",
-                cursor: "pointer",
-                fontSize: "20px",
-                height: 30,
-                lineHeight: 1,
-                textAlign: "center",
-                width: 30,
-              },
-              children: <span>{`<`}</span>,
-            }}
-            responsiveProps={[
-              {
-                itemsToShow: 2,
-                itemsToScroll: 2,
-                minWidth: 768,
-              },
-            ]}
-            speed={400}
-            easing="linear"
-          >
-            {formData?.additionalPicturesUrl.map((item, index) => (
-              <div key={index} style={{ width:300, height: 300, display: "inline-block", position: "relative", overflow: "hidden" }}>
-                <img
-                  src={item}
-                  alt={`Img ${index}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </div>
-            ))}
-          </ReactSimplyCarousel>
-        ) : null}
+        <Box sx={styles.carouselBox}>
+          {formData?.additionalPicturesUrl ? (
+            <ScrollCarousel
+            autoplay
+            autoplaySpeed={8}
+            speed={7}
+            >
+              {formData?.additionalPicturesUrl.map((item, index) => (
+                <div key={index} style={{ width: 300, height: 300}}>
+                  <img
+                    src={item}
+                    alt={`Img ${index}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+              ))}
+            </ScrollCarousel>
+          ) : null}
+        </Box>
 
         <Box sx={styles.description}>
           {formData!.description === ""
@@ -250,6 +207,7 @@ function UserForm() {
             <Button sx={interrestsButton}>{tag}</Button>
           ))}
         </Box>
+        <BlockAndReportButtons profileId={formData!.id} />
 
         <Box sx={styles.ButtonBox}>
           {formData!.isProfilesMatched && (
@@ -455,6 +413,12 @@ const styles = {
     fontSize: "18px",
     fontWeight: 700,
   },
+  carouselBox: {
+    width: 250,
+    height: 250,
+    overflow: "scroll",
+
+  }
 };
 
 export default UserForm;

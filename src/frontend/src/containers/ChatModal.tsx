@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import { Typography, Box } from "@mui/material";
@@ -44,6 +44,14 @@ function ChatModal(props: ChatModalProps) {
     }
   };
 
+  const handleTextChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!isSending && e.target.value.length <= 200) {
+      setMessageText(e.target.value);
+    }
+  };
+
   return (
     <Modal
       open={props.chatOpen}
@@ -66,17 +74,17 @@ function ChatModal(props: ChatModalProps) {
         />
         <Box sx={styles.sendBox}>
           <form onSubmit={handleSubmit}>
-            <fieldset disabled={isSending}>
-              <TextField
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Write a message..."
-                sx={styles.textField}
-              ></TextField>
-              <LoadingButton loading={isSending}>
-                <SendIcon />
-              </LoadingButton>
-            </fieldset>
+            <TextField
+              value={messageText}
+              onChange={handleTextChange}
+              placeholder="Write a message..."
+              sx={styles.textField}
+              type="text"
+              autoFocus={true}
+            ></TextField>
+            <LoadingButton type="submit" loading={isSending}>
+              <SendIcon />
+            </LoadingButton>
           </form>
         </Box>
       </Box>

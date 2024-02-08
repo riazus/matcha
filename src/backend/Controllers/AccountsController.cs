@@ -105,10 +105,7 @@ public class AccountsController : BaseController
     {
         var account = _accountService.ForgotPassword(model);
 
-        _ = Task.Run(async () =>
-        {
-            await _accountService.SendPasswordResetEmail(account, Request.Headers["origin"]);
-        });
+        await _accountService.SendPasswordResetEmail(account, Request.Headers["origin"]);
 
         return Ok(new { message = "Please check your email for password reset instructions" });
     }
@@ -252,6 +249,38 @@ public class AccountsController : BaseController
     {
         var res = _accountService.GetAccountsCoords();
         return Ok(res);
+    }
+
+    [HttpPatch("{profileId:Guid}")]
+    public async Task<ActionResult> ReportProfile(Guid profileId)
+    {
+        await _accountService.ReportProfile(Account, profileId);
+        return Ok();
+    }
+
+    [HttpPatch("change-email")]
+    public async Task<ActionResult> ChangeEmail(ChangeEmailRequest req)
+    {
+        var token = _accountService.ChangeEmail(Account, req.Email);
+
+        await _accountService.SendVerifyChangedEmail(req.Email, token, Request.Headers["origin"]);
+
+        return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("verify-changed-email")]
+    public ActionResult VerifyChangedEmail(VerifyEmailRequest req)
+    {
+        _accountService.VerifyChangedEmail(req.Token);
+        return Ok();
+    }
+
+    [HttpPatch("update-names")]
+    public ActionResult UpdateNames(UpdateNamesRequest req)
+    {
+        _accountService.UpdateNames(Account, req);
+        return Ok();
     }
 
     #region Helpers

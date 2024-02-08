@@ -148,6 +148,9 @@ function CompleteProfile() {
     } else if (age !== null && isNaN(age)) {
       toast.error("Your birthday date is not valid!");
       return;
+    } else if (description.length === 0) {
+      toast.error("Description cannot be empty!");
+      return;
     }
 
     const res: CompleteProfileBody = {

@@ -35,6 +35,7 @@ import {
   Location,
   IpAddressResponse,
   Coord,
+  NamesBody,
 } from "../../types/api/accounts";
 import { RootState } from "../store";
 import { Mutex } from "async-mutex";
@@ -83,7 +84,7 @@ const baseQueryWithReauth: BaseQueryFn<
           api,
           extraOptions
         );
-        if (data) {
+        if (data && Object.hasOwn(data, "id")) {
           api.dispatch(setCurrentUserState(data as RefreshTokenResponse));
           result = await baseQuery(args, api, extraOptions);
         } else {
@@ -564,6 +565,33 @@ export const api = createApi({
         method: "POST",
       }),
     }),
+    reportProfile: builder.mutation<void, string>({
+      query: (id) => ({
+        url: ACCOUNT_ROUTES.REPORT_PROFILE(id),
+        method: "PATCH",
+      }),
+    }),
+    changeEmail: builder.mutation<void, string>({
+      query: (email) => ({
+        url: ACCOUNT_ROUTES.CHANGE_EMAIL,
+        body: { email },
+        method: "PATCH",
+      }),
+    }),
+    changedVerifyEmail: builder.query<void, VerifyEmailBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.VERIFY_CHANGED_EMAIL,
+        body,
+        method: "POST",
+      }),
+    }),
+    updateNames: builder.mutation<void, NamesBody>({
+      query: (body) => ({
+        url: ACCOUNT_ROUTES.UPDATE_NAMES,
+        body,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -600,4 +628,8 @@ export const {
   useGetAccountsCoordQuery,
   useGetScheduledEventsQuery,
   useCreateScheduledEventMutation,
+  useReportProfileMutation,
+  useChangeEmailMutation,
+  useChangedVerifyEmailQuery,
+  useUpdateNamesMutation,
 } = api;
