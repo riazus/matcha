@@ -142,6 +142,18 @@ export const currentUserSlice = createSlice({
         state.user.tags = payload;
       }
     },
+    resetFilterDistance: (state) => {
+      if (state.filter) {
+        state.filter.maxDistance = undefined;
+        state.filter.minDistance = undefined;
+      }
+    },
+    fillFilterDistance: (state) => {
+      if (state.filter) {
+        state.filter.maxDistance = 13588;
+        state.filter.minDistance = 0;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -209,4 +221,6 @@ export const {
   increaseSearchingPage,
   setLocation,
   setTags,
+  resetFilterDistance,
+  fillFilterDistance,
 } = currentUserSlice.actions;
