@@ -24,11 +24,14 @@ import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
+import { interrestsButton } from "../styles/textStyles";
+import ReactSimplyCarousel from "react-simply-carousel";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
   const notificationConnection = getNotificationConnection();
   const dispatch = useAppDispatch();
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [refreshChatRequested, setRefreshChatRequested] = useState(false);
@@ -139,73 +142,168 @@ function UserForm() {
   }
 
   return (
-    <Box>
-      <Box sx={styles.box}>
+    <Box sx={styles.containerBox}>
+      <Box sx={styles.userBox}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
-        <Avatar
-          src={formData!.profilePictureUrl}
-          sx={{ marginTop: "10px", width: 100, height: 100 }}
-        />
+        <Box sx={styles.avatarBox}>
+          <Avatar
+            src={formData!.profilePictureUrl}
+            sx={{ marginTop: "10px", width: 100, height: 100 }}
+          />
+          <Box sx={styles.genderAndLocationBox}>
+            <Typography sx={styles.locationText}>
+              {formData!.town} {formData!.country}
+            </Typography>
 
-        {formData!.gender === 0 ? <MaleIcon /> : <FemaleIcon />}
+            {formData!.gender === 0 ? (
+              <MaleIcon style={styles.genderIcon} />
+            ) : (
+              <FemaleIcon style={styles.genderIcon} />
+            )}
+          </Box>
+        </Box>
 
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
-            new Date(formData!.birthday).getFullYear()}
+            new Date(formData!.birthday).getFullYear()}{" "}
+          years old
         </Box>
 
-        <Box sx={styles.description}>{formData!.description}</Box>
+        {formData?.additionalPicturesUrl ? (
+          <ReactSimplyCarousel
+            activeSlideIndex={activeSlideIndex}
+            onRequestChange={setActiveSlideIndex}
+            itemsToShow={1}
+            itemsToScroll={1}
+            forwardBtnProps={{
+              //here you can also pass className, or any other button element attributes
+              style: {
+                alignSelf: "center",
+                background: "black",
+                border: "none",
+                borderRadius: "50%",
+                color: "white",
+                cursor: "pointer",
+                fontSize: "20px",
+                height: 30,
+                lineHeight: 1,
+                textAlign: "center",
+                width: 30,
+              },
+              children: <span>{`>`}</span>,
+            }}
+            backwardBtnProps={{
+              //here you can also pass className, or any other button element attributes
+              style: {
+                alignSelf: "center",
+                background: "black",
+                border: "none",
+                borderRadius: "50%",
+                color: "white",
+                cursor: "pointer",
+                fontSize: "20px",
+                height: 30,
+                lineHeight: 1,
+                textAlign: "center",
+                width: 30,
+              },
+              children: <span>{`<`}</span>,
+            }}
+            responsiveProps={[
+              {
+                itemsToShow: 2,
+                itemsToScroll: 2,
+                minWidth: 768,
+              },
+            ]}
+            speed={400}
+            easing="linear"
+          >
+            {formData?.additionalPicturesUrl.map((item, index) => (
+              <div style={{ width: 300, height: 300, background: '#FFFFFF' }}>
+              <img
+                src={item}
+                alt={`Image ${index}`}
+                loading="lazy"
+              />
+              </div>
+            ))}
+          </ReactSimplyCarousel>
+        ) : null}
 
-        {formData!.isProfilesMatched && (
-          <>
-            <Button onClick={handleOpenChat} sx={styles.chatButton}>
-              Open chat
-            </Button>
-            <Button
-              onClick={handleOpenCreateEvent}
-              sx={styles.scheduleEventButton}
-            >
-              Create Event
-            </Button>
-          </>
-        )}
+        <Box sx={styles.description}>
+          {formData!.description === ""
+            ? "No bio provided"
+            : formData!.description}
+        </Box>
 
-        <Button onClick={handleBlockProfile} sx={styles.blockButton}>
-          Block Profile
-        </Button>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            margin: "2%",
+            flexWrap: "wrap",
+          }}
+        >
+          {formData?.tags.map((tag) => (
+            <Button sx={interrestsButton}>{tag}</Button>
+          ))}
+        </Box>
 
-        {formData!.isProfilesMatched && (
-          <ScheduledEventsAccordion profileId={formData!.id} />
+        <Box sx={styles.ButtonBox}>
+          {formData!.isProfilesMatched && (
+            <>
+              <Button onClick={handleOpenChat} sx={styles.chatButton}>
+                Open chat
+              </Button>
+              <Button
+                onClick={handleOpenCreateEvent}
+                sx={styles.scheduleEventButton}
+              >
+                Create Event
+              </Button>
+            </>
+          )}
+          {formData!.isProfilesMatched && (
+            <ScheduledEventsAccordion profileId={formData!.id} />
+          )}
+
+          <Button onClick={handleBlockProfile} sx={styles.blockButton}>
+            Block Profile
+          </Button>
+        </Box>
+      </Box>
+
+      <Box sx={{ margin: "3%", display: "flex", justifyContent: "center" }}>
+        {formData!.isLiked ? (
+          <Tooltip title="unlike this profile">
+            <span>
+              <IconButton
+                aria-label="dislike user"
+                onClick={handleRemoveLikeClick}
+                disabled={isLikeLoading}
+                sx={styles.unlikeButton}
+              >
+                <FavoriteIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        ) : (
+          <Tooltip title="like this profile">
+            <span>
+              <IconButton
+                aria-label="like user"
+                onClick={handleLikeClick}
+                disabled={isLikeLoading}
+                sx={styles.likeButton}
+              >
+                <FavoriteBorderIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
       </Box>
-      {formData!.isLiked ? (
-        <Tooltip title="unlike this profile">
-          <span>
-            <IconButton
-              aria-label="like user"
-              onClick={handleRemoveLikeClick}
-              disabled={isLikeLoading}
-              sx={styles.likeButton}
-            >
-              <FavoriteIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      ) : (
-        <Tooltip title="like this profile">
-          <span>
-            <IconButton
-              aria-label="dislike user"
-              onClick={handleLikeClick}
-              disabled={isLikeLoading}
-              sx={styles.unlikeButton}
-            >
-              <FavoriteBorderIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      )}
 
       {chatOpen && (
         <ChatModal
@@ -235,7 +333,13 @@ const baseButtonStyle = {
 };
 
 const styles = {
-  box: {
+  containerBox: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    margin: "2%",
+  },
+  userBox: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -283,6 +387,10 @@ const styles = {
     cursor: "pointer",
     boxShadow: "0 2px 4px rgba(255, 0, 0, 0.1)",
     transition: "background-color 0.3s ease",
+    ":hover": {
+      backgroundColor: matchaColors.red,
+      color: "black",
+    },
   },
   description: {
     backgroundColor: "#f8f8f8",
@@ -297,8 +405,8 @@ const styles = {
   },
   likeButton: {
     ...baseButtonStyle,
-    backgroundColor: "#FF5A5F",
-    color: "#fff",
+    backgroundColor: "#FFFFFF",
+    color: "red",
     ":hover": {
       backgroundColor: matchaColors.darkBox,
       color: "rgb(255, 255, 255, 0.2)",
@@ -306,14 +414,19 @@ const styles = {
   },
   unlikeButton: {
     ...baseButtonStyle,
-    backgroundColor: "#FFFFFF",
-    color: "red",
+    backgroundColor: matchaColors.red,
+    color: "white",
     ":hover": {
       backgroundColor: matchaColors.red,
       color: "black",
     },
   },
-  birthday: {},
+  birthday: {
+    color: matchaColors.yellowlight,
+    fontFamily: "Roboto",
+    fontWeight: "800",
+    fontSize: "2rem",
+  },
   unblockButton: {
     color: "black",
     backgroundColor: matchaColors.yellow,
@@ -321,6 +434,26 @@ const styles = {
     ":hover": {
       backgroundColor: matchaColors.yellowlight,
     },
+  },
+  genderIcon: {
+    fontSize: "3rem",
+  },
+  ButtonBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    justifyContent: "space-around",
+  },
+  avatarBox: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  genderAndLocationBox: {
+    marginLeft: "5%",
+  },
+  locationText: {
+    fontSize: "18px",
+    fontWeight: 700,
   },
 };
 

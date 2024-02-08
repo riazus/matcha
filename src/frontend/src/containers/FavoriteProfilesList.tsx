@@ -4,22 +4,18 @@ import {
   ListItem,
   ListItemText,
   Typography,
-  styled,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useGetFavoriteProfilesQuery } from "../app/api/api";
 import { title } from "../styles/textStyles";
 import { useNavigate } from "react-router-dom";
+import { matchaColors } from "../styles/colors";
 
-// TODO: need to change visual representing
 interface Profile {
   username: string;
   id: string;
 }
 
-const Demo = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-}));
 
 function FavoritesList() {
   const [favorites, setFavorites] = useState<Profile[]>([]);
@@ -41,7 +37,7 @@ function FavoritesList() {
           {favorites.length > 1 ? "profiles" : "profile"} ❤️
         </Typography>
       </Box>
-      <Demo>
+      <Box sx={styles.listBox}>
         <List dense={true}>
           {favorites?.map((item, ind) => {
             return (
@@ -55,7 +51,7 @@ function FavoritesList() {
             );
           })}
         </List>
-      </Demo>
+        </Box>
     </Box>
   );
 }
@@ -71,7 +67,14 @@ const styles = {
   listItem: {
     borderBottom: "1px solid #ccc",
     padding: "16px",
-    margin: "",
+    margin: "2%",
+    marginLeft: "5%",
+    width: "90%",
+    borderRadius: "10px",
+    backgroundColor: matchaColors.backgroundlight,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    border: "2px solid black",
+    transition: "background-color 0.3s",
     "&:hover": {
       backgroundColor: "#e0e0e0",
       cursor: "pointer",
@@ -80,6 +83,13 @@ const styles = {
   lengthText: {
     fontSize: "18px",
   },
+  listBox: {
+    backgroundColor: matchaColors.darkBox,
+    borderRadius: "10%",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    border: "2px solid black"
+
+  }
 };
 
 export default FavoritesList;

@@ -33,11 +33,13 @@ const styles = {
     padding: "20px",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    backgroundColor: matchaColors.usersBox,
     marginTop: "16px",
-},
-userList: {
-      borderRadius: "10px",
+    backgroundColor: matchaColors.usersBox,
+  },
+  userList: {
+    borderRadius: "10px",
+    backgroundColor: "#FFFFFF",
+    margin: "5%",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
   }
 };

@@ -60,10 +60,11 @@ function ProfilePicturesUploading({
         <div
           style={{
             ...styles.onePictureBox,
+            backgroundPosition: "center",
             backgroundImage: profilePicture
               ? `url(${URL.createObjectURL(profilePicture)})`
               : "none",
-          }}
+            }}
         >
           <Button component="label">
             <DriveFileRenameOutlineIcon fontSize="large" />
@@ -93,6 +94,7 @@ function ProfilePicturesUploading({
             key={index}
             style={{
               ...styles.onePictureBox,
+              backgroundPosition: "center",
               backgroundImage:
                 picture && pictures
                   ? `url(${URL.createObjectURL(picture)})`
