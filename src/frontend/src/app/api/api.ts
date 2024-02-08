@@ -84,7 +84,7 @@ const baseQueryWithReauth: BaseQueryFn<
           api,
           extraOptions
         );
-        if (data) {
+        if (data && Object.hasOwn(data, "id")) {
           api.dispatch(setCurrentUserState(data as RefreshTokenResponse));
           result = await baseQuery(args, api, extraOptions);
         } else {
