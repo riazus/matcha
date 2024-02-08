@@ -221,12 +221,12 @@ function UserForm() {
             easing="linear"
           >
             {formData?.additionalPicturesUrl.map((item, index) => (
-              <div style={{ width: 300, height: 300, background: '#FFFFFF' }}>
-              <img
-                src={item}
-                alt={`Image ${index}`}
-                loading="lazy"
-              />
+              <div key={index} style={{ width:300, height: 300, display: "inline-block", position: "relative", overflow: "hidden" }}>
+                <img
+                  src={item}
+                  alt={`Img ${index}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
               </div>
             ))}
           </ReactSimplyCarousel>
