@@ -104,13 +104,6 @@ function UserForm() {
     setIsLikeLoading(true);
   };
 
-  const handleBlockProfile = () => {
-    emitNotificationConnectionEvent(
-      NotificationEvent.BlockProfile,
-      formData!.id
-    );
-  };
-
   const handleUnblockProfile = () => {
     emitNotificationConnectionEvent(
       NotificationEvent.UnblockProfile,
@@ -226,10 +219,6 @@ function UserForm() {
           {formData!.isProfilesMatched && (
             <ScheduledEventsAccordion profileId={formData!.id} />
           )}
-
-          <Button onClick={handleBlockProfile} sx={styles.blockButton}>
-            Block Profile
-          </Button>
         </Box>
       </Box>
 
