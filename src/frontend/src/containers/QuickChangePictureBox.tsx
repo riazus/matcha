@@ -38,13 +38,15 @@ function QuickChangePictureBox({
     if (!isDeleteLoading && isDeleteSuccess) {
       reduceAdditionalPictures(index);
     }
-  }, [isDeleteLoading, isDeleteSuccess, reduceAdditionalPictures, index]);
+    // eslint-disable-next-line
+  }, [isDeleteLoading, isDeleteSuccess]);
 
   useEffect(() => {
     if (!isUploadLoading && isUploadSuccess) {
       increaseAdditionalPictures(data!.pictureUrl);
     }
-  }, [isUploadLoading, isUploadSuccess, increaseAdditionalPictures, data]);
+    // eslint-disable-next-line
+  }, [isUploadLoading, isUploadSuccess]);
 
   const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
