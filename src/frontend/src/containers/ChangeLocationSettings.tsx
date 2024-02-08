@@ -28,7 +28,7 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
     useChangeLocationMutation();
   const [newLocation, setNewLocation] = useState<Location>();
   const [checkedLocation, setCheckedLocation] = useState<boolean>(
-    user?.latitude !== null
+    !!user?.latitude
   );
   const switchLabel = { inputProps: { "aria-label": "location-switch" } };
   const [ip, setIp] = useState();
