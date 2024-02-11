@@ -48,7 +48,7 @@ function UserForm() {
     isError,
   } = useGetUserByIdQuery(idFromParams!);
   const [activeStep, setActiveStep] = useState<number>(0);
-  const maxSteps = formData?.additionalPicturesUrl.length;
+  const maxSteps = formData?.additionalPicturesUrl === null ? 0 : formData?.additionalPicturesUrl.length;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
