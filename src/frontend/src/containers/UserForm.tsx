@@ -25,8 +25,12 @@ import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
 import { interrestsButton } from "../styles/textStyles";
-import ScrollCarousel from 'scroll-carousel-react';
 import BlockAndReportButtons from "./BlockAndReportButtons";
+import { useTheme } from '@mui/material/styles';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import MobileStepper from '@mui/material/MobileStepper';
+
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -36,12 +40,24 @@ function UserForm() {
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [refreshChatRequested, setRefreshChatRequested] = useState(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const theme = useTheme();
   const {
     data: formData,
     isLoading,
     isSuccess,
     isError,
   } = useGetUserByIdQuery(idFromParams!);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const maxSteps = formData?.additionalPicturesUrl.length;
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep: number) => prevActiveStep - 1);
+  };
+
 
   useEffect(() => {
     if (chatOpen) {
@@ -162,25 +178,49 @@ function UserForm() {
             new Date(formData!.birthday).getFullYear()}{" "}
           years old
         </Box>
-        <Box sx={styles.carouselBox}>
-          {formData?.additionalPicturesUrl ? (
-            <ScrollCarousel
-            autoplay
-            autoplaySpeed={8}
-            speed={7}
-            >
-              {formData?.additionalPicturesUrl.map((item, index) => (
-                <div key={index} style={{ width: 300, height: 300}}>
-                  <img
-                    src={item}
-                    alt={`Img ${index}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
-              ))}
-            </ScrollCarousel>
-          ) : null}
-        </Box>
+
+        {formData!.additionalPicturesUrl ?
+          <Box key="image-stepper" sx={{ maxWidth: 400, flexGrow: 1 }}>
+            <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
+              <img
+                src={formData!.additionalPicturesUrl[activeStep]}
+                alt={`Image ${activeStep}`}
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </Box>
+            <MobileStepper
+              key={`stepper-${maxSteps}`}
+              variant="text"
+              steps={maxSteps ? maxSteps : 0}
+              position="static"
+              activeStep={activeStep}
+              nextButton={
+                <Button
+                  key={`nextButton-${activeStep}`}
+                  size="small"
+                  onClick={handleNext}
+                  disabled={maxSteps ? activeStep === maxSteps - 1 : true}
+                >
+                  Next
+                  {theme.direction === 'rtl' ? (
+                    <KeyboardArrowLeft />
+                  ) : (
+                    <KeyboardArrowRight />
+                  )}
+                </Button>
+              }
+              backButton={
+                <Button key={`backButton-${activeStep}`} size="small" onClick={handleBack} disabled={activeStep === 0}>
+                  {theme.direction === 'rtl' ? (
+                    <KeyboardArrowRight />
+                  ) : (
+                    <KeyboardArrowLeft />
+                  )}
+                  Back
+                </Button>
+              }
+            />
+          </Box> : null}
 
         <Box sx={styles.description}>
           {formData!.description === ""
@@ -196,8 +236,8 @@ function UserForm() {
             flexWrap: "wrap",
           }}
         >
-          {formData?.tags.map((tag) => (
-            <Button sx={interrestsButton}>{tag}</Button>
+          {formData?.tags.map((tag, index) => (
+            <Button key={`tag-${index}`} sx={interrestsButton}>{tag}</Button>
           ))}
         </Box>
         <BlockAndReportButtons profileId={formData!.id} />

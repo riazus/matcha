@@ -190,7 +190,7 @@ function CompleteProfile() {
               setAge(
                 Math.abs(
                   new Date(Date.now() - +newDate!.toDate()).getUTCFullYear() -
-                    1970
+                  1970
                 )
               );
             }}
@@ -341,6 +341,9 @@ const styles = {
   datePicker: {
     width: "40%",
     minWidth: "230px",
+    '& input': {
+      color: matchaColors.yellow
+    }
   },
   bithdayText: {
     paddingBottom: "10px",
@@ -448,7 +451,7 @@ const styles = {
   },
   textfield: {
     marginBottom: "1%",
-    width: "60%",
+    width: "95%",
     color: matchaColors.yellow,
   },
 };

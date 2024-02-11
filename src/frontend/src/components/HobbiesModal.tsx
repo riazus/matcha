@@ -98,7 +98,7 @@ const HobbiesModal = forwardRef(
         </Typography>
         <Grid container spacing={2}>
           {tagsData.map((tag) => (
-            <Grid key={tag} item xs={10} sm={4}>
+            <Grid key={tag} item xs={10} sm={5}>
               <Button
                 onClick={() => handleTag(tag)}
                 color="secondary"
@@ -132,7 +132,7 @@ const HobbiesModal = forwardRef(
 
 const clearAndFinishedButton = {
   marginTop: "5%",
-  backgroundColor: matchaColors.darkBox,
+  backgroundColor: matchaColors.backgroundlight,
   color: "black",
   borderRadius: "10px",
   border: "3px solid black",
