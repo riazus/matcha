@@ -38,6 +38,7 @@ CREATE TABLE Account (
     Country NVARCHAR(128) NULL,
     Town NVARCHAR(128) NULL,
     FameRating INT NOT NULL DEFAULT (0),
+    LastConnectionDate DATETIME NULL,
     CONSTRAINT Unique_Username UNIQUE (Username),
     CONSTRAINT Unique_Email UNIQUE (Email)
 );

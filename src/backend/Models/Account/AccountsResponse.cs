@@ -18,4 +18,5 @@ public class AccountsResponse
     public double? Longitude { get; set; }
     public List<string> Tags { get; set; }
     public int FameRating { get; set; }
+    public DateTime? LastConnectionDate { get; set; }
 }

@@ -47,6 +47,7 @@ CREATE TABLE Account (
     Country NVARCHAR(128) NULL,
     Town NVARCHAR(128) NULL,
     FameRating INT NOT NULL DEFAULT (0),
+    LastConnectionDate DATETIME NULL,
     CONSTRAINT Unique_Username UNIQUE (Username),
     CONSTRAINT Unique_Email UNIQUE (Email)
 );
@@ -402,84 +403,84 @@ BEGIN
     ,[PasswordReset],[Created],[Updated],[Provider],[IsProfileCompleted]
     ,[RelativeProfilePictureUrl],[RelativeAdditionalPicturesUrlDB],[GenderDB]
     ,[GenderPreferencesDB],[Birthday],[Description],[TagsDB],[Latitude]
-    ,[Longitude],[Postcode],[Country],[Town]) 
+    ,[Longitude],[Postcode],[Country],[Town],[LastConnectionDate]) 
     VALUES
     (newid(), 'mbelucci' + CAST(@i as nvarchar(2)), 'monica' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Monica', 'Belucci', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 1, 0, '12-16-1980', 'I like running and watch movies', '["movies", "running", "popcorn"]', 
-    34.052235, -118.243683, 90001, 'USA', 'Los Angeles'),
+    34.052235, -118.243683, 90001, 'USA', 'Los Angeles', getdate()),
 
     (newid(), 'rsmith' + CAST(@i as nvarchar(2)), 'rsmith' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Roland', 'Smith', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 1, 1, '01-01-1988', 'I like running and spend time with my friends', '["movies", "friends", "running"]', 
-    41.902782, 12.496365, 90001, 'Italy', 'Rome'),
+    41.902782, 12.496365, 90001, 'Italy', 'Rome', getdate()),
 
     (newid(), 'kasmus' + CAST(@i as nvarchar(2)), 'kasmus' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Kristina', 'Asmus', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 1, 2, '01-01-1990', 'I like running and spend time with my friends', '["movies", "friends", "running"]', 
-    -22.91101, -43.20937, 90001, 'Brazil', 'Rio de Janeiro'),
+    -22.91101, -43.20937, 90001, 'Brazil', 'Rio de Janeiro', getdate()),
 
     (newid(), 'lcarrol' + CAST(@i as nvarchar(2)), 'lcarrol' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Lika', 'Carrol', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 0, 0, '01-01-1999', 'I like running and spend time with my friends', '["sport", "friends", "running"]', 
-    48.856613, 2.352222, 90001, 'France', 'Paris'),
+    48.856613, 2.352222, 90001, 'France', 'Paris', getdate()),
 
     (newid(), 'pfluery' + CAST(@i as nvarchar(2)), 'pfluery' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Pierre', 'Fleury', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 0, 1, '01-01-1995', 'I like running and spend time with my friends', '["sport", "friends", "geek"]', 
-    55.78235, 49.12423, 90001, 'Russia', 'Kazan'),
+    55.78235, 49.12423, 90001, 'Russia', 'Kazan', getdate()),
 
     (newid(), 'ljouli' + CAST(@i as nvarchar(2)), 'ljouli' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Loran', 'Jouli', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 0, 2, '01-01-2000', 'I like running and spend time with my friends', '["sport", "friends", "geek"]', 
-    40.71273, -74.00602, 90001, 'USA', 'New York'),
+    40.71273, -74.00602, 90001, 'USA', 'New York', getdate()),
 
     (newid(), 'ybaque' + CAST(@i as nvarchar(2)), 'ybaque' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Yasmine', 'Baque', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 2, 0, '01-01-2002', 'I like running and spend time with my friends', '["food", "friends", "geek"]', 
-    41.00638, 28.97587, 90001, 'Turkey', 'Istanbul'),
+    41.00638, 28.97587, 90001, 'Turkey', 'Istanbul', getdate()),
 
     (newid(), 'ajolie' + CAST(@i as nvarchar(2)), 'ajoli' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Angelina', 'Jolie', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 2, 1, '01-01-1988', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
-    48.573406, 7.752111, 90001, 'France', 'Strasbourg'),
+    48.573406, 7.752111, 90001, 'France', 'Strasbourg', getdate()),
 
     (newid(), 'tkami' + CAST(@i as nvarchar(2)), 'tkami' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Tamara', 'Kami', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 2, 2, '01-01-2000', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
-    59.913868, 10.752245, 90001, 'Sweden', 'Stockholm'),
+    59.913868, 10.752245, 90001, 'Sweden', 'Stockholm', getdate()),
 
     (newid(), 'cjambou' + CAST(@i as nvarchar(2)), 'cjambou' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Clement', 'Jambou', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 0, 0, '01-01-1970', 'I like running and spend time with my friends', '["coding", "vegan", "movie"]', 
-    52.520008, 13.404954, 90001, 'Germany', 'Berlin'),
+    52.520008, 13.404954, 90001, 'Germany', 'Berlin', getdate()),
 
     (newid(), 'malan' + CAST(@i as nvarchar(2)), 'malan' + CAST(@i as nvarchar(2)) + '@mail.com', 
     'Morgan', 'Alan', 'xeZeHwXF7CWXdGcZg9cfnw==;nLMydQ9dX1D+pHqviwgt6LgW0GVaYy2UADSi8ZPYG+Q=', 
     null, getdate(), null, null, null, getdate(), 
     null, null, 1, 'Images/dummy.jpg', 
     null, 2, 1, '01-01-2003', 'I like running and spend time with my friends', '["sport", "friends", "geek"]', 
-    43.29617, 5.36995, 90001, 'France', 'Marseille')
+    43.29617, 5.36995, 90001, 'France', 'Marseille', getdate())
 END;
 
 GO

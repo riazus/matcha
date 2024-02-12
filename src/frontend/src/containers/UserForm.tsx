@@ -1,36 +1,41 @@
-import { IconButton, Typography, Tooltip } from "@mui/material";
-import { useParams } from "react-router-dom";
-import { useAppDispatch } from "../app/hooks/hooks";
-import { Button, Box, Avatar } from "@mui/material";
+import { HubConnectionState } from "@microsoft/signalr";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FemaleIcon from "@mui/icons-material/Female";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import MaleIcon from "@mui/icons-material/Male";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import MobileStepper from "@mui/material/MobileStepper";
+import { useTheme } from "@mui/material/styles";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import ChatModal from "./ChatModal";
+import { useParams } from "react-router-dom";
+import { useGetUserByIdQuery } from "../app/api/api";
+import { useAppDispatch } from "../app/hooks/hooks";
 import {
   removeInterlocuterId,
   setInterlocuterId,
 } from "../app/slices/currentUserSlice";
-import { useGetUserByIdQuery } from "../app/api/api";
 import FullScreenLoader from "../components/FullScreenLoader";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { NotificationEvent } from "../config";
 import {
   emitNotificationConnectionEvent,
   getNotificationConnection,
 } from "../sockets/notificationConnection";
-import { HubConnectionState } from "@microsoft/signalr";
-import { NotificationEvent } from "../config";
-import { title } from "../styles/textStyles";
-import MaleIcon from "@mui/icons-material/Male";
-import FemaleIcon from "@mui/icons-material/Female";
 import { matchaColors } from "../styles/colors";
-import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
-import CreateEventModal from "./CreateEventModal";
-import { interrestsButton } from "../styles/textStyles";
+import { interrestsButton, title } from "../styles/textStyles";
 import BlockAndReportButtons from "./BlockAndReportButtons";
-import { useTheme } from '@mui/material/styles';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import MobileStepper from '@mui/material/MobileStepper';
-
+import ChatModal from "./ChatModal";
+import CreateEventModal from "./CreateEventModal";
+import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -48,7 +53,10 @@ function UserForm() {
     isError,
   } = useGetUserByIdQuery(idFromParams!);
   const [activeStep, setActiveStep] = useState<number>(0);
-  const maxSteps = formData?.additionalPicturesUrl === null ? 0 : formData?.additionalPicturesUrl.length;
+  const maxSteps =
+    formData?.additionalPicturesUrl === null
+      ? 0
+      : formData?.additionalPicturesUrl.length;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
@@ -57,7 +65,6 @@ function UserForm() {
   const handleBack = () => {
     setActiveStep((prevActiveStep: number) => prevActiveStep - 1);
   };
-
 
   useEffect(() => {
     if (chatOpen) {
@@ -161,6 +168,16 @@ function UserForm() {
           </Typography>
         </Box>
 
+        {/* Modify this code */}
+        {formData!.lastConnectionDate ? (
+          <Typography>
+            Last connection date:{" "}
+            {dayjs(formData!.lastConnectionDate).toString()}
+          </Typography>
+        ) : (
+          <Typography>I'm connected!</Typography>
+        )}
+
         <Box sx={styles.avatarBox}>
           <Avatar
             src={formData!.profilePictureUrl}
@@ -179,14 +196,14 @@ function UserForm() {
           </Box>
         </Box>
 
-
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}{" "}
           years old
         </Box>
 
-        {formData!.additionalPicturesUrl && formData!.additionalPicturesUrl.length !== 0?
+        {formData!.additionalPicturesUrl &&
+        formData!.additionalPicturesUrl.length !== 0 ? (
           <Box sx={styles.stepperBox}>
             <Box sx={styles.imgBox}>
               <img
@@ -209,7 +226,7 @@ function UserForm() {
                   disabled={maxSteps ? activeStep === maxSteps - 1 : true}
                 >
                   Next
-                  {theme.direction === 'rtl' ? (
+                  {theme.direction === "rtl" ? (
                     <KeyboardArrowLeft />
                   ) : (
                     <KeyboardArrowRight />
@@ -217,8 +234,13 @@ function UserForm() {
                 </Button>
               }
               backButton={
-                <Button key={`backButton-${activeStep}`} size="small" onClick={handleBack} disabled={activeStep === 0}>
-                  {theme.direction === 'rtl' ? (
+                <Button
+                  key={`backButton-${activeStep}`}
+                  size="small"
+                  onClick={handleBack}
+                  disabled={activeStep === 0}
+                >
+                  {theme.direction === "rtl" ? (
                     <KeyboardArrowRight />
                   ) : (
                     <KeyboardArrowLeft />
@@ -227,7 +249,8 @@ function UserForm() {
                 </Button>
               }
             />
-          </Box> : null}
+          </Box>
+        ) : null}
 
         <Box sx={styles.description}>
           {formData!.description === ""
@@ -244,7 +267,9 @@ function UserForm() {
           }}
         >
           {formData?.tags.map((tag, index) => (
-            <Button key={`tag-${index}`} sx={interrestsButton}>{tag}</Button>
+            <Button key={`tag-${index}`} sx={interrestsButton}>
+              {tag}
+            </Button>
           ))}
         </Box>
         <BlockAndReportButtons profileId={formData!.id} />
@@ -419,7 +444,7 @@ const styles = {
     fontFamily: "Roboto",
     fontWeight: "800",
     fontSize: "15px",
-    margin: "2%"
+    margin: "2%",
   },
   unblockButton: {
     color: "black",
@@ -444,7 +469,7 @@ const styles = {
   },
   genderAndLocationBox: {
     marginLeft: "10%",
-    marginTop: "10%"
+    marginTop: "10%",
   },
   locationText: {
     fontFamily: "Roboto",
@@ -456,22 +481,22 @@ const styles = {
     margin: "3%",
     fontSize: "20px",
     fontWeight: "700",
-    width: "100%"
+    width: "100%",
   },
   stepperBox: {
     height: "100%",
     border: "1px solid black",
-    boxShadow: "5px 5px black"
+    boxShadow: "5px 5px black",
   },
-  imgBox: {  
-    width: '100%',
+  imgBox: {
+    width: "100%",
     height: "100%",
-    p: 0.5
+    p: 0.5,
   },
   img: {
-    width: '100%', 
-    height: '100%',
-  }
+    width: "100%",
+    height: "100%",
+  },
 };
 
 export default UserForm;

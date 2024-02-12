@@ -35,7 +35,7 @@ public class NotificationHub : ApplicationHub
         _blockedProfileService = blockedProfileService;
     }
 
-    public override Task OnConnectedAsync()
+    public async override Task OnConnectedAsync()
     {
         var currUserId = CurrentAccountId;
 
@@ -49,12 +49,19 @@ public class NotificationHub : ApplicationHub
             }
         );
 
-        return base.OnConnectedAsync();
+        await Clients.Others.SendAsync(NotificationEvent.UserConnected, currUserId);
+
+        var currAcc = _accountRepository.Get(currUserId);
+        currAcc.LastConnectionDate = null;
+        _accountRepository.Update(currAcc);
+
+        await base.OnConnectedAsync();
     }
 
-    public override Task OnDisconnectedAsync(Exception exception)
+    public async override Task OnDisconnectedAsync(Exception exception)
     {
         var userId = CurrentAccountId;
+        var lastConnectionDate = DateTime.Now;
 
         if (_connectedNotificationClients.TryGetValue(userId, out var connectionIds))
         {
@@ -66,7 +73,13 @@ public class NotificationHub : ApplicationHub
             }
         }
 
-        return base.OnDisconnectedAsync(exception);
+        await Clients.Others.SendAsync(NotificationEvent.UserDisconnected, userId, lastConnectionDate);
+
+        var currAcc = _accountRepository.Get(userId);
+        currAcc.LastConnectionDate = lastConnectionDate;
+        _accountRepository.Update(currAcc);
+
+        await base.OnDisconnectedAsync(exception);
     }
 
     public async Task LikeProfile(string likedAccountId)
