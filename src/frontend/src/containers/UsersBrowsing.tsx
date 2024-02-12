@@ -1,4 +1,6 @@
-import Typography from "@mui/material/Typography";
+import { Favorite } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
+import InfoIcon from "@mui/icons-material/Info";
 import {
   Box,
   Button,
@@ -8,17 +10,15 @@ import {
   CardMedia,
   Tooltip,
 } from "@mui/material";
-import { useGetBrowsingUsersWithFiltersQuery, api } from "../app/api/api";
-import { Favorite } from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
-import InfoIcon from "@mui/icons-material/Info";
+import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
+import { api, useGetBrowsingUsersWithFiltersQuery } from "../app/api/api";
 import { useAppDispatch, useAppSelector } from "../app/hooks/hooks";
-import FullScreenLoader from "../components/FullScreenLoader";
-import Filter from "../components/Filter";
-import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
-import { NotificationEvent } from "../config";
 import { increaseBrowsingPage } from "../app/slices/currentUserSlice";
+import Filter from "../components/Filter";
+import FullScreenLoader from "../components/FullScreenLoader";
+import { NotificationEvent } from "../config";
+import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { matchaColors } from "../styles/colors";
 import { title } from "../styles/textStyles";
 
@@ -94,6 +94,17 @@ function UsersBrowsing() {
                     new Date(data[0].birthday).getFullYear()}{" "}
                   years old
                 </Typography>
+
+                {/* Modify this code */}
+                {data[0].lastConnectionDate ? (
+                  <Typography>
+                    Last connection date:{" "}
+                    {data[0].lastConnectionDate}
+                  </Typography>
+                ) : (
+                  <Typography>I'm connected!</Typography>
+                )}
+
                 <Typography variant="body2" sx={styles.userInfo}>
                   {data[0].town ?? ""} {data[0].country ?? ""}
                 </Typography>

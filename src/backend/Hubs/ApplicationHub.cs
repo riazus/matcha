@@ -37,6 +37,8 @@ public class ApplicationHub : Hub
         public const string UnblockProfile = "UnblockProfile";
         public const string ProfileBlocked = "ProfileBlocked";
         public const string MyProfileWasBlocked = "MyProfileWasBlocked";
+        public const string UserConnected = "UserConnected";
+        public const string UserDisconnected = "UserDisconnected";
     }
 
     public static class ChatEvent

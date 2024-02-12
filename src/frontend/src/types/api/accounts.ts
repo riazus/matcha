@@ -103,6 +103,8 @@ export interface AccountsResponse {
   longitude: number;
   tags: string[];
   fameRating: number;
+  // did with string because redux not accept unserializetable types
+  lastConnectionDate: string | undefined;
 }
 
 export interface AccountResponse {
@@ -128,6 +130,8 @@ export interface AccountResponse {
   isProfilesMatched: boolean;
   isBlockedMe: boolean;
   isBlockedByMe: boolean;
+  // did with string because redux not accept unserializetable types
+  lastConnectionDate: string | undefined;
 }
 
 export interface Pictures {

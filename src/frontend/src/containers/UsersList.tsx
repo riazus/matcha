@@ -105,7 +105,8 @@ function UsersList() {
                   <ListItemText
                     sx={{fontWeight: "bold", fontSize: "18px", fontFamily: "Roboto"}}
                     primary={user.username}
-                    secondary={`${ user.town ?? ""} ${user.country ?? ""}`}
+                    // Modify this code
+                    secondary={`${ user.town ?? ""} ${user.country ?? ""} | ${user.lastConnectionDate ? user.lastConnectionDate : "I'm connected!"}`}
                   />
                   <Badge badgeContent={fameRating[ind]} color="primary">
                     <Typography>⭐</Typography>

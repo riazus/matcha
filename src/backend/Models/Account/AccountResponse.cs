@@ -26,4 +26,5 @@ public class AccountResponse
     public bool IsProfilesMatched { get; set; }
     public bool IsBlockedMe { get; set; } = false;
     public bool IsBlockedByMe { get; set; } = false;
+    public DateTime? LastConnectionDate { get; set; }
 }

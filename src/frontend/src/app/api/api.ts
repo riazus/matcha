@@ -5,6 +5,7 @@ import {
   createApi,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
+import { Mutex } from "async-mutex";
 import {
   ACCOUNT_ROUTES,
   API_BASE_URL,
@@ -14,41 +15,40 @@ import {
   NotificationEvent,
   SCHEDULED_EVENT_ROUTES,
 } from "../../config";
-import {
-  GenericResponse,
-  RegisterBody,
-  LoginBody,
-  RefreshTokenResponse,
-  ForgotPasswordBody,
-  ResetPasswordBody,
-  VerifyEmailBody,
-  CompleteProfileBody,
-  convertCompleteProfileBodyToFormData,
-  AccountsResponse,
-  AccountResponse,
-  CompleteProfileResponse,
-  Pictures,
-  SettingsDataResponse,
-  UpdateProfileSettings,
-  UpdatePasswordBody,
-  ChangeProfilePictureResponse,
-  Location,
-  IpAddressResponse,
-  Coord,
-  NamesBody,
-} from "../../types/api/accounts";
-import { RootState } from "../store";
-import { Mutex } from "async-mutex";
-import { loggedOut, setCurrentUserState } from "../slices/currentUserSlice";
-import { MessageRequest, MessageDataResponse } from "../../types/api/message";
-import { NotificationsResponse } from "../../types/api/notification";
-import { getNotificationConnection } from "../../sockets/notificationConnection";
 import { getChatConnection } from "../../sockets/chatConnection";
-import { Filter } from "../../types/slices/currentUser";
+import { getNotificationConnection } from "../../sockets/notificationConnection";
+import {
+  AccountResponse,
+  AccountsResponse,
+  ChangeProfilePictureResponse,
+  CompleteProfileBody,
+  CompleteProfileResponse,
+  Coord,
+  ForgotPasswordBody,
+  GenericResponse,
+  IpAddressResponse,
+  Location,
+  LoginBody,
+  NamesBody,
+  Pictures,
+  RefreshTokenResponse,
+  RegisterBody,
+  ResetPasswordBody,
+  SettingsDataResponse,
+  UpdatePasswordBody,
+  UpdateProfileSettings,
+  VerifyEmailBody,
+  convertCompleteProfileBodyToFormData,
+} from "../../types/api/accounts";
+import { MessageDataResponse, MessageRequest } from "../../types/api/message";
+import { NotificationsResponse } from "../../types/api/notification";
 import {
   ScheduledEventRequest,
   ScheduledEventResponse,
 } from "../../types/api/scheduledEvent";
+import { Filter } from "../../types/slices/currentUser";
+import { loggedOut, setCurrentUserState } from "../slices/currentUserSlice";
+import { RootState } from "../store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -377,6 +377,28 @@ export const api = createApi({
             }));
           });
 
+          connection?.on(NotificationEvent.UserConnected, (userId: string) => {
+            updateCachedData((draft) => {
+              if (draft.id === userId) {
+                return { ...draft, lastConnectionDate: undefined };
+              }
+            });
+          });
+
+          connection?.on(
+            NotificationEvent.UserDisconnected,
+            (userId: string, lastConnectionDate: string) => {
+              updateCachedData((draft) => {
+                if (draft.id === userId) {
+                  return {
+                    ...draft,
+                    lastConnectionDate: lastConnectionDate,
+                  };
+                }
+              });
+            }
+          );
+
           await cacheEntryRemoved;
 
           connection?.off(NotificationEvent.LikeProfile);
@@ -386,6 +408,8 @@ export const api = createApi({
           connection?.off(NotificationEvent.ProfileBlocked);
           connection?.off(NotificationEvent.MyProfileWasBlocked);
           connection?.off(NotificationEvent.UnblockProfile);
+          connection?.off(NotificationEvent.UserConnected);
+          connection?.off(NotificationEvent.UserDisconnected);
         } catch (err) {
           console.error(err);
         }
@@ -512,6 +536,52 @@ export const api = createApi({
             JSON.stringify(previousArg.filter)
         );
       },
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          // TODO: this is wrong!!! Need to replace this query in the another file
+          const connection = getNotificationConnection();
+
+          connection?.on(NotificationEvent.UserConnected, (userId: string) => {
+            updateCachedData((draft) =>
+              draft.map((acc) => {
+                if (acc.id === userId) {
+                  return { ...acc, lastConnectionDate: undefined };
+                }
+                return acc;
+              })
+            );
+          });
+
+          connection?.on(
+            NotificationEvent.UserDisconnected,
+            (userId: string, lastConnectionDate: string) => {
+              updateCachedData((draft) =>
+                draft.map((acc) => {
+                  if (acc.id === userId) {
+                    return {
+                      ...acc,
+                      lastConnectionDate: lastConnectionDate,
+                    };
+                  }
+                  return acc;
+                })
+              );
+            }
+          );
+
+          await cacheEntryRemoved;
+
+          connection?.off(NotificationEvent.UserConnected);
+          connection?.off(NotificationEvent.UserDisconnected);
+        } catch (err) {
+          console.error(err);
+        }
+      },
     }),
     getBrowsingUsersWithFilters: builder.query<
       AccountsResponse[],
@@ -539,6 +609,52 @@ export const api = createApi({
           JSON.stringify(currentArg.filter) !==
             JSON.stringify(previousArg.filter)
         );
+      },
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          // TODO: this is wrong!!! Need to replace this query in the another file
+          const connection = getNotificationConnection();
+
+          connection?.on(NotificationEvent.UserConnected, (userId: string) => {
+            updateCachedData((draft) =>
+              draft.map((acc) => {
+                if (acc.id === userId) {
+                  return { ...acc, lastConnectionDate: undefined };
+                }
+                return acc;
+              })
+            );
+          });
+
+          connection?.on(
+            NotificationEvent.UserDisconnected,
+            (userId: string, lastConnectionDate: string) => {
+              updateCachedData((draft) =>
+                draft.map((acc) => {
+                  if (acc.id === userId) {
+                    return {
+                      ...acc,
+                      lastConnectionDate: lastConnectionDate,
+                    };
+                  }
+                  return acc;
+                })
+              );
+            }
+          );
+
+          await cacheEntryRemoved;
+
+          connection?.off(NotificationEvent.UserConnected);
+          connection?.off(NotificationEvent.UserDisconnected);
+        } catch (err) {
+          console.error(err);
+        }
       },
     }),
     getSettingsData: builder.query<SettingsDataResponse, void>({

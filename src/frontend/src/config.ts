@@ -108,6 +108,8 @@ export enum NotificationEvent {
   UnblockProfile = "UnblockProfile",
   ProfileBlocked = "ProfileBlocked",
   MyProfileWasBlocked = "MyProfileWasBlocked",
+  UserConnected = "UserConnected",
+  UserDisconnected = "UserDisconnected",
 }
 
 export enum ChatEvent {
