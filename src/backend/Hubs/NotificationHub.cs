@@ -85,7 +85,7 @@ public class NotificationHub : ApplicationHub
 
         var newNotify = _notificationService.AddProfileLiked(acc.Username, parsedLikedAccountId);
 
-        await sendLikeProfileEvent(currUserId);
+        await sendLikeProfileEvent(currUserId, _mapper.Map(likedAcc, new AccountsResponse()));
 
         await sendAddNotification(parsedLikedAccountId, newNotify);
 
@@ -293,13 +293,13 @@ public class NotificationHub : ApplicationHub
         }
     }
 
-    private async Task sendLikeProfileEvent(Guid toUserId)
+    private async Task sendLikeProfileEvent(Guid toUserId, AccountsResponse likedProfile)
     {
         if (_connectedNotificationClients.TryGetValue(toUserId, out var connectionIds))
         {
             foreach (var connectionId in connectionIds)
             {
-                await Clients.Client(connectionId).SendAsync(NotificationEvent.LikeProfile);
+                await Clients.Client(connectionId).SendAsync(NotificationEvent.LikeProfile, likedProfile);
             }
         }
     }

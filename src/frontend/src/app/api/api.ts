@@ -223,6 +223,32 @@ export const api = createApi({
     }),
     getFavoriteProfiles: builder.query<AccountsResponse[], void>({
       query: () => ({ url: ACCOUNT_ROUTES.FAVORITES }),
+      async onCacheEntryAdded(
+        _,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData }
+      ) {
+        try {
+          await cacheDataLoaded;
+
+          // TODO: this is wrong!!! Need to replace this query in the another file
+          const connection = getNotificationConnection();
+
+          connection?.on(
+            NotificationEvent.LikeProfile,
+            (acc: AccountsResponse) => {
+              updateCachedData((draft) => {
+                draft.push(acc);
+              });
+            }
+          );
+
+          await cacheEntryRemoved;
+
+          connection?.off(NotificationEvent.LikeProfile);
+        } catch (err) {
+          console.error(err);
+        }
+      },
     }),
     setLike: builder.mutation<void, string>({
       query: (id) => ({ url: ACCOUNT_ROUTES.LIKE(id), method: "POST" }),
