@@ -79,7 +79,6 @@ function ChangeProfileSettings({
   };
 
   const handleSubmitChanges = () => {
-    console.log("description : ", profileData.description)
     if (!tags || tags.length < 1) {
       toast.error("You need provide at least one hobbie");
       return;

@@ -67,7 +67,7 @@ function ProfilePicturesUploading({
             }}
         >
           <Button component="label">
-            <DriveFileRenameOutlineIcon fontSize="large" />
+            <DriveFileRenameOutlineIcon sx={styles.icon}  />
             <VisuallyHiddenInput
               type="file"
               accept={ACCEPTED_IMAGE_TYPES}
@@ -103,7 +103,7 @@ function ProfilePicturesUploading({
           >
             {!pictures[index] && (index === 0 || pictures[index - 1]) ? (
               <Button component="label">
-                <AddCircleOutlineIcon fontSize="large" />
+                <AddCircleOutlineIcon sx={styles.icon} />
                 <VisuallyHiddenInput
                   type="file"
                   accept={ACCEPTED_IMAGE_TYPES}
@@ -112,7 +112,7 @@ function ProfilePicturesUploading({
               </Button>
             ) : pictures[index] ? (
               <Button onClick={() => suppressPictureUploaded(index)}>
-                <RemoveCircleOutlineIcon fontSize="large" />
+                <RemoveCircleOutlineIcon sx={styles.icon} />
               </Button>
             ) : null}
           </div>
@@ -131,21 +131,27 @@ const styles = {
     gap: "10px",
   },
   onePictureBox: {
+    display: "flex",
     margin: "1%",
     backgroundColor: "rgb(255, 255, 255, 0.3)",
     height: "25vh",
-    width: "15%",
+    width: "20%",
     borderRadius: "10px",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
+    backgroundPosition: "center",
+
   },
   labelText: {
     marginLeft: "10px",
     fontWeight: 900,
     fontFamily: "Roboto, Arial, Helvetica, sans-serif",
   },
+  icon: {
+    fontSize: "20px"
+  }
 };
 
 export default memo(ProfilePicturesUploading);

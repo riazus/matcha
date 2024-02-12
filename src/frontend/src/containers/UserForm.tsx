@@ -25,8 +25,12 @@ import { matchaColors } from "../styles/colors";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
 import CreateEventModal from "./CreateEventModal";
 import { interrestsButton } from "../styles/textStyles";
-import ScrollCarousel from 'scroll-carousel-react';
 import BlockAndReportButtons from "./BlockAndReportButtons";
+import { useTheme } from '@mui/material/styles';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import MobileStepper from '@mui/material/MobileStepper';
+
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -36,12 +40,24 @@ function UserForm() {
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [refreshChatRequested, setRefreshChatRequested] = useState(false);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const theme = useTheme();
   const {
     data: formData,
     isLoading,
     isSuccess,
     isError,
   } = useGetUserByIdQuery(idFromParams!);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const maxSteps = formData?.additionalPicturesUrl === null ? 0 : formData?.additionalPicturesUrl.length;
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep: number) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep: number) => prevActiveStep - 1);
+  };
+
 
   useEffect(() => {
     if (chatOpen) {
@@ -139,6 +155,12 @@ function UserForm() {
       <Box sx={styles.userBox}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
+        <Box>
+          <Typography sx={styles.nameText}>
+            {formData!.firstName} {formData!.lastName}
+          </Typography>
+        </Box>
+
         <Box sx={styles.avatarBox}>
           <Avatar
             src={formData!.profilePictureUrl}
@@ -157,30 +179,55 @@ function UserForm() {
           </Box>
         </Box>
 
+
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}{" "}
           years old
         </Box>
-        <Box sx={styles.carouselBox}>
-          {formData?.additionalPicturesUrl ? (
-            <ScrollCarousel
-            autoplay
-            autoplaySpeed={8}
-            speed={7}
-            >
-              {formData?.additionalPicturesUrl.map((item, index) => (
-                <div key={index} style={{ width: 300, height: 300}}>
-                  <img
-                    src={item}
-                    alt={`Img ${index}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
-              ))}
-            </ScrollCarousel>
-          ) : null}
-        </Box>
+
+        {formData!.additionalPicturesUrl && formData!.additionalPicturesUrl.length !== 0?
+          <Box sx={styles.stepperBox}>
+            <Box sx={styles.imgBox}>
+              <img
+                src={formData!.additionalPicturesUrl[activeStep]}
+                alt={`${activeStep}`}
+                style={styles.img}
+              />
+            </Box>
+            <MobileStepper
+              key={`stepper-${maxSteps}`}
+              variant="text"
+              steps={maxSteps ? maxSteps : 0}
+              position="static"
+              activeStep={activeStep}
+              nextButton={
+                <Button
+                  key={`nextButton-${activeStep}`}
+                  size="small"
+                  onClick={handleNext}
+                  disabled={maxSteps ? activeStep === maxSteps - 1 : true}
+                >
+                  Next
+                  {theme.direction === 'rtl' ? (
+                    <KeyboardArrowLeft />
+                  ) : (
+                    <KeyboardArrowRight />
+                  )}
+                </Button>
+              }
+              backButton={
+                <Button key={`backButton-${activeStep}`} size="small" onClick={handleBack} disabled={activeStep === 0}>
+                  {theme.direction === 'rtl' ? (
+                    <KeyboardArrowRight />
+                  ) : (
+                    <KeyboardArrowLeft />
+                  )}
+                  Back
+                </Button>
+              }
+            />
+          </Box> : null}
 
         <Box sx={styles.description}>
           {formData!.description === ""
@@ -196,8 +243,8 @@ function UserForm() {
             flexWrap: "wrap",
           }}
         >
-          {formData?.tags.map((tag) => (
-            <Button sx={interrestsButton}>{tag}</Button>
+          {formData?.tags.map((tag, index) => (
+            <Button key={`tag-${index}`} sx={interrestsButton}>{tag}</Button>
           ))}
         </Box>
         <BlockAndReportButtons profileId={formData!.id} />
@@ -369,10 +416,10 @@ const styles = {
     },
   },
   birthday: {
-    color: matchaColors.yellowlight,
     fontFamily: "Roboto",
     fontWeight: "800",
-    fontSize: "2rem",
+    fontSize: "15px",
+    margin: "2%"
   },
   unblockButton: {
     color: "black",
@@ -396,17 +443,34 @@ const styles = {
     flexDirection: "row",
   },
   genderAndLocationBox: {
-    marginLeft: "5%",
+    marginLeft: "10%",
+    marginTop: "10%"
   },
   locationText: {
+    fontFamily: "Roboto",
     fontSize: "18px",
     fontWeight: 700,
   },
-  carouselBox: {
-    width: 250,
-    height: 250,
-    overflow: "hidden",
-
+  nameText: {
+    fontFamily: "Roboto",
+    margin: "3%",
+    fontSize: "20px",
+    fontWeight: "700",
+    width: "100%"
+  },
+  stepperBox: {
+    height: "100%",
+    border: "1px solid black",
+    boxShadow: "5px 5px black"
+  },
+  imgBox: {  
+    width: '100%',
+    height: "100%",
+    p: 0.5
+  },
+  img: {
+    width: '100%', 
+    height: '100%',
   }
 };
 

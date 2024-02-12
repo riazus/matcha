@@ -9,7 +9,8 @@ import {
 import { AccountsResponse } from "../types/api/accounts";
 import { matchaColors } from "../styles/colors";
 
-export default function ProfileViewDisplay({ viewProfiles }: { viewProfiles: AccountsResponse[] | undefined}) {
+export default function ProfileViewDisplay({ viewProfiles }: { viewProfiles: AccountsResponse[] | undefined }) {
+
   return (
     <Box sx={styles.containerBox}>
       <List dense={true}>
@@ -17,9 +18,9 @@ export default function ProfileViewDisplay({ viewProfiles }: { viewProfiles: Acc
           return (
             <ListItem key={ind} sx={styles.userList}>
               <ListItemAvatar>
-                <Avatar alt={item.username} src={item.profilePictureUrl} />
+                <Avatar alt={item?.username} src={item?.profilePictureUrl} />
               </ListItemAvatar>
-              <ListItemText primary={item.username} />
+              <ListItemText primary={item?.username} />
             </ListItem>
           );
         })}
@@ -40,6 +41,6 @@ const styles = {
     borderRadius: "10px",
     backgroundColor: "#FFFFFF",
     margin: "5%",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   }
 };

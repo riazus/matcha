@@ -56,8 +56,8 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
 
       if (checkedLocation === false) {
         dispatch(resetFilterDistance());
-        toast.success(`Localisation has been disabled`);
-      } else {
+        toast.success(`Location has been disabled`);
+      } else if (newLocation.country !== undefined) {
         toast.success(
           `Location successfully changed to ${
             newLocation.town ? newLocation.town : ""
@@ -114,16 +114,16 @@ function ChangeLocationSettings({ user }: { user: UserState | null }) {
       />
       {checkedLocation === true && (
         <>
-          <Typography>Click on the map to change your location :</Typography>
+          <Typography sx={styles.clickText}>Click on the map to change your location :</Typography>
           <Box sx={styles.location}>
             <OpenStreetMap setAddressData={handleChangeLocation} />
           </Box>
           {newLocation ? (
-            <Typography>{`You are located in ${newLocation.town || ""} ${
+            <Typography >{`You are located in ${newLocation.town || ""} ${
               newLocation.country
             }`}</Typography>
           ) : user?.country ? (
-            <Typography>{`You are located in ${user?.town || ""} ${
+            <Typography sx={styles.locationText}>{`You are located in ${user?.town || ""} ${
               user?.country
             }`}</Typography>
           ) : null}
@@ -143,6 +143,14 @@ const styles = {
     width: "90%",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
   },
+  locationText: {
+    margin: "5%",
+  },
+  clickText: {
+    margin: "2%",
+    fontWeight: "700",
+    
+  }
 };
 
 export default ChangeLocationSettings;
