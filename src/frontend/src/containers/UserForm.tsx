@@ -191,7 +191,7 @@ function UserForm() {
             <Box sx={styles.imgBox}>
               <img
                 src={formData!.additionalPicturesUrl[activeStep]}
-                alt={`Image ${activeStep}`}
+                alt={`${activeStep}`}
                 style={styles.img}
               />
             </Box>
