@@ -142,17 +142,19 @@ function SettingsForm() {
           {user?.username}
         </Typography>
 
-        <Box component="form" onSubmit={handleNamesUpdate}>
+        <Box sx={styles.nameBox} component="form" onSubmit={handleNamesUpdate}>
           <Input
+            sx={{width: "30%", fontWeight: "800"}}
             value={names?.firstName}
             onChange={handleFirstNameChange}
           ></Input>
           <Input
+            sx={{marginLeft: "15px", width: "30%",fontWeight: "800"}}
             value={names?.lastName}
             onChange={handleLastNameChange}
           ></Input>
           <LoadingButton type="submit" loading={isUpdateNamesLoading}>
-            <DriveFileRenameOutlineIcon />
+            <DriveFileRenameOutlineIcon sx={{color: matchaColors.yellow}}/>
           </LoadingButton>
         </Box>
 
@@ -257,6 +259,12 @@ const styles = {
       backgroundColor: matchaColors.yellowlight,
     },
   },
+  nameBox: {
+    margin: "3%",
+    width: "65%",
+    display: "flex",
+    padding: "1%",
+  }
 };
 
 export default SettingsForm;

@@ -155,6 +155,12 @@ function UserForm() {
       <Box sx={styles.userBox}>
         <Typography sx={title}>{formData!.username}'s profile</Typography>
 
+        <Box>
+          <Typography sx={styles.nameText}>
+            {formData!.firstName} {formData!.lastName}
+          </Typography>
+        </Box>
+
         <Box sx={styles.avatarBox}>
           <Avatar
             src={formData!.profilePictureUrl}
@@ -173,19 +179,20 @@ function UserForm() {
           </Box>
         </Box>
 
+
         <Box sx={styles.birthday}>
           {new Date().getFullYear() -
             new Date(formData!.birthday).getFullYear()}{" "}
           years old
         </Box>
 
-        {formData!.additionalPicturesUrl ?
-          <Box key="image-stepper" sx={{ maxWidth: 400, flexGrow: 1 }}>
-            <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
+        {formData!.additionalPicturesUrl && formData!.additionalPicturesUrl.length !== 0?
+          <Box sx={styles.stepperBox}>
+            <Box sx={styles.imgBox}>
               <img
                 src={formData!.additionalPicturesUrl[activeStep]}
                 alt={`Image ${activeStep}`}
-                style={{ width: '100%', height: 'auto' }}
+                style={styles.img}
               />
             </Box>
             <MobileStepper
@@ -409,10 +416,10 @@ const styles = {
     },
   },
   birthday: {
-    color: matchaColors.yellowlight,
     fontFamily: "Roboto",
     fontWeight: "800",
-    fontSize: "2rem",
+    fontSize: "15px",
+    margin: "2%"
   },
   unblockButton: {
     color: "black",
@@ -436,17 +443,34 @@ const styles = {
     flexDirection: "row",
   },
   genderAndLocationBox: {
-    marginLeft: "5%",
+    marginLeft: "10%",
+    marginTop: "10%"
   },
   locationText: {
+    fontFamily: "Roboto",
     fontSize: "18px",
     fontWeight: 700,
   },
-  carouselBox: {
-    width: 250,
-    height: 250,
-    overflow: "hidden",
-
+  nameText: {
+    fontFamily: "Roboto",
+    margin: "3%",
+    fontSize: "20px",
+    fontWeight: "700",
+    width: "100%"
+  },
+  stepperBox: {
+    height: "100%",
+    border: "1px solid black",
+    boxShadow: "5px 5px black"
+  },
+  imgBox: {  
+    width: '100%',
+    height: "100%",
+    p: 0.5
+  },
+  img: {
+    width: '100%', 
+    height: '100%',
   }
 };
 
