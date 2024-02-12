@@ -21,7 +21,6 @@ import { NotificationEvent } from "../config";
 import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { matchaColors } from "../styles/colors";
 import { title } from "../styles/textStyles";
-import dayjs from "dayjs";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -95,14 +94,17 @@ function UsersBrowsing() {
                     new Date(data[0].birthday).getFullYear()}{" "}
                   years old
                 </Typography>
+
+                {/* Modify this code */}
                 {data[0].lastConnectionDate ? (
-                  <Typography>I'm connected!</Typography>
-                ) : (
                   <Typography>
                     Last connection date:{" "}
-                    {dayjs(data[0]!.lastConnectionDate).toString()}
+                    {data[0].lastConnectionDate}
                   </Typography>
+                ) : (
+                  <Typography>I'm connected!</Typography>
                 )}
+
                 <Typography variant="body2" sx={styles.userInfo}>
                   {data[0].town ?? ""} {data[0].country ?? ""}
                 </Typography>

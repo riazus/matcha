@@ -560,7 +560,7 @@ export const api = createApi({
           connection?.on(
             NotificationEvent.UserDisconnected,
             (userId: string, lastConnectionDate: string) => {
-              updateCachedData((draft) => {
+              updateCachedData((draft) =>
                 draft.map((acc) => {
                   if (acc.id === userId) {
                     return {
@@ -569,8 +569,8 @@ export const api = createApi({
                     };
                   }
                   return acc;
-                });
-              });
+                })
+              );
             }
           );
 
@@ -634,7 +634,7 @@ export const api = createApi({
           connection?.on(
             NotificationEvent.UserDisconnected,
             (userId: string, lastConnectionDate: string) => {
-              updateCachedData((draft) => {
+              updateCachedData((draft) =>
                 draft.map((acc) => {
                   if (acc.id === userId) {
                     return {
@@ -643,8 +643,8 @@ export const api = createApi({
                     };
                   }
                   return acc;
-                });
-              });
+                })
+              );
             }
           );
 

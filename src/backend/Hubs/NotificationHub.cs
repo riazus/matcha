@@ -1,4 +1,4 @@
-using Backend.Entities;
+﻿using Backend.Entities;
 using Backend.Helpers;
 using Backend.Repositories;
 using Backend.Services;
@@ -51,7 +51,7 @@ public class NotificationHub : ApplicationHub
 
         await Clients.Others.SendAsync(NotificationEvent.UserConnected, currUserId);
 
-        var currAcc = _accountRepository.Get(currUserId);
+        var currAcc = _accountRepository.Get(currUserId, false);
         currAcc.LastConnectionDate = null;
         _accountRepository.Update(currAcc);
 
@@ -75,7 +75,7 @@ public class NotificationHub : ApplicationHub
 
         await Clients.Others.SendAsync(NotificationEvent.UserDisconnected, userId, lastConnectionDate);
 
-        var currAcc = _accountRepository.Get(userId);
+        var currAcc = _accountRepository.Get(userId, false);
         currAcc.LastConnectionDate = lastConnectionDate;
         _accountRepository.Update(currAcc);
 
