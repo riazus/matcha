@@ -21,6 +21,7 @@ import { NotificationEvent } from "../config";
 import { emitNotificationConnectionEvent } from "../sockets/notificationConnection";
 import { matchaColors } from "../styles/colors";
 import { title } from "../styles/textStyles";
+import dayjs from "dayjs";
 
 function UsersBrowsing() {
   const { filter, browsingPage } = useAppSelector((root) => root.user);
@@ -88,6 +89,14 @@ function UsersBrowsing() {
                 sx={styles.cardMedia}
               />
               <CardContent>
+                  {data[0].lastConnectionDate ? (
+                    <Typography>
+                      Last connection date:{" "}
+                      {dayjs(data[0].lastConnectionDate).format("DD MMMM YYYY hh:mm")}
+                    </Typography>
+                  ) : (
+                    <Typography sx={{fontSize: "10px"}}>connected</Typography>
+                  )}
                 <Typography variant="h5">{data[0].username}</Typography>
                 <Typography variant="body2" sx={styles.userInfo}>
                   {new Date().getFullYear() -
@@ -95,15 +104,6 @@ function UsersBrowsing() {
                   years old
                 </Typography>
 
-                {/* Modify this code */}
-                {data[0].lastConnectionDate ? (
-                  <Typography>
-                    Last connection date:{" "}
-                    {data[0].lastConnectionDate}
-                  </Typography>
-                ) : (
-                  <Typography>I'm connected!</Typography>
-                )}
 
                 <Typography variant="body2" sx={styles.userInfo}>
                   {data[0].town ?? ""} {data[0].country ?? ""}

@@ -36,6 +36,7 @@ import BlockAndReportButtons from "./BlockAndReportButtons";
 import ChatModal from "./ChatModal";
 import CreateEventModal from "./CreateEventModal";
 import ScheduledEventsAccordion from "./ScheduledEventsAccordion";
+import { StyledBadge } from "../styles/stylesBadge";
 
 function UserForm() {
   const { id: idFromParams } = useParams();
@@ -168,21 +169,33 @@ function UserForm() {
           </Typography>
         </Box>
 
-        {/* Modify this code */}
         {formData!.lastConnectionDate ? (
           <Typography>
             Last connection date:{" "}
-            {dayjs(formData!.lastConnectionDate).toString()}
+            {dayjs(formData!.lastConnectionDate).format('DD MMMM YYYY HH:mm')}
           </Typography>
-        ) : (
-          <Typography>I'm connected!</Typography>
-        )}
+        ) : null}
 
         <Box sx={styles.avatarBox}>
-          <Avatar
-            src={formData!.profilePictureUrl}
-            sx={{ marginTop: "10px", width: 100, height: 100 }}
-          />
+          {formData!.lastConnectionDate ? (
+            <Avatar
+              src={formData!.profilePictureUrl}
+              sx={{ marginTop: "10px", width: 100, height: 100 }}
+            />
+          ) : (
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              variant="dot"
+            >
+              {" "}
+              <Avatar
+                src={formData!.profilePictureUrl}
+                sx={{ marginTop: "10px", width: 100, height: 100 }}
+              />
+            </StyledBadge>
+          )}
+
           <Box sx={styles.genderAndLocationBox}>
             <Typography sx={styles.locationText}>
               {formData!.town ?? ""} {formData!.country ?? ""}

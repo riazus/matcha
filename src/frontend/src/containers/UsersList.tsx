@@ -14,9 +14,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { increaseSearchingPage } from "../app/slices/currentUserSlice";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import { useEffect, useState } from "react";
-import {title}from "../styles/textStyles";
+import { title } from "../styles/textStyles";
 import { matchaColors } from "../styles/colors";
 import { AccountsResponse } from "../types/api/accounts";
+import { StyledBadge } from "../styles/stylesBadge";
+import dayjs from "dayjs";
 
 function UsersList() {
   const { filter, searchingPage, hasMoreSearchingPage } = useAppSelector(
@@ -99,14 +101,39 @@ function UsersList() {
                   onClick={() => handleUserClick(user)}
                   sx={styles.listItemButton}
                 >
-                  <ListItemAvatar>
-                    <Avatar src={user.profilePictureUrl}></Avatar>
-                  </ListItemAvatar>
+                  <>
+                    {user.lastConnectionDate ? (
+                      <ListItemAvatar>
+                        <Avatar src={user.profilePictureUrl}></Avatar>
+                      </ListItemAvatar>
+                    ) : (
+                      <StyledBadge
+                        overlap="circular"
+                        anchorOrigin={{
+                          vertical: "top",
+                          horizontal: "right",
+                        }}
+                        variant="dot"
+                      >
+                        <ListItemAvatar>
+                          <Avatar src={user.profilePictureUrl}></Avatar>
+                        </ListItemAvatar>
+                      </StyledBadge>
+                    )}
+                  </>
                   <ListItemText
-                    sx={{fontWeight: "bold", fontSize: "18px", fontFamily: "Roboto"}}
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "18px",
+                      fontFamily: "Roboto",
+                      margin: "1%",
+                    }}
                     primary={user.username}
-                    // Modify this code
-                    secondary={`${ user.town ?? ""} ${user.country ?? ""} | ${user.lastConnectionDate ? user.lastConnectionDate : "I'm connected!"}`}
+                    secondary={`${user.town ?? ""} ${user.country ?? ""} ${
+                      user.lastConnectionDate
+                        ? `| ${dayjs(user.lastConnectionDate).format("DD MMMM YYYY hh:mm")}`
+                        : ""
+                    }`}
                   />
                   <Badge badgeContent={fameRating[ind]} color="primary">
                     <Typography>⭐</Typography>
@@ -152,9 +179,9 @@ const styles = {
     background: matchaColors.darkBox,
     borderRadius: "20px",
     marginRight: "10%",
-    ':hover': {
+    ":hover": {
       background: matchaColors.usersBox,
-    }
+    },
   },
   scrollButton: {
     padding: "10px",
