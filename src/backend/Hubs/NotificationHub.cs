@@ -38,22 +38,27 @@ public class NotificationHub : ApplicationHub
     public async override Task OnConnectedAsync()
     {
         var currUserId = CurrentAccountId;
+        var firstConnection = true;
 
         _connectedNotificationClients.AddOrUpdate(
             currUserId,
             new List<string>() { Context.ConnectionId },
             (_, existingList) =>
             {
+                firstConnection = false;
                 existingList.Add(Context.ConnectionId);
                 return existingList;
             }
         );
 
-        await Clients.Others.SendAsync(NotificationEvent.UserConnected, currUserId);
+        if (firstConnection)
+        {
+            await Clients.Others.SendAsync(NotificationEvent.UserConnected, currUserId);
 
-        var currAcc = _accountRepository.Get(currUserId, false);
-        currAcc.LastConnectionDate = null;
-        _accountRepository.Update(currAcc);
+            var currAcc = _accountRepository.Get(currUserId, false);
+            currAcc.LastConnectionDate = null;
+            _accountRepository.Update(currAcc);
+        }
 
         await base.OnConnectedAsync();
     }
@@ -62,6 +67,7 @@ public class NotificationHub : ApplicationHub
     {
         var userId = CurrentAccountId;
         var lastConnectionDate = DateTime.Now;
+        var lastDevice = false;
 
         if (_connectedNotificationClients.TryGetValue(userId, out var connectionIds))
         {
@@ -69,15 +75,19 @@ public class NotificationHub : ApplicationHub
 
             if (connectionIds.Count == 0)
             {
+                lastDevice = true;
                 _connectedNotificationClients.TryRemove(userId, out _);
             }
         }
 
-        await Clients.Others.SendAsync(NotificationEvent.UserDisconnected, userId, lastConnectionDate);
+        if (lastDevice) 
+        {
+            await Clients.Others.SendAsync(NotificationEvent.UserDisconnected, userId, lastConnectionDate);
 
-        var currAcc = _accountRepository.Get(userId, false);
-        currAcc.LastConnectionDate = lastConnectionDate;
-        _accountRepository.Update(currAcc);
+            var currAcc = _accountRepository.Get(userId, false);
+            currAcc.LastConnectionDate = lastConnectionDate;
+            _accountRepository.Update(currAcc);
+        }
 
         await base.OnDisconnectedAsync(exception);
     }
